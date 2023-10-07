@@ -201,7 +201,8 @@ for (s in scenarios){
                type_of_poll == "national") %>%
         select(-c("scenario", "type_of_poll")) %>%
         arrange(date) -> polls_national
-
+    
+    # convert vote shares to votes
     polls_national %>%
         mutate( cc_n      = round(cc_share * sample_size, digits = 0),
                 dgm_n     = round(dgm_share * sample_size, digits = 0),
