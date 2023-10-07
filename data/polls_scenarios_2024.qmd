@@ -249,7 +249,7 @@ for (s in scenarios){
     rm(lst_data)
 }
 
-df_tmp %>% 
+df_diff %>% 
     arrange(desc(ratio_maxdiff_minN))
 ```
 
