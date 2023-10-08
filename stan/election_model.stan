@@ -94,7 +94,7 @@ data {
   // priors
   vector[dim_mmu_v] m_mmu_T;
   cov_matrix[dim_mmu_v] V_mmu_T;
-  real<lower=0> prior_sig_ddelta; 
+  real<lower=0> sig_ddelta; 
   
   // params
   cov_matrix[dim_mmu_v] W;
@@ -241,8 +241,7 @@ transformed parameters {
     // initialize ttheta[, j] with 0
     ttheta_nat[, j] = rep_vector(0, n_parties);
     ttheta_nat[:, j] = inv_additive_log_ratio(to_vector(mmu_nat[day_poll_nat[j]][:, 1]) + to_vector(ddelta[house_poll[j], :]), n_parties); 
-  }
-  
+  }  
 }
 
 model {
@@ -266,6 +265,6 @@ model {
   // house effects
   for (p in 1:(n_parties-1)) 
     for (h in 1:(n_pollsters-1))
-          ddelta_raw[h, p] ~ normal(0, prior_sig_ddelta); 
+          ddelta_raw[h, p] ~ normal(0, sig_ddelta); 
   
 }
