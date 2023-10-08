@@ -2,10 +2,10 @@
 # output is a matrix with rows equal to the number of regions 
 # and columns equal to the number of states. 
 # States not in a given region/row receive a weight of 0.
-load_regional_pop_weights <- function(path = "./dataland/dataland_demographics.csv"){
+load_regional_pop_weights <- function(path = here::here("data", "dataland_demographics.csv")){
     # load national weights    
-    pop_weights_nat <- load_national_pop_weights()    
-    
+    pop_weights_nat <- load_national_pop_weights()
+        
     # load data
     dat <- read.csv(path, stringsAsFactors = FALSE)
 
