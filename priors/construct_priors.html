@@ -3133,7 +3133,8 @@ return!"\t\n\x0B\f\r                　\u2028\u2029
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#preliminaries" id="toc-preliminaries" class="nav-link active" data-scroll-target="#preliminaries">Preliminaries</a></li>
+  <li><a href="#to-dos" id="toc-to-dos" class="nav-link active" data-scroll-target="#to-dos">To-dos</a></li>
+  <li><a href="#preliminaries" id="toc-preliminaries" class="nav-link" data-scroll-target="#preliminaries">Preliminaries</a></li>
   <li><a href="#scenario-independent-priors" id="toc-scenario-independent-priors" class="nav-link" data-scroll-target="#scenario-independent-priors">Scenario-independent priors</a>
   <ul class="collapse">
   <li><a href="#covariance-matrix-boldsymbolw" id="toc-covariance-matrix-boldsymbolw" class="nav-link" data-scroll-target="#covariance-matrix-boldsymbolw">covariance matrix <span class="math inline">\(\boldsymbol{W}\)</span></a></li>
@@ -3168,6 +3169,15 @@ return!"\t\n\x0B\f\r                　\u2028\u2029
 </header>
 
 <p>This notebook constructs the <strong>priors for the model estimation</strong>. See <code>model_description.html</code>for details. Some of the priors are independent of the specific scenario being estimated, e.g. the innovations to the reverse random-walk <span class="math inline">\(\boldsymbol{W}\)</span>; others depend on the scenario and the resulting <em>fundamental forecast</em>, e.g. the prior mean <span class="math inline">\(m_{\mu_T}\)</span> and variance <span class="math inline">\(V_{\mu_T}\)</span> on the (transformed) latent voting intentions on election day.</p>
+<section id="to-dos" class="level2">
+<h2 class="anchored" data-anchor-id="to-dos">To-dos</h2>
+<ul>
+<li>regularization of <span class="math inline">\(\boldsymbol{\hat{W}}\)</span></li>
+<li>simulate trajectories of <span class="math inline">\(\mu_{1:T}\)</span> for different values of <span class="math inline">\(\kappa\)</span> given <span class="math inline">\(\boldsymbol{\hat{W}}\)</span></li>
+<li>simulate house effects by drawing from -&gt; use a sequence of polls from previous election as starting point</li>
+<li>differences in <span class="math inline">\(V_{\mu_T}\)</span> across scenarios</li>
+<li>add forecasts from fundamental model</li>
+</ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># libraries</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
@@ -3178,6 +3188,7 @@ return!"\t\n\x0B\f\r                　\u2028\u2029
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;functions&quot;</span>, f))</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(f, names_functions)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
 <section id="preliminaries" class="level2">
 <h2 class="anchored" data-anchor-id="preliminaries">Preliminaries</h2>
 <p>Initialize empty list to store priors for different scenarios</p>
@@ -3268,11 +3279,9 @@ return!"\t\n\x0B\f\r                　\u2028\u2029
 <span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>corr_mat <span class="ot">&lt;-</span> <span class="fu">cor</span>(mat_results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Regularization???</p>
 </section>
 <section id="scale-factor-kappa" class="level4">
 <h4 class="anchored" data-anchor-id="scale-factor-kappa">Scale factor <span class="math inline">\(\kappa\)</span></h4>
-<p>Simulate movements of <span class="math inline">\(\mu\)</span> for different values <span class="math inline">\(\kappa\)</span> and a given <span class="math inline">\(\boldsymbol{\hat{W}}\)</span></p>
 </section>
 <section id="calculate-boldsymbolw-and-store-in-list" class="level4">
 <h4 class="anchored" data-anchor-id="calculate-boldsymbolw-and-store-in-list">Calculate <span class="math inline">\(\boldsymbol{W}\)</span> and store in list</h4>
@@ -3282,11 +3291,11 @@ return!"\t\n\x0B\f\r                　\u2028\u2029
 </div>
 <p>Store in list</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>priors[[<span class="st">&quot;A&quot;</span>]][[<span class="st">&quot;sig_ddelta&quot;</span>]] <span class="ot">&lt;-</span> </span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    priors[[<span class="st">&quot;B&quot;</span>]][[<span class="st">&quot;sig_ddelta&quot;</span>]] <span class="ot">&lt;-</span> </span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    priors[[<span class="st">&quot;C&quot;</span>]][[<span class="st">&quot;sig_ddelta&quot;</span>]] <span class="ot">&lt;-</span> </span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    priors[[<span class="st">&quot;D&quot;</span>]][[<span class="st">&quot;sig_ddelta&quot;</span>]] <span class="ot">&lt;-</span> </span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    priors[[<span class="st">&quot;E&quot;</span>]][[<span class="st">&quot;sig_ddelta&quot;</span>]] <span class="ot">&lt;-</span> W</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>priors[[<span class="st">&quot;A&quot;</span>]][[<span class="st">&quot;W&quot;</span>]] <span class="ot">&lt;-</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    priors[[<span class="st">&quot;B&quot;</span>]][[<span class="st">&quot;W&quot;</span>]] <span class="ot">&lt;-</span> </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    priors[[<span class="st">&quot;C&quot;</span>]][[<span class="st">&quot;W&quot;</span>]] <span class="ot">&lt;-</span> </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    priors[[<span class="st">&quot;D&quot;</span>]][[<span class="st">&quot;W&quot;</span>]] <span class="ot">&lt;-</span> </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    priors[[<span class="st">&quot;E&quot;</span>]][[<span class="st">&quot;W&quot;</span>]] <span class="ot">&lt;-</span> W</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>

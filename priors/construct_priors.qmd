@@ -141,11 +141,11 @@ W <- diag(0.01, nrow = sum(n_parties_by_state-1))
 
 Store in list
 ```{r}
-priors[["A"]][["sig_ddelta"]] <- 
-    priors[["B"]][["sig_ddelta"]] <- 
-    priors[["C"]][["sig_ddelta"]] <- 
-    priors[["D"]][["sig_ddelta"]] <- 
-    priors[["E"]][["sig_ddelta"]] <- W
+priors[["A"]][["W"]] <- 
+    priors[["B"]][["W"]] <- 
+    priors[["C"]][["W"]] <- 
+    priors[["D"]][["W"]] <- 
+    priors[["E"]][["W"]] <- W
 ```
 
 ### $\sigma^2_{\delta}$
