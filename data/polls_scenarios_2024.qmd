@@ -141,86 +141,87 @@ pollsters <- load_pollsters()
 
 Loop over scenarios
 ```{r}
-scenarios <- unique(dat$scenario)
-
-for (s in scenarios){
+scenarios <- unique(dat$scenario)    
+polls <- list() # initialize empty list
+for (scenario in scenarios){
     
-    # initialize empty list
-    lst_data <- list()
-   
+    polls[[scenario]] <- list()
+    
     # state polls----
 
     dat %>%
-    filter(scenario == s,
+    filter(scenario == .env$scenario,
            type_of_poll == "state") %>%
     select(-c("scenario", "type_of_poll")) %>%
-    arrange(date) -> polls_state
+    arrange(date) -> df_polls_state
 
     # convert vote shares to votes
-    polls_state %>%
+    df_polls_state %>%
         mutate( cc_n      = round(cc_share * sample_size, digits = 0),
                 dgm_n     = round(dgm_share * sample_size, digits = 0),
                 pdal_n    = round(pdal_share * sample_size, digits = 0),
-                ssp_n     = round(ssp_share * sample_size, digits = 0)) -> polls_state
+                ssp_n     = round(ssp_share * sample_size, digits = 0)) -> df_polls_state
     
     # store data in list
-    lst_data[["n_responses"]]   <- polls_state$sample_size
-    lst_data[["day_poll"]]      <- sapply(polls_state$date, 
+    polls[[scenario]][["n_responses"]]   <- df_polls_state$sample_size
+    polls[[scenario]][["day_poll"]]      <- sapply(df_polls_state$date, 
                                             function(x){ which(dates_campaign == x)})
-    lst_data[["house_poll"]]    <- sapply(polls_state$pollster, 
+    polls[[scenario]][["house_poll"]]    <- sapply(df_polls_state$pollster, 
                                             function(x){which(pollsters == x)})
-    lst_data[["state_poll"]]    <- sapply(polls_state$geography, 
+    polls[[scenario]][["state_poll"]]    <- sapply(df_polls_state$geography, 
                                             function(x){which(states_regions$state == x)}) 
-    lst_data[["y"]]             <- t(as.matrix(polls_state[, c("cc_n", "dgm_n", "pdal_n", "ssp_n")]))
+    polls[[scenario]][["y"]]             <- t(as.matrix(df_polls_state[, c("cc_n", "dgm_n", "pdal_n", "ssp_n")]))
     
     # regional polls ----
     dat %>%
-        filter(scenario == s,
+        filter(scenario == .env$scenario,
                type_of_poll == "regional") %>%
         select(-c("scenario", "type_of_poll")) %>%
-        arrange(date) -> polls_region  
+        arrange(date) -> df_polls_region  
 
     # convert vote shares to votes
-    polls_region %>%
+    df_polls_region %>%
         mutate( cc_n      = round(cc_share * sample_size, digits = 0),
                 dgm_n     = round(dgm_share * sample_size, digits = 0),
                 pdal_n    = round(pdal_share * sample_size, digits = 0),
-                ssp_n     = round(ssp_share * sample_size, digits = 0)) -> polls_region
+                ssp_n     = round(ssp_share * sample_size, digits = 0)) -> df_polls_region
     
-    lst_data[["n_responses_reg"]]   <- polls_region$sample_size
-    lst_data[["day_poll_reg"]]      <- sapply(polls_region$date, 
+    polls[[scenario]][["n_responses_reg"]]   <- df_polls_region$sample_size
+    polls[[scenario]][["day_poll_reg"]]      <- sapply(df_polls_region$date, 
                                                 function(x){ which(dates_campaign == x)})
-    lst_data[["house_poll_reg"]]    <- sapply(polls_region$pollster, 
+    polls[[scenario]][["house_poll_reg"]]    <- sapply(df_polls_region$pollster, 
                                                 function(x){which(pollsters == x)})
-    lst_data[["region_poll"]]       <- sapply(polls_region$geography,
+    polls[[scenario]][["region_poll"]]       <- sapply(df_polls_region$geography,
                                                 function(x){which(unique(states_regions$region) == x)}) 
-    lst_data[["y_reg"]]             <- t(as.matrix(polls_region[, c("cc_n", "dgm_n", "pdal_n", "ssp_n")]))
+    polls[[scenario]][["y_reg"]]             <- t(as.matrix(df_polls_region[, c("cc_n", "dgm_n", "pdal_n", "ssp_n")]))
     
     # national polls ----
     dat %>%
-        filter(scenario == s,
+        filter(scenario == .env$scenario,
                type_of_poll == "national") %>%
         select(-c("scenario", "type_of_poll")) %>%
-        arrange(date) -> polls_national
+        arrange(date) -> df_polls_national
     
     # convert vote shares to votes
-    polls_national %>%
+    df_polls_national %>%
         mutate( cc_n      = round(cc_share * sample_size, digits = 0),
                 dgm_n     = round(dgm_share * sample_size, digits = 0),
                 pdal_n    = round(pdal_share * sample_size, digits = 0),
-                ssp_n     = round(ssp_share * sample_size, digits = 0)) -> polls_national
+                ssp_n     = round(ssp_share * sample_size, digits = 0)) -> df_polls_national
 
-    lst_data[["n_responses_nat"]]   <- polls_national$sample_size
-    lst_data[["day_poll_nat"]]      <- sapply(polls_national$date, 
+    polls[[scenario]][["n_responses_nat"]]   <- df_polls_national$sample_size
+    polls[[scenario]][["day_poll_nat"]]      <- sapply(df_polls_national$date, 
                                                 function(x){ which(dates_campaign == x)})
-    lst_data[["house_poll_nat"]]    <- sapply(polls_national$pollster, 
+    polls[[scenario]][["house_poll_nat"]]    <- sapply(df_polls_national$pollster, 
                                                 function(x){which(pollsters == x)})
-    lst_data[["y_nat"]]             <- t(as.matrix(polls_national[, c("cc_n", "dgm_n", "pdal_n", "ssp_n")]))
+    polls[[scenario]][["y_nat"]]             <- t(as.matrix(df_polls_national[, c("cc_n", "dgm_n", "pdal_n", "ssp_n")]))
     
-    # Export ----
-    save(lst_data, file = here::here("data", paste0("data_scenario", s, ".Rda")))
-    rm(lst_data, polls_state, polls_region, polls_national)
+    # Clean up ----
+    rm(df_polls_state, df_polls_region, df_polls_national)
 }
+
+# Export ----
+save(polls, file = here::here("data", paste0("polls.Rda")))
 ```
 
 ## Compare differences between sum of votes and total number of responses
