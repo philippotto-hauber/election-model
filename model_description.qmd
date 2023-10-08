@@ -4,6 +4,7 @@ format:
     html:
         toc: true
         toc-location: left
+        embed-resources: true
 editor: visual
 bibliography: references.bib
 ---
@@ -22,13 +23,13 @@ The latent voting intentions at the state level are aggregated to the regional a
 
 Let $\pi_{t, s} = [\pi_{t, s, 1}, \dots, \pi_{t, s, P}]$ denote the vector of voting intentions for the $P$ different parties in state $s$ at time $t$. Because these are expected vote shares, $\sum_p^P \pi_{t,s, p} = 1$. 
 
-To be able to model the dynamic evolution and correlation across parties and states more flexibly, the latent voting intentions are transformed to a vector of unbounded, real-valued quantities using the *additive log ratio transformation* (see XXX)
+To be able to model the dynamic evolution and correlation across parties and states more flexibly, the latent voting intentions are transformed to a vector of unbounded, real-valued quantities using the *additive log ratio transformation* (see @Stoetzer_etal_2019)
 
 $$
 \mu_{t, s} = \text{alr}(\pi_{t, s}) = \left( \frac{\pi_{t,s,1}}{\pi_{t,s,P}}, \dots, \frac{\pi_{t,s,P-1}}{\pi_{t,s,P}}\right)
 $$
 
-For each state $s$ this yields a vector of dimensions $P_s-1 \times 1$ where $P_s$ is the number of parties running in thatstate!
+For each state $s$ this yields a vector of dimensions $P_s-1 \times 1$ where $P_s$ is the number of parties running in that state!
 
 Conversely, the inverse of the transformation is defined as 
 
@@ -78,7 +79,18 @@ and $\mu^{\text{nat}}_{t} = \text{alr}(\pi^{\text{nat}}_{t})$.
 
 The value for $\boldsymbol{W}$ which governs the correlations between voting intentions across parties and states is calibrated and not updated in the estimation. This can be interpreted as a very tight prior on the values!
 
-The transformed voting intentions on election day in state $s$, $\mu_{T, s}$ are given a Normal prior centered on a *fundamental forecast* of the expected vote share in each state $\text{alr}(\pi^*_{t, s})$. All elements are assumed to be a priori independent but I allow for different prior variances $\sigma^2_s$ across states. By choosing a tighter prior more weight is placed on the fundamental forecasts. This may be reasonable in those states or regions where fewer polls are available.
+The transformed voting intentions on election day are given a Normal prior:
+
+$$
+\mu_T \sim \mathcal{N}(m_{\mu_T}, V_{\mu_T})
+$$
+
+The prior mean is derived from a *fundamental forecast* of the expected vote share in each state, $\pi^*_{T,s}$,
+$$
+m_{\mu_T} = [\mu_{T, 1}, \dots, \mu_{T, S}] = [\text{alr}(\pi^*_{T, 1}), \dots, \text{alr}(\pi^*_{T, S})]
+$$ 
+
+All elements of $\mu_T$ are assumed to be a priori independent but I allow for different prior variances $\sigma^2_s$ across states. That is to say, $V_{\mu_T} = \text{diag}(\sigma^2_1, \dots, \sigma^2_S)$. By choosing a tighter prior more weight is placed on the fundamental forecasts. This may be reasonable in those states or regions where fewer polls are available.
 
 ## House effects
 
@@ -96,7 +108,7 @@ I assume that the house effects for state, regional and national polls are all t
 
 ### Prior on $\delta$
 
-The prior on the house effects is centered around 0 and the same prior variance $\sigma_{\delta}$ for all the elements: 
+The prior on the house effects is centered around 0 and the same prior variance $\sigma^2 _{\delta}$ for all the elements: 
 
 $$
 \delta_{p, h} \sim \mathcal{N}(0, \sigma^2_{\delta})
