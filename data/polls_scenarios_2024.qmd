@@ -193,7 +193,7 @@ for (s in scenarios){
     lst_data[["house_poll_reg"]]    <- sapply(polls_region$pollster, 
                                                 function(x){which(pollsters == x)})
     lst_data[["region_poll"]]       <- sapply(polls_region$geography,
-                                                function(x){which(states_regions$region == x)}) 
+                                                function(x){which(unique(states_regions$region) == x)}) 
     lst_data[["y_reg"]]             <- t(as.matrix(polls_region[, c("cc_n", "dgm_n", "pdal_n", "ssp_n")]))
     
     # national polls ----
