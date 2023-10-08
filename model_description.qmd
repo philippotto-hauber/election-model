@@ -1,0 +1,131 @@
+---
+title: "Model description"
+format: 
+    html:
+        toc: true
+        toc-location: left
+editor: visual
+bibliography: references.bib
+---
+
+@Linzer_2013 and @Heidemanns_2020 as well as  @Stoetzer_etal_2019 are papers that my model is based on. 
+
+The central part of the model are the latent voting intentions or expected vote shares for the different parties in all of Dataland's states. 
+
+For modelling purposes, these latent voting intentions are transformed using the *additive log ratio* transformation. 
+
+In the model, the latent voting intentions are inferred from polling data. However, polls do **not** just reflect the expected vote shares (up to sampling variability). They also contain *house effects*, i.e. systematic biases in the vote shares reported by different pollsters.
+
+The latent voting intentions at the state level are aggregated to the regional and national level using population weights so that the model can also handle regional and national polls
+
+## Latent voting intentions
+
+Let $\pi_{t, s} = [\pi_{t, s, 1}, \dots, \pi_{t, s, P}]$ denote the vector of voting intentions for the $P$ different parties in state $s$ at time $t$. Because these are expected vote shares, $\sum_p^P \pi_{t,s, p} = 1$. 
+
+To be able to model the dynamic evolution and correlation across parties and states more flexibly, the latent voting intentions are transformed to a vector of unbounded, real-valued quantities using the *additive log ratio transformation* (see XXX)
+
+$$
+\mu_{t, s} = \text{alr}(\pi_{t, s}) = \left( \frac{\pi_{t,s,1}}{\pi_{t,s,P}}, \dots, \frac{\pi_{t,s,P-1}}{\pi_{t,s,P}}\right)
+$$
+
+For each state $s$ this yields a vector of dimensions $P_s-1 \times 1$ where $P_s$ is the number of parties running in thatstate!
+
+Conversely, the inverse of the transformation is defined as 
+
+$$
+\pi_{t,s} = \text{alr}^{-1}(\mu_{t,s}) = \frac{\left[\exp(\mu_{t,s,1}), \dots, \exp(\mu_{t,s,P-1}), 1\right]}{\sum_p^{P-1} \exp(\mu_{t,s,p}) + 1} 
+$$
+
+where I have inserted the implicit $\exp(\log(\frac{\pi_{t,s, P}}{\pi_{t,s,P}})) = 1$.
+
+### Dynamics of (transformed) latent voting intentions
+
+Let $\mu_t= [\mu_{t, 1}, \dots, \mu_{t, S}]$ denote the vector of transformed voting intentions stacked by states. Starting on election day, i.e. $\mu_T$, the dynamics are modeled as a (reverse) random-walk
+
+$$
+\mu_t = \mu_{t+1} + w_t,\:t = 1:T-1
+$$
+
+The innovations are distributed as 
+
+$$
+w_t \sim \mathcal{N}(0, \boldsymbol{W})
+$$
+
+### Aggregating (transformed) latent voting intentions 
+
+To map the latent voting intentions to polls not only at the state level but also at the regional or national levels and thus exploit additional sources of information in the form of regional or national polls, I aggregate them using population weights. 
+
+Let $\omega^{nat}_s$ denote the population share of state $s$ at national level and $\omega^{r}_s$ the share of that state in region $s$. Both  $\omega_s^{nat}$ and the $\omega_s^{r}$ all sum to 1. 
+
+Then for region $r$ the aggregated voting intentions are
+
+$$
+\pi^{\text{reg}}_{t,r} = \sum_s^{S_r} \omega_s^{r} \pi_{t, s}
+$$
+
+These can then be transformed to the log ratio space, yielding $\mu^{\text{reg}}_{t,r} = \text{alr}(\pi^{\text{reg}}_{t,r})$.
+
+Similarly, for the voting intentions at the national level
+
+$$
+\pi^{\text{nat}}_{t} = \sum_s^{S} \omega_s \pi_{t, s}
+$$
+
+and $\mu^{\text{nat}}_{t} = \text{alr}(\pi^{\text{nat}}_{t})$.
+
+### Priors
+
+The value for $\boldsymbol{W}$ which governs the correlations between voting intentions across parties and states is calibrated and not updated in the estimation. This can be interpreted as a very tight prior on the values!
+
+The transformed voting intentions on election day in state $s$, $\mu_{T, s}$ are given a Normal prior centered on a *fundamental forecast* of the expected vote share in each state $\text{alr}(\pi^*_{t, s})$. All elements are assumed to be a priori independent but I allow for different prior variances $\sigma^2_s$ across states. By choosing a tighter prior more weight is placed on the fundamental forecasts. This may be reasonable in those states or regions where fewer polls are available.
+
+## House effects
+
+For the $h=1:H$ different pollsters, the model allows for systematic deviations in the published vote share of each party. That is to say, the scalar $\delta_{p, h}$ captures by how much (in the log ratio space) the reported vote share in a poll by pollster $h$ will deviate from the underlying voting intentions. 
+
+For a given pollster and party, the sum of the house effects is zero, i.e.  
+$$
+\sum_p^P \delta_{p, h} = 0\;,
+\sum_h^H \delta_{p, h} = 0
+$$
+
+In a slight abuse of notation, let $\delta_{h} = [\delta_{1, h}, \dots, \delta_{P, h}]$ denote the vector of house effects of pollster h for the P different parties.
+
+I assume that the house effects for state, regional and national polls are all the same. In addition, I do not model different "house effects" depending on how many parties are running. 
+
+### Prior on $\delta$
+
+The prior on the house effects is centered around 0 and the same prior variance $\sigma_{\delta}$ for all the elements: 
+
+$$
+\delta_{p, h} \sim \mathcal{N}(0, \sigma^2_{\delta})
+$$
+
+## Polls
+
+$$
+\theta_{t, s, c} = \text{alr}^{-1}(\mu_{t, s} + \delta_{h})
+$$
+
+### State polls
+
+The outcome of the $i = 1:I$ state polls are modeled as a realization of *multinomial random variable*
+
+$$
+y_i \sim \text{Multinomial}(N_i, \theta_{t[i], s[i], h[i]})
+$$
+
+where $N_i$ is the total number of respondents and $y_i = [y_{i, 1}, \dots, y_{i, P}]$ is a vector containing the number of respondents who in poll $i$ on day $t[i]$ would vote for the candidate of party $p$ in state $s[i]$.
+
+### Regional polls
+
+Indexed by $j=1:J$, regional polls are modeled in exactly the same way as state polls. The only difference is that underlying probabilities of the multinomial distribution are derived from the regional voting intentions, $\pi^{reg}_{t[j], p[j], r[j]}:
+
+$$
+y^{reg}_j \sim \text{Multinomial}(N_i, \pi^{reg}_{t[j], p[j], r[j]})
+$$
+
+### National polls
+
+Similarly, national polls are 
