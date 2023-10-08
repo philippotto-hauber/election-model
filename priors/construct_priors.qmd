@@ -8,14 +8,206 @@ format:
 
 This notebook constructs the **priors for the model estimation**. See `model_description.html`for details. Some of the priors are independent of the specific scenario being estimated, e.g. the innovations to the reverse random-walk $\boldsymbol{W}$; others depend on the scenario and the resulting *fundamental forecast*, e.g. the prior mean $m_{\mu_T}$ and variance $V_{\mu_T}$ on the (transformed) latent voting intentions on election day.
 
+```{r}
+#| output: false
+
+# libraries
+library(dplyr)
+
+# source functions
+names_functions = list.files(here::here("functions"))
+for (f in names_functions)
+    source(here::here("functions", f))
+rm(f, names_functions)
+```
+
+## Preliminaries
+
+Initialize empty list to store priors for different scenarios
+
+```{r}
+priors <- list() 
+```
+
+Load number of parties running in each state -> needed to set the prior on $\mu_T$
+```{r}
+n_parties_by_state <- load_n_parties_by_geography("state") # 
+```
+
+Load election results -> needed to estimate $\boldsymbol{W}$
+
+```{r}
+election_results <- load_election_vote_shares()
+n_elections <- length(unique(election_results$year))
+```
+
 ## Scenario-independent priors
 
-### $\boldsymbol{W}$
+### covariance matrix $\boldsymbol{W}$
 
-### $\sigma_{\delta}$
+To specify the "prior" on the innovations to the reverse random-walk, it is useful to decompose the covariance as 
+
+$$
+\boldsymbol{W} = \kappa \times \boldsymbol{\hat{W}}
+$$
+
+where $\boldsymbol{\hat{W}}$ is a correlation matrix and $\kappa$ a scale factor. Intuitively, $\boldsymbol{\hat{W}}$ accounts for the comovement of the changes in latent voting intentions across parties and states while $\kappa$ governs how large changes in voting intentions are!
+
+#### Correlation matrix $\boldsymbol{\hat{W}}$
+
+To calculate the correlation matrix I rely on two sources of information: 
+
+- actual election results
+- similarities in demographics across states
+
+For the former I use all the available election results since 
+
+
+> [...] although parties’ vote shares in each province oscillate from year to year—possibly for quantifiable reasons like the strength of the economy, and possibly for unquantifiable ones like the comparative appeal of their candidates or of their proposed policies—the baseline popularity of each party in each province is constant all the way from 1984 to 2024, as are the characteristics of each pollster. There is no equivalent in Dataland of, say, West Virginia in the United States shifting over time from a reliably Democratic-voting state to a reliably Republican-voting one, because there are no long-run time trends. As a result, when predicting elections in 2024, **you should treat historical results and polls from 1984 as being just as informative as those from 2023 are**. (background material on Dataland, my emphasis)
+
+
+```{r}
+# loop over elections
+df_corr <- data.frame()
+for (y in seq(min(election_results$year), max(election_results$year))){
+
+    election_results %>% 
+        filter(year == y) %>%
+        select(state, region, cc, dgm, pdal, ssp) %>% 
+        arrange(region, state) -> election_result
+
+    # convert to log ratios
+    result_lr <- election_result
+    result_lr[, c("cc", "dgm", "pdal", "ssp")] <- NA
+
+    for (i in seq(1, nrow(election_result))) {
+        n_parties_i <- n_parties_by_state[election_result$state[i]]
+        # return vote shares as vector -> not sure why drop = TRUE returns list!?
+        tmp_voteshares <- unlist(election_result[i, c("cc", "dgm", "pdal", "ssp"), 
+                                                 drop = TRUE])
+        if (n_parties_i == 3)
+            tmp_voteshares <- tmp_voteshares[1:3] 
+        tmp_lr <- additive_log_ratio(tmp_voteshares)
+        if (n_parties_i == 3)
+            result_lr[i, c("cc", "dgm", "pdal")] <- tmp_lr
+        else 
+            result_lr[i, c("cc", "dgm", "pdal", "ssp")] <- tmp_lr
+    }
+
+    result_lr %>% 
+        mutate(year = y) %>%
+        tidyr::pivot_longer(cols = c("cc", "dgm", "pdal", "ssp"),
+                            names_to = "party", 
+                            values_to = "value") -> result_lr_long
+
+    result_lr_long %>% 
+        select(-region) %>% 
+        filter(!is.na(value), value != 0) %>%
+        tidyr::unite(col = "state_party", state, party) %>%
+        tidyr::pivot_wider(names_from = state_party, values_from = value) -> df_corr_tmp
+
+    df_corr <- rbind(df_corr, df_corr_tmp)
+}
+
+df_corr %>% 
+    select(-year) %>% 
+    as.matrix -> mat_results 
+
+# check dims
+if (!(nrow(mat_results) == n_elections & 
+        ncol(mat_results) == sum(n_parties_by_state-1)))
+    stop("Dimensions of matrix containing log ratio election results not correct. Abort!")
+
+corr_mat <- cor(mat_results)
+```
+
+Regularization???
+
+#### Scale factor $\kappa$
+
+Simulate movements of $\mu$ for different values $\kappa$ and a given $\boldsymbol{\hat{W}}$
+
+#### Calculate $\boldsymbol{W}$ and store in list
+
+For the time being, simply set $\boldsymbol{W}$ to a diagonal matrix: 
+
+```{r}
+W <- diag(0.01, nrow = sum(n_parties_by_state-1))
+```
+
+Store in list
+```{r}
+priors[["A"]][["sig_ddelta"]] <- 
+    priors[["B"]][["sig_ddelta"]] <- 
+    priors[["C"]][["sig_ddelta"]] <- 
+    priors[["D"]][["sig_ddelta"]] <- 
+    priors[["E"]][["sig_ddelta"]] <- W
+```
+
+### $\sigma^2_{\delta}$
+
+```{r}
+sig_ddelta <- sqrt(0.01) # specify in terms of standard deviation for Stan!
+```
+
+Store in list
+
+```{r}
+
+priors[["A"]][["sig_ddelta"]] <- 
+    priors[["B"]][["sig_ddelta"]] <- 
+    priors[["C"]][["sig_ddelta"]] <- 
+    priors[["D"]][["sig_ddelta"]] <- 
+    priors[["E"]][["sig_ddelta"]] <- sig_ddelta
+```
 
 ## Scenario-dependent priors
 
+For the time being, I center the prior mean of $\mu_T$ on an equal vote share for all parties running in a given state
+
 ### $m_{\mu_T}$
 
+```{r}
+m_mmu_T <- rep(0, sum(n_parties_by_state-1))
+```
+
+Store in list
+```{r}
+priors[["A"]][["m_mmu_T"]] <- 
+    priors[["B"]][["m_mmu_T"]] <- 
+    priors[["C"]][["m_mmu_T"]] <- 
+    priors[["D"]][["m_mmu_T"]] <- 
+    priors[["E"]][["m_mmu_T"]] <- m_mmu_T
+```
+
 ### $V_{\mu_T}$
+
+The prior variance can across scenarios to reflect how far advanced the campaign is. 
+
+![](./../plots/available_polls_over_time.png)
+
+In addition, it can also be set to a smaller value - placing greater weight on the fundamental forecast - in those states where within a given scenario fewer or no polls are available
+
+![](./../plots/available_polls_by_geography.png)
+
+For the time being, however, I set a relatively uninformative prior that is the same in all scenarios and states
+
+```{r}
+V_mmu_T <- diag(rep(1, sum(n_parties_by_state-1)))
+```
+
+Store in list
+```{r}
+priors[["A"]][["V_mmu_T"]] <- 
+    priors[["B"]][["V_mmu_T"]] <- 
+    priors[["C"]][["V_mmu_T"]] <- 
+    priors[["D"]][["V_mmu_T"]] <- 
+    priors[["E"]][["V_mmu_T"]] <- V_mmu_T
+```
+
+## Export
+
+
+```{r}
+save(priors, file = here::here("priors", "priors.Rda"))
+```
