@@ -247,7 +247,7 @@ transformed parameters {
 
 model {
 
-  mmu_T ~ multi_normal(prior_mean_mmu_T, prior_Sig_mmu_T);
+  mmu_T ~ multi_normal(m_mmu_T, V_mmu_T);
 
   to_vector(w) ~ std_normal(); // not entirely sure, why to_vector() is needed! See Economist's 2020 poll model 
 
