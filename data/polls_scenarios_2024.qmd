@@ -109,11 +109,13 @@ ggplot(df_plot, aes(x = date, fill = type_of_poll)) +
     ggsci::scale_fill_jco() +
     facet_wrap(~scenario) + 
     labs(title = "Availability of polls over time", subtitle = "By type of poll")
+
+ggsave(file = here::here("plots", "available_polls_over_time.png"))
 ```
 
 ```{r}
 #| echo: false
-ggplot(filter(df_plot, type_of_poll == "state"), 
+ggplot(filter(df_plot), 
         aes(x = geography, fill = month)) +
     geom_bar() + 
     ggsci::scale_fill_jco() +
@@ -121,18 +123,8 @@ ggplot(filter(df_plot, type_of_poll == "state"),
     labs(title = "Availability of polls by state") +
     theme(axis.text.x = element_text(angle = 90)) +
     coord_flip()
-```
 
-```{r}
-#| echo: false
-ggplot(filter(df_plot, type_of_poll != "state"), 
-        aes(x = geography, fill = month)) +
-    geom_bar() + 
-    facet_wrap(~scenario) +
-    ggsci::scale_fill_jco() +
-    labs(title = "Availability of national and regional polls") +
-    theme(axis.text.x = element_text(angle = 90)) +
-    coord_flip()
+ ggsave(file = here::here("plots", "available_polls_by_geography.png"))   
 ```
 
 ```{r}
@@ -234,7 +226,7 @@ for (s in scenarios){
 
 ## Compare differences between sum of votes and total number of responses
 
-As a consequence of rounding the product of vote share and number of poll respondents, the sum of votes for the parties may not exactly match the total number of respondents in the poll. 
+As a consequence of rounding the product of vote share and number of poll respondents to an integer, the sum of votes for the parties may not exactly match the total number of respondents in the poll. 
 
 How large are these discrepancies? 
 
