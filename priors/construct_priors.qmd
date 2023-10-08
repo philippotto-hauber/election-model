@@ -8,6 +8,14 @@ format:
 
 This notebook constructs the **priors for the model estimation**. See `model_description.html`for details. Some of the priors are independent of the specific scenario being estimated, e.g. the innovations to the reverse random-walk $\boldsymbol{W}$; others depend on the scenario and the resulting *fundamental forecast*, e.g. the prior mean $m_{\mu_T}$ and variance $V_{\mu_T}$ on the (transformed) latent voting intentions on election day.
 
+## To-dos
+
+- regularization of $\boldsymbol{\hat{W}}$
+- simulate trajectories of $\mu_{1:T}$ for different values of $\kappa$ given $\boldsymbol{\hat{W}}$
+- simulate house effects by drawing from -> use a sequence of polls from previous election as starting point
+- differences in $V_{\mu_T}$ across scenarios
+- add forecasts from fundamental model
+
 ```{r}
 #| output: false
 
@@ -121,11 +129,7 @@ if (!(nrow(mat_results) == n_elections &
 corr_mat <- cor(mat_results)
 ```
 
-Regularization???
-
 #### Scale factor $\kappa$
-
-Simulate movements of $\mu$ for different values $\kappa$ and a given $\boldsymbol{\hat{W}}$
 
 #### Calculate $\boldsymbol{W}$ and store in list
 
