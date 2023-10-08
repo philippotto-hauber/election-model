@@ -147,8 +147,7 @@ for (s in scenarios){
     
     # initialize empty list
     lst_data <- list()
-    lst_data[["scenario"]] <- s
-    
+   
     # state polls----
 
     dat %>%
