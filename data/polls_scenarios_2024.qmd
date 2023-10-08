@@ -5,10 +5,12 @@ format:
         embed-resources: true
 ---
 
-## Load librariess and functions
+This notebook **loads and prepares the scenarios of polling data in the 2024 election cycle**. The transformed data are converted to lists and exported as e.g. `data_scenarioaA.Rda`
 
+## Load libraries and functions
 
-```{r, echo = FALSE, warning = FALSE}
+```{r}
+#| output: false
 library(ggplot2)
 library(dplyr)
 names_functions = list.files(here::here("functions"))
@@ -57,7 +59,9 @@ Check that shares (approximately) sum to 1:
 hist(dat$cc_poll_share + 
          dat$dgm_poll_share + 
             dat$pdal_poll_share + 
-                dat$ssp_poll_share - 1, main = "Sum of vote shares minus 1")
+                dat$ssp_poll_share - 1, 
+                xlab = "", 
+                main = "Sum of vote shares minus 1")
 ```
 
 Simplify names of party vote shares
@@ -90,12 +94,14 @@ dates_campaign <- seq(start_campaign, end_campaign, by = "1 day")
 This can be useful information when choosing how tight the prior on the election day voting intentions should be!
 
 ```{r}
+#| echo: false
 # add column with the month of the poll and store in new data frame
 dat %>%
     mutate(month = format(date, "%B")) -> df_plot
 ```
 
-```{r, echo = FALSE}
+```{r}
+#| echo: false
 ggplot(df_plot, aes(x = date, fill = type_of_poll)) +
     geom_bar() +
     ggsci::scale_fill_jco() +
@@ -103,7 +109,8 @@ ggplot(df_plot, aes(x = date, fill = type_of_poll)) +
     labs(title = "Availability of polls over time", subtitle = "By type of poll")
 ```
 
-```{r, echo = FALSE}
+```{r}
+#| echo: false
 ggplot(filter(df_plot, type_of_poll == "state"), 
         aes(x = geography, fill = month)) +
     geom_bar() + 
@@ -115,6 +122,7 @@ ggplot(filter(df_plot, type_of_poll == "state"),
 ```
 
 ```{r}
+#| echo: false
 ggplot(filter(df_plot, type_of_poll != "state"), 
         aes(x = geography, fill = month)) +
     geom_bar() + 
@@ -125,8 +133,8 @@ ggplot(filter(df_plot, type_of_poll != "state"),
     coord_flip()
 ```
 
-Clean up!
 ```{r}
+#| echo: false
 rm(df_plot)
 ```
 
@@ -222,7 +230,7 @@ for (s in scenarios){
 }
 ```
 
-## Compare differences between sum of votes and total responses
+## Compare differences between sum of votes and total number of responses
 
 As a consequence of rounding the product of vote share and number of poll respondents, the sum of votes for the parties may not exactly match the total number of respondents in the poll. 
 
