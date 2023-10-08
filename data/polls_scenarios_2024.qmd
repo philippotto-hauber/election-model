@@ -3,6 +3,7 @@ title: "Prepare poll data for model estimation"
 format: 
     html:
         embed-resources: true
+        toc: true
 ---
 
 This notebook **loads and prepares the scenarios of polling data in the 2024 election cycle**. The transformed data are converted to lists and exported as e.g. `data_scenarioaA.Rda`
@@ -56,6 +57,7 @@ dat %>%
 Check that shares (approximately) sum to 1:
 
 ```{r}
+#| echo: false
 hist(dat$cc_poll_share + 
          dat$dgm_poll_share + 
             dat$pdal_poll_share + 
