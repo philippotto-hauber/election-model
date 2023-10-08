@@ -4,8 +4,8 @@
 # function for dim_mmu_v
 # function for offset_mmu_v
 # function to load parties -> get n_parties that way!
-# adjust data so that no regional polls like in scenario B can be handled
-# poll data in one file with different lists for scenarios -> like for priors!
+# adjust data so that no regional polls like in scenario B can be handled -> DONE!!!!
+# poll data in one file with different lists for scenarios -> like for priors! -> DONE!!!!
 
 # set up ----
 
@@ -45,9 +45,11 @@ model <- cmdstanr::cmdstan_model(exe_file = here::here("stan", "election_model.e
 # load priors
 load(here::here("priors", paste0("priors.Rda")))
 
+# load polls
+load(here::here("data", paste0("polls.Rda")))
+
 # loop over scenarios -----
-#scenarios <- load_scenarios()
-scenarios <- c("A", "C", "D", "E")
+scenarios <- load_scenarios() 
 
 for (scenario in scenarios) {
 
@@ -55,17 +57,30 @@ for (scenario in scenarios) {
     dates_campaign <- load_dates_election_campaign(scenario = scenario)
     data_for_stan[["n_days"]] <- length(dates_campaign)
 
-    # load polls
-    load(here::here("data", paste0("data_scenario", scenario, ".Rda")))
-    data_for_stan[["n_polls_state"]] <- dim(lst_data$y)[2]
-    data_for_stan[["n_polls_reg"]] <- dim(lst_data$y_reg)[2]
-    data_for_stan[["n_polls_nat"]] <- dim(lst_data$y_nat)[2]
+
+    data_for_stan[["n_polls_state"]] <- dim(polls[[scenario]]$y)[2]
+    data_for_stan[["n_polls_reg"]] <- dim(polls[[scenario]]$y_reg)[2]
+    data_for_stan[["n_polls_nat"]] <- dim(polls[[scenario]]$y_nat)[2]
 
     # sample from model
     data_for_stan_scenario <- list()
     data_for_stan_scenario  <- c(data_for_stan,
-                                 lst_data, 
+                                 polls[[scenario]], 
                                  priors[[scenario]])
+
+    if (scenario == "B"){
+        # scenario B only has 1 regional polls. This causes problems in Stan 
+        # where the variables refering to regional polls are declared as arrays (of size 1)
+        # In this case, Stan requires the data to have a dim attribute!
+        # The easiest way of doing this is by converting the variables to arrays
+        # see here: https://stackoverflow.com/questions/53163214/how-to-have-a-variable-in-the-data-block-of-stan-be-an-array-of-length-j-1
+        # It's a bit puzzling because an R vector does not have a dim attribute either so 
+        # I don't see the difference to other scenarios. But I guess a vector of length 1 is treated differently!
+        data_for_stan_scenario[["day_poll_reg"]] <- as.array(data_for_stan_scenario[["day_poll_reg"]])
+        data_for_stan_scenario[["n_responses_reg"]] <- as.array(data_for_stan_scenario[["n_responses_reg"]])
+        data_for_stan_scenario[["house_poll_reg"]] <- as.array(data_for_stan_scenario[["house_poll_reg"]])
+        data_for_stan_scenario[["region_poll"]] <- as.array(data_for_stan_scenario[["region_poll"]])
+    }
 
     fit <- model$sample(
                         data = data_for_stan_scenario,
@@ -77,6 +92,6 @@ for (scenario in scenarios) {
     out <- rstan::read_stan_csv(fit$output_files())
 
     save(out, file = here::here("stan", paste0("mcmc_out_", scenario, ".Rda")))
-    rm(out, lst_data, data_for_stan_scenario, fit)
+    rm(out, data_for_stan_scenario, fit)
 }
 
