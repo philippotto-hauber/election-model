@@ -209,7 +209,7 @@ transformed parameters {
   for (k in 1 : n_polls_reg){
     // initialize ttheta[, i] with 0
     ttheta_reg[, k] = rep_vector(0, n_parties);
-    ttheta_reg[1:n_parties_by_region[region_poll[k]], k] = inv_additive_log_ratio(to_vector(mmu_reg[day_poll_reg[k]][1:n_parties_by_region[region_poll[k]], region_poll[k]]) + to_vector(ddelta[house_poll[k], 1:n_parties_by_region[region_poll[k]]]), n_parties_by_region[region_poll[k]]); 
+    ttheta_reg[1:n_parties_by_region[region_poll[k]], k] = inv_additive_log_ratio(to_vector(mmu_reg[day_poll_reg[k]][1:n_parties_by_region[region_poll[k]], region_poll[k]]) + to_vector(ddelta[house_poll_reg[k], 1:n_parties_by_region[region_poll[k]]]), n_parties_by_region[region_poll[k]]); 
   }
   
   
@@ -239,8 +239,8 @@ transformed parameters {
   // add house effects to aggregated (log ratio) voting intentions at national level to map with regional polls
   for (j in 1 : n_polls_nat){
     // initialize ttheta[, j] with 0
-    ttheta_nat[, j] = rep_vector(0, n_parties);
-    ttheta_nat[:, j] = inv_additive_log_ratio(to_vector(mmu_nat[day_poll_nat[j]][:, 1]) + to_vector(ddelta[house_poll[j], :]), n_parties); 
+    ttheta_nat[:, j] = rep_vector(0, n_parties);
+    ttheta_nat[:, j] = inv_additive_log_ratio(to_vector(mmu_nat[day_poll_nat[j]][:, 1]) + to_vector(ddelta[house_poll_nat[j], :]), n_parties); 
   }  
 }
 
