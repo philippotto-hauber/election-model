@@ -25,10 +25,10 @@ data_for_stan[["state_weights_nat"]] <- load_national_pop_weights()
 data_for_stan[["state_weights_reg"]] <- load_regional_pop_weights()
 
 # compile/load compiled stan model
-model <- cmdstanr::cmdstan_model(here::here("stan", "election_model.stan"), 
-                                 compile=TRUE, force=TRUE)
-# model <- cmdstanr::cmdstan_model(exe_file = here::here("stan", "election_model.exe"), 
-#                                  compile=FALSE)
+# model <- cmdstanr::cmdstan_model(here::here("stan", "election_model.stan"), 
+#                                  compile=TRUE, force=TRUE)
+model <- cmdstanr::cmdstan_model(exe_file = here::here("stan", "election_model.exe"), 
+                                 compile=FALSE)
 
 # load priors
 load(here::here("priors", paste0("priors.Rda")))
@@ -73,6 +73,7 @@ for (scenario in scenarios) {
     fit <- model$sample(
                         data = data_for_stan_scenario,
                         chains = mcmc_options[["n_chains"]],
+                        parallel_chains = mcmc_options[["parallel_chains"]], 
                         iter_warmup = mcmc_options[["n_warmup"]],
                         iter_sampling = mcmc_options[["n_sampling"]],
                         refresh = mcmc_options[["n_refresh"]],
@@ -83,4 +84,3 @@ for (scenario in scenarios) {
     save(out, file = here::here("stan", paste0("mcmc_out_", scenario, ".Rda")))
     rm(out, data_for_stan_scenario, fit)
 }
-
