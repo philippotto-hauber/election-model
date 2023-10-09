@@ -5,9 +5,10 @@ format:
         page-layout: full
         embed-resources: true
         toc: true
+        toc-location: left
 ---
 
-This notebook **loads and prepares the scenarios of polling data in the 2024 election cycle**. The transformed data are converted to lists and exported as e.g. `data_scenarioaA.Rda`
+This notebook **loads and prepares the scenarios of polling data in the 2024 election cycle**. The transformed data are converted to lists and exported as  `polls.Rda`.
 
 ## Load libraries and functions
 
@@ -77,19 +78,12 @@ dat <- rename(dat,
     ssp_share     = ssp_poll_share)
 ```
 
-Convert date column to POSIXct
+Rename and convert date column to POSIXct
 
 ```{r}
 dat %>% 
     mutate(date = as.POSIXct(date_published)) %>%
     select(-date_published) -> dat
-```
-
-Load the election day according to the calendar and determine the start of the campaign (=earliest poll recored!)
-```{r}
-start_campaign <- min(dat$date)
-end_campaign <- load_election_day(year = 2024)
-dates_campaign <- seq(start_campaign, end_campaign, by = "1 day")
 ```
 
 ## Plot available polls in different scenarios
@@ -123,7 +117,7 @@ ggplot(filter(df_plot),
     facet_wrap(~scenario) + 
     labs(title = "Availability of polls by geography") +
     theme(axis.text.x = element_text(angle = 90)) +
-    coord_flip()
+    coord_flip() 
 
  ggsave(file = here::here("plots", "available_polls_by_geography.png"))   
 ```
@@ -135,9 +129,9 @@ ggplot(filter(df_plot),
     geom_bar() + 
     ggsci::scale_fill_jco() +
     facet_wrap(~scenario) + 
-    labs(title = "Availability of polls by sponser") +
+    labs(title = "Availability of polls by sponsor") +
     theme(axis.text.x = element_text(angle = 90)) +
-    coord_flip()
+    coord_flip()  
 
  ggsave(file = here::here("plots", "available_polls_by_sponsor.png"))   
 ```
@@ -161,6 +155,9 @@ polls <- list() # initialize empty list
 for (scenario in scenarios){
     
     polls[[scenario]] <- list()
+
+    # load the dates of the election campaign for the scenario
+    dates_campaign <- load_dates_election_campaign(scenario)
     
     # state polls----
 
