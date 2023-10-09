@@ -1,9 +1,10 @@
 
 # to-dos ----
 
-# function for dim_mmu_v
-# function for offset_mmu_v
-# function to load parties -> get n_parties that way!
+# function for dim_mmu_v -> DONE!!!!
+# function for offset_mmu_v -> DONE!!!!
+# function to load parties -> get n_parties that way!-> DONE!!!!
+# function to load mcmc options  -> DONE!!!!
 # adjust data so that no regional polls like in scenario B can be handled -> DONE!!!!
 # poll data in one file with different lists for scenarios -> like for priors! -> DONE!!!!
 
@@ -16,31 +17,32 @@ for (f in names_functions)
 rm(f, names_functions)
 
 # mcmc options
-mcmc_options <- list()
-mcmc_options[["n_chains"]] <- 1
-mcmc_options[["n_warmup"]] <- 10
-mcmc_options[["n_sampling"]] <- 10
-mcmc_options[["n_refresh"]] <- 10
+mcmc_options <- load_mcmc_options()
+# mcmc_options <- list()
+# mcmc_options[["n_chains"]] <- 1
+# mcmc_options[["n_warmup"]] <- 10
+# mcmc_options[["n_sampling"]] <- 10
+# mcmc_options[["n_refresh"]] <- 10
 
 # set up data list for stan
 data_for_stan <- list()
-data_for_stan[["n_parties"]] <- 4
+data_for_stan[["n_parties"]] <- length(load_parties())
 data_for_stan[["n_parties_by_state"]] <- load_n_parties_by_geography("state")
 data_for_stan[["n_parties_by_region"]] <- load_n_parties_by_geography("region")
 states_regions <- load_dataland_states_regions()
 data_for_stan[["n_states"]] <- nrow(states_regions)
 data_for_stan[["n_regions"]] <- length(unique(states_regions$region))
 data_for_stan[["n_pollsters"]] <- length(load_pollsters())
-data_for_stan[["dim_mmu_v"]] <- sum(data_for_stan[["n_parties_by_state"]] - 1)
-data_for_stan[["offset_mmu_v"]] <- c(0, cumsum(data_for_stan[["n_parties_by_state"]] - 1)[1:(data_for_stan[["n_states"]] - 1)])
+data_for_stan[["dim_mmu_v"]] <- load_dim_mmu_v()
+data_for_stan[["offset_mmu_v"]] <- load_offset_mmu_v()
 data_for_stan[["state_weights_nat"]] <- load_national_pop_weights()
 data_for_stan[["state_weights_reg"]] <- load_regional_pop_weights()
 
 # compile/load compiled stan model
-# model <- cmdstanr::cmdstan_model(here::here("stan", "election_model.stan"), 
-#                                  compile=TRUE, force=TRUE)
-model <- cmdstanr::cmdstan_model(exe_file = here::here("stan", "election_model.exe"), 
-                                 compile=FALSE)
+model <- cmdstanr::cmdstan_model(here::here("stan", "election_model.stan"), 
+                                 compile=TRUE, force=TRUE)
+# model <- cmdstanr::cmdstan_model(exe_file = here::here("stan", "election_model.exe"), 
+#                                  compile=FALSE)
 
 # load priors
 load(here::here("priors", paste0("priors.Rda")))
@@ -87,7 +89,8 @@ for (scenario in scenarios) {
                         chains = mcmc_options[["n_chains"]],
                         iter_warmup = mcmc_options[["n_warmup"]],
                         iter_sampling = mcmc_options[["n_sampling"]],
-                        refresh = mcmc_options[["n_refresh"]]
+                        refresh = mcmc_options[["n_refresh"]],
+                        seed = 1843
                         )
     out <- rstan::read_stan_csv(fit$output_files())
 
