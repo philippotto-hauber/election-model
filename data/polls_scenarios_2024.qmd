@@ -2,6 +2,7 @@
 title: "Prepare poll data for model estimation"
 format: 
     html:
+        page-layout: full
         embed-resources: true
         toc: true
 ---
@@ -245,10 +246,10 @@ rm(polls)
 load(file = here::here("data", paste0("polls.Rda")))
 ```
 
-Function to convert polls to `data.frame` and plot for a given scenario
+Functions to convert polls to `data.frame` and generate plots for a given scenario
 
 ```{r}
-gen_plots <- function(scen) {
+convert_polls_to_df <- function(polls, scen) {
     df_polls <- as.data.frame(t(polls[[scen]]$y))
 
     df_polls$day_poll <- dates_campaign[polls[[scen]]$day_poll]
@@ -282,17 +283,30 @@ gen_plots <- function(scen) {
                                         "sample_size",
                                         "type_of_poll"),
                             names_to = "party", values_to = "value") -> df_plt
+    df_plt
+}
+```
+
+```{r}
+plot_state_polls <- function(polls, scen) {
+    df_plt <- convert_polls_to_df(polls, scen)
 
     df_plt %>%
-        filter(type_of_poll == "state") %>%
-        ggplot(aes(x = day_poll, y = value/sample_size, color = party)) +
-        ggsci::scale_color_jco() + 
-        geom_point() +
-        facet_wrap(~geography, nrow = 4) +
-        labs(title = paste0(scen, ": state polls")) +
-        theme(legend.position="top") -> plt_state
+    filter(type_of_poll == "state") %>%
+    ggplot(aes(x = day_poll, y = value/sample_size, color = party)) +
+    ggsci::scale_color_jco() + 
+    geom_point() +
+    facet_wrap(~geography, nrow = 4) +
+    labs(title = paste0(scen, ": state polls")) +
+    theme(legend.position="top") -> plt_state
 
+    plt_state
+}
+```
 
+```{r}
+plot_regnat_polls <- function(polls, scen) {
+    df_plt <- convert_polls_to_df(polls, scen)
 
     df_plt %>%
         filter(type_of_poll != "state") %>%
@@ -301,77 +315,78 @@ gen_plots <- function(scen) {
         geom_point() +
         facet_wrap(~geography, nrow = 2) + 
         labs(title = paste0(scen, ": regional and national polls")) + 
-        theme(legend.position="top") -> plt_reg_nat
-    
-    return(list(plt_state = plt_state, plt_reg_nat = plt_reg_nat))
+        theme(legend.position="top") -> plt_regnat
+    plt_regnat
 }
 ```
 
-### Scenario A
+### Scenarios
+
+::: {.panel-tabset}
+
+## A
 
 ```{r}
 #| echo: false
-plts_tmp <- gen_plots("A")
-plts_tmp$plt_state
+plot_state_polls(polls, scen = "A")
 ```
 
 ```{r}
 #| echo: false
-plts_tmp$plt_reg_nat
+plot_regnat_polls(polls, scen = "A")
 ```
 
-### Scenario B
+## B
 
 ```{r}
 #| echo: false
-plts_tmp <- gen_plots("B")
-plts_tmp$plt_state
-```
-
-```{r}
-#| echo: false
-plts_tmp$plt_reg_nat
-```
-
-### Scenario C
-
-```{r}
-#| echo: false
-plts_tmp <- gen_plots("C")
-plts_tmp$plt_state
+plot_state_polls(polls, scen = "B")
 ```
 
 ```{r}
 #| echo: false
-plts_tmp$plt_reg_nat
+plot_regnat_polls(polls, scen = "B")
 ```
 
-### Scenario D
+## C
 
 ```{r}
 #| echo: false
-plts_tmp <- gen_plots("D")
-plts_tmp$plt_state
-
-```
-
-```{r}
-#| echo: false
-plts_tmp$plt_reg_nat
-```
-
-### Scenario E
-
-```{r}
-#| echo: false
-plts_tmp <- gen_plots("E")
-plts_tmp$plt_state
+plot_state_polls(polls, scen = "C")
 ```
 
 ```{r}
 #| echo: false
-plts_tmp$plt_reg_nat
+plot_regnat_polls(polls, scen = "C")
 ```
+
+## D
+
+```{r}
+#| echo: false
+plot_state_polls(polls, scen = "D")
+```
+
+```{r}
+#| echo: false
+plot_regnat_polls(polls, scen = "D")
+```
+
+## E
+
+```{r}
+#| echo: false
+plot_state_polls(polls, scen = "E")
+```
+
+```{r}
+#| echo: false
+plot_regnat_polls(polls, scen = "E")
+```
+
+
+:::
+
 
 ## Compare differences between sum of votes and total number of responses
 
