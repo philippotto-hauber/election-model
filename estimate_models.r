@@ -1,13 +1,4 @@
 
-# to-dos ----
-
-# function for dim_mmu_v -> DONE!!!!
-# function for offset_mmu_v -> DONE!!!!
-# function to load parties -> get n_parties that way!-> DONE!!!!
-# function to load mcmc options  -> DONE!!!!
-# adjust data so that no regional polls like in scenario B can be handled -> DONE!!!!
-# poll data in one file with different lists for scenarios -> like for priors! -> DONE!!!!
-
 # set up ----
 
 # source functions
@@ -18,11 +9,6 @@ rm(f, names_functions)
 
 # mcmc options
 mcmc_options <- load_mcmc_options()
-# mcmc_options <- list()
-# mcmc_options[["n_chains"]] <- 1
-# mcmc_options[["n_warmup"]] <- 10
-# mcmc_options[["n_sampling"]] <- 10
-# mcmc_options[["n_refresh"]] <- 10
 
 # set up data list for stan
 data_for_stan <- list()
