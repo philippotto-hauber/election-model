@@ -176,7 +176,19 @@ For the time being, I center the prior mean of $\mu_T$ on an equal vote share fo
 ### $m_{\mu_T}$
 
 ```{r}
+names_mmu_T <- c()
+parties <- load_parties()
+for (s in seq(1, length(n_parties_by_state))) {
+    tmp <- paste0(names(n_parties_by_state)[s], "_")
+    for (p in seq(1, n_parties_by_state[s] - 1)) {
+        names_mmu_T <- c(names_mmu_T, paste0(tmp, parties[p]))        
+    }
+}
+```
+
+```{r}
 m_mmu_T <- rep(0, sum(n_parties_by_state-1))
+names(m_mmu_T) <- names_mmu_T
 ```
 
 Store in list
