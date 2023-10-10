@@ -276,14 +276,18 @@ plot_state_polls <- function(scen) {
     df_polls$date <- as.Date(df_polls$date)
 
     df_polls %>%
-    filter(type_of_poll == "state") %>%
-    ggplot(aes(x = date, y = value/sample_size, color = party)) +
-    ggsci::scale_color_jco() + 
-    scale_x_date(date_labels = "%b-%d") +
-    geom_point() +
-    facet_wrap(~geography, nrow = 4) +
-    labs(title = paste0(scen, ": state polls")) +
-    theme(legend.position="top") -> plt_state
+        filter(type_of_poll == "state") %>%
+        # set zero values for SSP in non-Synapse Territories to NA for better visibility
+        mutate(value = ifelse(value == 0, 
+                                NA, 
+                                value)) %>%
+        ggplot(aes(x = date, y = value/sample_size, color = party)) +
+        ggsci::scale_color_jco() + 
+        scale_x_date(date_labels = "%b-%d") +
+        geom_point() +
+        facet_wrap(~geography, nrow = 4) +
+        labs(title = paste0(scen, ": state polls")) +
+        theme(legend.position="top") -> plt_state
 
     plt_state
 }
@@ -297,6 +301,10 @@ plot_regnat_polls <- function(scen) {
 
     df_polls %>%
         filter(type_of_poll != "state") %>%
+        # set zero values for SSP in non-Synapse Territories to NA for better visibility
+        mutate(value = ifelse(value == 0, 
+                                NA, 
+                                value)) %>%
         ggplot(aes(x = date, y = value/sample_size, color = party)) +
         ggsci::scale_color_jco() + 
         geom_point() +
