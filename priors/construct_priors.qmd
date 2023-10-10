@@ -2,8 +2,12 @@
 title: "Construct priors"
 format: 
     html:
+        page-layout: full
         embed-resources: true
         toc: true
+        toc-location: left
+        self-contained-math: true
+        html-math-method: katex
 ---
 
 This notebook constructs the **priors for the model estimation**. See `model_description.html`for details. Some of the priors are independent of the specific scenario being estimated, e.g. the innovations to the reverse random-walk $\boldsymbol{W}$; others depend on the scenario and the resulting *fundamental forecast*, e.g. the prior mean $m_{\mu_T}$ and variance $V_{\mu_T}$ on the (transformed) latent voting intentions on election day.
@@ -39,7 +43,7 @@ priors <- list()
 
 Load number of parties running in each state -> needed to set the prior on $\mu_T$
 ```{r}
-n_parties_by_state <- load_n_parties_by_geography("state") # 
+n_parties_by_state <- load_n_parties_by_geography("state")
 ```
 
 Load election results -> needed to estimate $\boldsymbol{W}$
