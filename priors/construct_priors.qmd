@@ -217,5 +217,5 @@ priors[["A"]][["V_mmu_T"]] <-
 
 
 ```{r}
-save(priors, file = here::here("priors", "priors.Rda"))
+saveRDS(priors, file = here::here("priors", "priors.Rds"))
 ```
