@@ -28,7 +28,7 @@ rm(f, names_functions)
 
 ```{r}
 rawdat <- read.csv(here::here("data", "dataland_polls_2024_scenarios.csv"), stringsAsFactors = FALSE)
-keep_cols <- c("scenario", "date_published", "date_conducted",
+keep_cols <- c("scenario", "date_published",
                 "pollster", "geography", "sponsor",
                 "sample_size", "cc_poll_share",
                 "dgm_poll_share", "pdal_poll_share",
@@ -80,15 +80,20 @@ dat <- rename(dat,
     ssp_share     = ssp_poll_share)
 ```
 
-Rename and convert date column to POSIXct
+Rename and convert date column to `Date`-format
 
 ```{r}
 dat %>% 
-    mutate(date = as.POSIXct(date_published)) %>%
+    mutate(date = as.Date(date_published)) %>%
     select(-date_published) -> dat
 ```
 
-## Plot available polls in different scenarios
+Load list of pollsters 
+```{r}
+pollsters <- load_pollsters()
+```
+
+## Explore poll data
 
 This can be useful information when choosing how tight the prior on the election day voting intentions should be!
 
@@ -145,14 +150,17 @@ rm(df_plot)
 
 ## Convert polls to a Stan-friendly list
 
-Load list of pollsters 
 ```{r}
-pollsters <- load_pollsters()
+keep_cols_stan <- c("scenario", "type_of_poll", "date",
+                    "pollster", "geography", "sample_size", 
+                    "cc_share", "dgm_share", 
+                    "pdal_share", "ssp_share")
+dat <- dat[, keep_cols_stan]
 ```
 
 Loop over scenarios
 ```{r}
-scenarios <- unique(dat$scenario)    
+scenarios <- load_scenarios()
 polls <- list() # initialize empty list
 for (scenario in scenarios){
     
@@ -164,10 +172,9 @@ for (scenario in scenarios){
     # state polls----
 
     dat %>%
-    filter(scenario == .env$scenario,
-           type_of_poll == "state") %>%
-    select(-c("scenario", "type_of_poll")) %>%
-    arrange(date) -> df_polls_state
+        filter(scenario == .env$scenario,
+               type_of_poll == "state") %>%        
+        arrange(date) -> df_polls_state
 
     # convert vote shares to votes
     df_polls_state %>%
@@ -179,18 +186,17 @@ for (scenario in scenarios){
     # store data in list
     polls[[scenario]][["n_responses"]]   <- df_polls_state$sample_size
     polls[[scenario]][["day_poll"]]      <- sapply(df_polls_state$date, 
-                                            function(x){ which(dates_campaign == x)})
+                                                function(x){ which(dates_campaign == x)})
     polls[[scenario]][["house_poll"]]    <- sapply(df_polls_state$pollster, 
-                                            function(x){which(pollsters == x)})
+                                                function(x){which(pollsters == x)})
     polls[[scenario]][["state_poll"]]    <- sapply(df_polls_state$geography, 
-                                            function(x){which(states_regions$state == x)}) 
+                                                function(x){which(states_regions$state == x)}) 
     polls[[scenario]][["y"]]             <- t(as.matrix(df_polls_state[, c("cc_n", "dgm_n", "pdal_n", "ssp_n")]))
     
     # regional polls ----
     dat %>%
         filter(scenario == .env$scenario,
                type_of_poll == "regional") %>%
-        select(-c("scenario", "type_of_poll")) %>%
         arrange(date) -> df_polls_region  
 
     # convert vote shares to votes
@@ -202,18 +208,17 @@ for (scenario in scenarios){
     
     polls[[scenario]][["n_responses_reg"]]   <- df_polls_region$sample_size
     polls[[scenario]][["day_poll_reg"]]      <- sapply(df_polls_region$date, 
-                                                function(x){ which(dates_campaign == x)})
+                                                        function(x){ which(dates_campaign == x)})
     polls[[scenario]][["house_poll_reg"]]    <- sapply(df_polls_region$pollster, 
-                                                function(x){which(pollsters == x)})
+                                                        function(x){which(pollsters == x)})
     polls[[scenario]][["region_poll"]]       <- sapply(df_polls_region$geography,
-                                                function(x){which(unique(states_regions$region) == x)}) 
+                                                        function(x){which(unique(states_regions$region) == x)}) 
     polls[[scenario]][["y_reg"]]             <- t(as.matrix(df_polls_region[, c("cc_n", "dgm_n", "pdal_n", "ssp_n")]))
     
     # national polls ----
     dat %>%
         filter(scenario == .env$scenario,
                type_of_poll == "national") %>%
-        select(-c("scenario", "type_of_poll")) %>%
         arrange(date) -> df_polls_national
     
     # convert vote shares to votes
@@ -225,13 +230,35 @@ for (scenario in scenarios){
 
     polls[[scenario]][["n_responses_nat"]]   <- df_polls_national$sample_size
     polls[[scenario]][["day_poll_nat"]]      <- sapply(df_polls_national$date, 
-                                                function(x){ which(dates_campaign == x)})
+                                                    function(x){ which(dates_campaign == x)})
     polls[[scenario]][["house_poll_nat"]]    <- sapply(df_polls_national$pollster, 
-                                                function(x){which(pollsters == x)})
+                                                    function(x){which(pollsters == x)})
     polls[[scenario]][["y_nat"]]             <- t(as.matrix(df_polls_national[, c("cc_n", "dgm_n", "pdal_n", "ssp_n")]))
+
+    # merge and convert polls to long format 
+    do.call("rbind", 
+            list(df_polls_state, df_polls_region, df_polls_national)) %>%
+    rename(CC = cc_n, 
+           DGM = dgm_n, 
+           PDAL = pdal_n, 
+           SS = ssp_n) %>%
+    select(-ends_with("_share")) %>%
+    tidyr::pivot_longer(cols = -c("scenario",
+                                  "date", 
+                                  "geography", 
+                                  "sample_size",
+                                  "pollster",
+                                  "type_of_poll"),
+                        names_to = "party", 
+                        values_to = "value") -> df_polls
+
+    # export polls to csv
+    write.csv(df_polls, 
+              file = here::here("data", paste0("df_polls_", scenario, ".csv")), 
+              row.names = FALSE)
     
     # Clean up ----
-    rm(df_polls_state, df_polls_region, df_polls_national)
+    rm(df_polls_state, df_polls_region, df_polls_national, df_polls)
 }
 
 # Export ----
@@ -241,59 +268,18 @@ rm(polls)
 
 ## Plot polls
 
-```{r}
-load(file = here::here("data", paste0("polls.Rda")))
-```
-
-Functions to convert polls to `data.frame` and generate plots for a given scenario
+Define auxiliary functions to generate plots for a given scenario
 
 ```{r}
-convert_polls_to_df <- function(polls, scen) {
-    df_polls <- as.data.frame(t(polls[[scen]]$y))
+plot_state_polls <- function(scen) {
+    df_polls <- read.csv(here::here("data", paste0("df_polls_", scen, ".csv")), stringsAsFactors = FALSE)
+    df_polls$date <- as.Date(df_polls$date)
 
-    df_polls$day_poll <- dates_campaign[polls[[scen]]$day_poll]
-    df_polls$sample_size <- polls[[scen]]$n_responses
-    df_polls$geography <- states_regions$state[polls[[scen]]$state_poll]
-    df_polls$type_of_poll <- "state"
-
-    df_polls_reg <- as.data.frame(t(polls[[scen]]$y_reg))
-    df_polls_reg$day_poll <- dates_campaign[polls[[scen]]$day_poll_reg]
-    df_polls_reg$sample_size <- polls[[scen]]$n_responses_reg
-    df_polls_reg$geography <- unique(states_regions$region)[polls[[scen]]$region_poll]
-    df_polls_reg$type_of_poll <- "regional"
-
-    df_polls <- rbind(df_polls, df_polls_reg)
-
-    df_polls_nat <- as.data.frame(t(polls[[scen]]$y_nat))
-    df_polls_nat$day_poll <- dates_campaign[polls[[scen]]$day_poll_nat]
-    df_polls_nat$sample_size <- polls[[scen]]$n_responses_nat
-    df_polls_nat$geography <- "national"
-    df_polls_nat$type_of_poll <- "national"
-
-    df_polls <- rbind(df_polls, df_polls_nat)
-
-    df_polls %>% 
-        rename(CC = cc_n, 
-                DGM = dgm_n, 
-                PDAL = pdal_n, 
-                SS = ssp_n) %>%
-        tidyr::pivot_longer(cols = -c("day_poll", 
-                                        "geography", 
-                                        "sample_size",
-                                        "type_of_poll"),
-                            names_to = "party", values_to = "value") -> df_plt
-    df_plt
-}
-```
-
-```{r}
-plot_state_polls <- function(polls, scen) {
-    df_plt <- convert_polls_to_df(polls, scen)
-
-    df_plt %>%
+    df_polls %>%
     filter(type_of_poll == "state") %>%
-    ggplot(aes(x = day_poll, y = value/sample_size, color = party)) +
+    ggplot(aes(x = date, y = value/sample_size, color = party)) +
     ggsci::scale_color_jco() + 
+    scale_x_date(date_labels = "%b-%d") +
     geom_point() +
     facet_wrap(~geography, nrow = 4) +
     labs(title = paste0(scen, ": state polls")) +
@@ -304,12 +290,14 @@ plot_state_polls <- function(polls, scen) {
 ```
 
 ```{r}
-plot_regnat_polls <- function(polls, scen) {
-    df_plt <- convert_polls_to_df(polls, scen)
+plot_regnat_polls <- function(scen) {
+    df_polls <- read.csv(here::here("data", paste0("df_polls_", scen, ".csv")), stringsAsFactors = FALSE)
 
-    df_plt %>%
+    df_polls$date <- as.Date(df_polls$date)
+
+    df_polls %>%
         filter(type_of_poll != "state") %>%
-        ggplot(aes(x = day_poll, y = value/sample_size, color = party)) +
+        ggplot(aes(x = date, y = value/sample_size, color = party)) +
         ggsci::scale_color_jco() + 
         geom_point() +
         facet_wrap(~geography, nrow = 2) + 
@@ -327,65 +315,63 @@ plot_regnat_polls <- function(polls, scen) {
 
 ```{r}
 #| echo: false
-plot_state_polls(polls, scen = "A")
+plot_state_polls(scen = "A")
 ```
 
 ```{r}
 #| echo: false
-plot_regnat_polls(polls, scen = "A")
+plot_regnat_polls(scen = "A")
 ```
 
 ## B
 
 ```{r}
 #| echo: false
-plot_state_polls(polls, scen = "B")
+plot_state_polls(scen = "B")
 ```
 
 ```{r}
 #| echo: false
-plot_regnat_polls(polls, scen = "B")
+plot_regnat_polls(scen = "B")
 ```
 
 ## C
 
 ```{r}
 #| echo: false
-plot_state_polls(polls, scen = "C")
+plot_state_polls(scen = "C")
 ```
 
 ```{r}
 #| echo: false
-plot_regnat_polls(polls, scen = "C")
+plot_regnat_polls(scen = "C")
 ```
 
 ## D
 
 ```{r}
 #| echo: false
-plot_state_polls(polls, scen = "D")
+plot_state_polls(scen = "D")
 ```
 
 ```{r}
 #| echo: false
-plot_regnat_polls(polls, scen = "D")
+plot_regnat_polls(scen = "D")
 ```
 
 ## E
 
 ```{r}
 #| echo: false
-plot_state_polls(polls, scen = "E")
+plot_state_polls(scen = "E")
 ```
 
 ```{r}
 #| echo: false
-plot_regnat_polls(polls, scen = "E")
+plot_regnat_polls(scen = "E")
 ```
 
-
 :::
-
 
 ## Compare differences between sum of votes and total number of responses
 
@@ -394,6 +380,7 @@ As a consequence of rounding the product of vote share and number of poll respon
 How large are these discrepancies? 
 
 ```{r}
+load(here::here("data", "polls.Rda"))
 df_diff <- data.frame()
 for (s in scenarios){
     for (i in c("", "_reg", "_nat")){
