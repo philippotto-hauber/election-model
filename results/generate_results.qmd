@@ -1,0 +1,96 @@
+---
+title: "Generate results from MCMC output"
+format:
+    html:
+        page-layout: full
+        embed-resources: true
+        toc: true
+        toc-location: left
+        self-contained-math: true
+        html-math-method: katex
+---
+
+## Libraries, functions
+
+```{r}
+#| output: false
+library(ggplot2)
+library(dplyr)
+names_functions = list.files(here::here("functions"))
+for (f in names_functions)
+    source(here::here("functions", f))
+rm(f, names_functions)
+```
+
+## Load "global" variables
+
+```{r}
+parties <- load_parties()
+states <- load_states()
+states_regions <- load_dataland_states_regions()
+n_parties_by_state <- load_n_parties_by_geography("state")
+```
+
+Load priors -> visualize along with posterior distribution of $\pi_T$
+
+```{r}
+priors <- readRDS(here::here("priors", "priors.Rds"))
+```
+
+## Loop over scenarios
+
+```{r}
+scen <- "A"
+```
+
+Load mcmc output
+```{r}
+load(here::here("model", paste0("mcmc_out_", scen, ".RDA")))
+```
+
+Load polls
+
+```{r}
+df_polls <- read.csv(here::here("data", paste0("df_polls_", scen, ".csv")))
+```
+
+Invert log ratio transformation on prior for $\mu_T$
+```{r}
+tmp <- as.data.frame(priors[[scen]][["m_mmu_T"]])
+names(tmp) <- "mmu"
+
+tmp %>% tibble::rownames_to_column(var = "tmp") %>%
+ tidyr::separate(tmp, into = c("state", "party"), 
+     sep = "_") %>% tidyr::pivot_wider(names_from = "party", values_from = "mmu") %>% 
+     mutate(SSP = NA) -> df_prior_mmu
+df_prior_mmu[is.na(df_prior_mmu)] <- 0.0
+
+prior_ppi <- matrix(NA, 
+                    nrow = length(states), 
+                    ncol = length(parties),
+                    dimnames = list(states, parties))
+
+for (s in seq(1, length(states))) {
+    parties_s <- parties[1:(n_parties_by_state[s])]
+    ppi_s <- inv_additive_log_ratio(unlist(df_prior_mmu[s, parties_s]))
+    prior_ppi[s, 1:n_parties_by_state[s]] <- ppi_s 
+}
+
+prior_ppi %>% as.data.frame() %>% tibble::rownames_to_column(var = "state") %>% 
+tidyr::pivot_longer(cols = -state, names_to = "party", values_to = "value") -> df_prior_ppi
+
+```
+
+Convert draws of $\pi$ to `data.frame()` 
+```{r}
+df_draws_ppi <- convert_draws_to_df(rstan::extract(out, pars = "ppi")[["ppi"]],                        
+                            states = states,
+                            parties = parties)
+```
+
+Plot posterior of $\pi_T$
+```{r}
+id_election_day <- max(df_draws_ppi$t)
+plot_ppiT(df_draws_ppi, df_priors = df_prior_ppi, id_election_day, n_states = length(states), scen)
+```
+
