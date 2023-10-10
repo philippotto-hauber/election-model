@@ -6,6 +6,8 @@ format:
         embed-resources: true
         toc: true
         toc-location: left
+        self-contained-math: true
+        html-math-method: katex
 ---
 
 This notebook **loads and prepares the scenarios of polling data in the 2024 election cycle**. The transformed data are converted to lists and exported as  `polls.Rda`.
