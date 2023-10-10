@@ -262,7 +262,7 @@ for (scenario in scenarios){
 }
 
 # Export ----
-save(polls, file = here::here("data", paste0("polls.Rda")))
+saveRDS(polls, file = here::here("data", paste0("polls.Rds")))
 rm(polls)
 ```
 
