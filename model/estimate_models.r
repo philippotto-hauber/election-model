@@ -21,8 +21,8 @@ data_for_stan[["n_regions"]] <- length(unique(states_regions$region))
 data_for_stan[["n_pollsters"]] <- length(load_pollsters())
 data_for_stan[["dim_mmu_v"]] <- load_dim_mmu_v()
 data_for_stan[["offset_mmu_v"]] <- load_offset_mmu_v()
-data_for_stan[["state_weights_nat"]] <- load_national_pop_weights()
-data_for_stan[["state_weights_reg"]] <- load_regional_pop_weights()
+data_for_stan[["state_weights_nat"]] <- load_pop_weights("national")
+data_for_stan[["state_weights_reg"]] <- load_pop_weights("regional")
 
 # compile/load compiled stan model
 # model <- cmdstanr::cmdstan_model(here::here("stan", "election_model.stan"), 
