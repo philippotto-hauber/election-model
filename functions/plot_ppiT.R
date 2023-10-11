@@ -1,6 +1,6 @@
-plot_ppiT <- function(df_draws, df_priors, id_election_day, n_geographies, plt_title_prefix) {
+plot_ppiT <- function(df_draws, df_priors, election_day, n_geographies, plt_title_prefix) {
   df_draws %>%
-    filter(t == id_election_day) %>%
+    filter(t == election_day) %>%
     mutate(values = ifelse(values == 0.0, NA, values)) %>%
     ggplot(aes(x = values, color = party, fill = party)) +
     geom_density(alpha = 0.2)+
