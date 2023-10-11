@@ -241,7 +241,7 @@ for (scenario in scenarios){
     rename(CC = cc_n, 
            DGM = dgm_n, 
            PDAL = pdal_n, 
-           SS = ssp_n) %>%
+           SSP = ssp_n) %>%
     select(-ends_with("_share")) %>%
     tidyr::pivot_longer(cols = -c("scenario",
                                   "date", 
@@ -388,7 +388,7 @@ As a consequence of rounding the product of vote share and number of poll respon
 How large are these discrepancies? 
 
 ```{r}
-load(here::here("data", "polls.Rda"))
+polls <- readRDS(here::here("data", "polls.Rds"))
 df_diff <- data.frame()
 for (s in scenarios){
     for (i in c("", "_reg", "_nat")){
