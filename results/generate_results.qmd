@@ -27,8 +27,10 @@ rm(f, names_functions)
 ```{r}
 parties <- load_parties()
 states <- load_states()
+regions <- load_regions()
 states_regions <- load_dataland_states_regions()
 n_parties_by_state <- load_n_parties_by_geography("state")
+dates_campaign <- load_dates_election_campaign(year = 2024, scen = "A")
 ```
 
 Load priors -> visualize along with posterior distribution of $\pi_T$
@@ -48,22 +50,18 @@ Load mcmc output
 load(here::here("model", paste0("mcmc_out_", scen, ".RDA")))
 ```
 
-Load polls
-
-```{r}
-df_polls <- read.csv(here::here("data", paste0("df_polls_", scen, ".csv")))
-```
+### Plot posterior of $\pi_T$
 
 Invert log ratio transformation on prior for $\mu_T$
 ```{r}
-tmp <- as.data.frame(priors[[scen]][["m_mmu_T"]])
-names(tmp) <- "mmu"
+prior_mmuT <- as.data.frame(priors[[scen]][["m_mmu_T"]])
+names(prior_mmuT) <- "mmu"
 
-tmp %>% tibble::rownames_to_column(var = "tmp") %>%
+prior_mmuT %>% tibble::rownames_to_column(var = "tmp") %>%
  tidyr::separate(tmp, into = c("state", "party"), 
      sep = "_") %>% tidyr::pivot_wider(names_from = "party", values_from = "mmu") %>% 
-     mutate(SSP = NA) -> df_prior_mmu
-df_prior_mmu[is.na(df_prior_mmu)] <- 0.0
+     mutate(SSP = NA) -> df_prior_mmuT
+df_prior_mmuT[is.na(df_prior_mmuT)] <- 0.0
 
 prior_ppi <- matrix(NA, 
                     nrow = length(states), 
@@ -72,25 +70,65 @@ prior_ppi <- matrix(NA,
 
 for (s in seq(1, length(states))) {
     parties_s <- parties[1:(n_parties_by_state[s])]
-    ppi_s <- inv_additive_log_ratio(unlist(df_prior_mmu[s, parties_s]))
+    ppi_s <- inv_additive_log_ratio(unlist(df_prior_mmuT[s, parties_s]))
     prior_ppi[s, 1:n_parties_by_state[s]] <- ppi_s 
 }
 
-prior_ppi %>% as.data.frame() %>% tibble::rownames_to_column(var = "state") %>% 
-tidyr::pivot_longer(cols = -state, names_to = "party", values_to = "value") -> df_prior_ppi
+prior_ppi %>% as.data.frame() %>% tibble::rownames_to_column(var = "geography") %>% 
+tidyr::pivot_longer(cols = -geography, names_to = "party", values_to = "value") -> df_prior_ppi
 
 ```
 
 Convert draws of $\pi$ to `data.frame()` 
 ```{r}
 df_draws_ppi <- convert_draws_to_df(rstan::extract(out, pars = "ppi")[["ppi"]],                        
-                            states = states,
+                            geographies = states,
                             parties = parties)
+df_draws_ppi$t <- dates_campaign[df_draws_ppi$t]
 ```
 
-Plot posterior of $\pi_T$
+
+
 ```{r}
 id_election_day <- max(df_draws_ppi$t)
-plot_ppiT(df_draws_ppi, df_priors = df_prior_ppi, id_election_day, n_states = length(states), scen)
+plot_ppiT(df_draws_ppi, df_priors = df_prior_ppi, id_election_day, n_geographies = length(states), scen)
 ```
 
+### Plot posterior distribution of $\pi_{1:T}$
+
+Load polls
+
+```{r}
+df_polls <- read.csv(here::here("data", paste0("df_polls_", scen, ".csv")))
+df_polls$date <- as.Date(df_polls$date)
+
+# set zero values for SSP in non-Synapse Territories to NA for better visibility
+df_polls$value = ifelse(df_polls$value == 0, NA, df_polls$value)
+```
+
+```{r}
+plot_ppi(df_draws_ppi, filter(df_polls, scenario == scen), n_geographies = length(states), type_of_poll = "state", plt_title_prefix = scen)
+```
+
+```{r}
+df_draws_ppi_reg <- convert_draws_to_df(rstan::extract(out, pars = "ppi_reg")[["ppi_reg"]],                        
+                            geographies = regions,
+                            parties = parties)
+df_draws_ppi_reg$t <- dates_campaign[df_draws_ppi_reg$t]
+```
+
+
+```{r}
+plot_ppi(df_draws_ppi_reg, filter(df_polls, scenario == scen), n_geographies = length(regions), type_of_poll = "regional", plt_title_prefix = scen)
+```
+
+```{r}
+df_draws_ppi_nat <- convert_draws_to_df(rstan::extract(out, pars = "ppi_nat")[["ppi_nat"]],                        
+                            geographies = "national",
+                            parties = parties)
+df_draws_ppi_nat$t <- dates_campaign[df_draws_ppi_nat$t]
+```
+
+```{r}
+plot_ppi(df_draws_ppi_nat, filter(df_polls, scenario == scen), n_geographies = 1, type_of_poll = "national", plt_title_prefix = scen)
+```
