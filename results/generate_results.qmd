@@ -30,7 +30,9 @@ states <- load_states()
 regions <- load_regions()
 states_regions <- load_dataland_states_regions()
 n_parties_by_state <- load_n_parties_by_geography("state")
-dates_campaign <- load_dates_election_campaign(year = 2024, scen = "A")
+dates_campaign <- load_dates_election_campaign(year = 2024)
+electoral_votes <- load_electoral_votes()
+election_day <- load_election_day()
 ```
 
 Load priors -> visualize along with posterior distribution of $\pi_T$
@@ -38,6 +40,7 @@ Load priors -> visualize along with posterior distribution of $\pi_T$
 ```{r}
 priors <- readRDS(here::here("priors", "priors.Rds"))
 ```
+
 
 ## Loop over scenarios
 
@@ -48,6 +51,17 @@ scen <- "A"
 Load mcmc output
 ```{r}
 load(here::here("model", paste0("mcmc_out_", scen, ".RDA")))
+#out <- readRDS(here::here("model", paste0("mcmc_out_", scen, ".Rds")))
+```
+
+Load polls
+
+```{r}
+df_polls <- read.csv(here::here("data", paste0("df_polls_", scen, ".csv")))
+df_polls$date <- as.Date(df_polls$date)
+
+# set zero values for SSP in non-Synapse Territories to NA for better visibility
+df_polls$value = ifelse(df_polls$value == 0, NA, df_polls$value)
 ```
 
 ### Plot posterior of $\pi_T$
@@ -57,10 +71,17 @@ Invert log ratio transformation on prior for $\mu_T$
 prior_mmuT <- as.data.frame(priors[[scen]][["m_mmu_T"]])
 names(prior_mmuT) <- "mmu"
 
-prior_mmuT %>% tibble::rownames_to_column(var = "tmp") %>%
- tidyr::separate(tmp, into = c("state", "party"), 
-     sep = "_") %>% tidyr::pivot_wider(names_from = "party", values_from = "mmu") %>% 
+prior_mmuT %>% 
+    tibble::rownames_to_column(var = "tmp") %>%
+    tidyr::separate(
+        tmp, 
+        into = c("state", "party"), 
+        sep = "_") %>% 
+    tidyr::pivot_wider(
+        names_from = "party", 
+        values_from = "mmu") %>% 
      mutate(SSP = NA) -> df_prior_mmuT
+
 df_prior_mmuT[is.na(df_prior_mmuT)] <- 0.0
 
 prior_ppi <- matrix(NA, 
@@ -74,61 +95,109 @@ for (s in seq(1, length(states))) {
     prior_ppi[s, 1:n_parties_by_state[s]] <- ppi_s 
 }
 
-prior_ppi %>% as.data.frame() %>% tibble::rownames_to_column(var = "geography") %>% 
-tidyr::pivot_longer(cols = -geography, names_to = "party", values_to = "value") -> df_prior_ppi
+prior_ppi %>% 
+    as.data.frame() %>% 
+    tibble::rownames_to_column(var = "geography") %>% 
+    tidyr::pivot_longer(
+        cols = -geography, 
+        names_to = "party", 
+        values_to = "value"
+        ) -> df_prior_ppi
 
 ```
 
 Convert draws of $\pi$ to `data.frame()` 
 ```{r}
-df_draws_ppi <- convert_draws_to_df(rstan::extract(out, pars = "ppi")[["ppi"]],                        
-                            geographies = states,
-                            parties = parties)
-df_draws_ppi$t <- dates_campaign[df_draws_ppi$t]
+df_draws_ppi <- convert_draws_to_df(
+    rstan::extract(out, pars = "ppi")[["ppi"]],                        
+    geographies = states,
+    parties = parties,
+    dates_campaign = dates_campaign)
 ```
 
 
 
 ```{r}
-id_election_day <- max(df_draws_ppi$t)
-plot_ppiT(df_draws_ppi, df_priors = df_prior_ppi, id_election_day, n_geographies = length(states), scen)
+plot_ppiT(
+    df_draws_ppi, 
+    df_prior_ppi, 
+    election_day, 
+    n_geographies = length(states), 
+    scen)
 ```
 
 ### Plot posterior distribution of $\pi_{1:T}$
 
-Load polls
-
 ```{r}
-df_polls <- read.csv(here::here("data", paste0("df_polls_", scen, ".csv")))
-df_polls$date <- as.Date(df_polls$date)
-
-# set zero values for SSP in non-Synapse Territories to NA for better visibility
-df_polls$value = ifelse(df_polls$value == 0, NA, df_polls$value)
+plot_ppi(
+    df_draws_ppi, 
+    filter(df_polls, scenario == scen), 
+    n_geographies = length(states), 
+    type_of_poll = "state", 
+    plt_title_prefix = scen)
 ```
 
 ```{r}
-plot_ppi(df_draws_ppi, filter(df_polls, scenario == scen), n_geographies = length(states), type_of_poll = "state", plt_title_prefix = scen)
-```
-
-```{r}
-df_draws_ppi_reg <- convert_draws_to_df(rstan::extract(out, pars = "ppi_reg")[["ppi_reg"]],                        
-                            geographies = regions,
-                            parties = parties)
-df_draws_ppi_reg$t <- dates_campaign[df_draws_ppi_reg$t]
+df_draws_ppi_reg <- convert_draws_to_df(
+    rstan::extract(out, pars = "ppi_reg")[["ppi_reg"]],
+    geographies = regions,
+    parties = parties,
+    dates_campaign = dates_campaign
+)
 ```
 
 
 ```{r}
-plot_ppi(df_draws_ppi_reg, filter(df_polls, scenario == scen), n_geographies = length(regions), type_of_poll = "regional", plt_title_prefix = scen)
+plot_ppi(
+    df_draws_ppi_reg, 
+    filter(df_polls, scenario == scen), 
+    n_geographies = length(regions), 
+    type_of_poll = "regional", 
+    plt_title_prefix = scen)
 ```
 
 ```{r}
-df_draws_ppi_nat <- convert_draws_to_df(rstan::extract(out, pars = "ppi_nat")[["ppi_nat"]],                        
-                            geographies = "national",
-                            parties = parties)
-df_draws_ppi_nat$t <- dates_campaign[df_draws_ppi_nat$t]
+df_draws_ppi_nat <- convert_draws_to_df(
+    rstan::extract(out, pars = "ppi_nat")[["ppi_nat"]],                        
+    geographies = "national",
+    parties = parties, 
+    dates_campaign = dates_campaign)
 ```
 
 ```{r}
-plot_ppi(df_draws_ppi_nat, filter(df_polls, scenario == scen), n_geographies = 1, type_of_poll = "national", plt_title_prefix = scen)
+plot_ppi(
+    df_draws_ppi_nat, 
+    filter(df_polls, scenario == scen), 
+    n_geographies = 1, 
+    type_of_poll = "national", 
+    plt_title_prefix = scen)
+```
+
+### Win probabilities
+
+```{r}
+tmp <- calc_prob_win(
+    df_draws_ppi, 
+    df_draws_ppi_nat, 
+    election_day, 
+    states, 
+    parties, 
+    electoral_votes)
+```
+
+
+#### Election
+
+```{r}
+plt_probwin_election <- plot_prob_win_electoral_college(
+    tmp[["df_prob_win_electoral_college"]],
+    plt_title_prefix = scen)
+```
+
+#### States
+
+```{r}
+plt_probwin_states <- plot_prob_win_states(
+    tmp[["df_prob_win_states"]],
+    plt_title_prefix = scen)
 ```
