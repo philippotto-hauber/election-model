@@ -17,7 +17,6 @@ load_pop_weights <- function(geography, path = here::here("data", "dataland_demo
         n_states <- length(states)
         regions <- unique(states_regions$region)
         n_regions <- length(regions)
-        # calculate regional weights
         pop_weights_reg <- matrix(0, nrow = n_regions, ncol = n_states)
         for (r in seq(1, n_regions)) {
             id_region <- which(grepl(regions[r], states_regions$region))
