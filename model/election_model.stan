@@ -168,8 +168,8 @@ transformed parameters {
   
   for (t in 1 : n_days){
     for (s in 1 : n_states){
-      for (p in 1: n_parties) // initialize with 0
-        ppi[t][p, s] = 0;
+      // initialize with 0
+      ppi[t][:, s] = rep_vector(0, n_parties);
       // voting intentions transformed back from log ratio space
       ppi[t][1:n_parties_by_state[s], s] = inv_additive_log_ratio(mmu[t][1:n_parties_by_state[s], s], n_parties_by_state[s]); 
     }
