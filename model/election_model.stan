@@ -103,6 +103,8 @@ data {
 transformed data {
   cholesky_factor_cov[dim_mmu_v] chol_W;
   chol_W = cholesky_decompose(W);
+  cholesky_factor_cov[dim_mmu_v] chol_V_mmu_T;
+  chol_V_mmu_T = cholesky_decompose(V_mmu_T);
 }
 
 parameters {
@@ -246,8 +248,8 @@ transformed parameters {
 
 model {
 
-  mmu_T ~ multi_normal(m_mmu_T, V_mmu_T);
-
+  //mmu_T ~ multi_normal(m_mmu_T, V_mmu_T);
+  mmu_T ~ multi_normal_cholesky(m_mmu_T, chol_V_mmu_T);
   to_vector(w) ~ std_normal(); // not entirely sure, why to_vector() is needed! See Economist's 2020 poll model 
 
   for (i in 1:n_polls_state){
