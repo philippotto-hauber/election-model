@@ -45,7 +45,15 @@ priors <- readRDS(here::here("priors", "priors.Rds"))
 ## Loop over scenarios
 
 ```{r}
+plts <- list()
+```
+
+```{r}
 scen <- "A"
+```
+
+```{r}
+plts[[scen]] <- list()
 ```
 
 Load mcmc output
@@ -60,7 +68,7 @@ Load polls
 df_polls <- read.csv(here::here("data", paste0("df_polls_", scen, ".csv")))
 df_polls$date <- as.Date(df_polls$date)
 
-# set zero values for SSP in non-Synapse Territories to NA for better visibility
+# set zero values for SSP in non-Synapse Territories to NA for better visibility of other polls
 df_polls$value = ifelse(df_polls$value == 0, NA, df_polls$value)
 ```
 
@@ -103,7 +111,6 @@ prior_ppi %>%
         names_to = "party", 
         values_to = "value"
         ) -> df_prior_ppi
-
 ```
 
 Convert draws of $\pi$ to `data.frame()` 
@@ -115,15 +122,13 @@ df_draws_ppi <- convert_draws_to_df(
     dates_campaign = dates_campaign)
 ```
 
-
-
 ```{r}
 plot_ppiT(
     df_draws_ppi, 
     df_prior_ppi, 
     election_day, 
     n_geographies = length(states), 
-    scen)
+    scen) -> plts[[scen]][["plt_ppiT"]]
 ```
 
 ### Plot posterior distribution of $\pi_{1:T}$
@@ -134,7 +139,7 @@ plot_ppi(
     filter(df_polls, scenario == scen), 
     n_geographies = length(states), 
     type_of_poll = "state", 
-    plt_title_prefix = scen)
+    plt_title_prefix = scen) -> plts[[scen]][["plt_ppi"]]
 ```
 
 ```{r}
@@ -153,7 +158,7 @@ plot_ppi(
     filter(df_polls, scenario == scen), 
     n_geographies = length(regions), 
     type_of_poll = "regional", 
-    plt_title_prefix = scen)
+    plt_title_prefix = scen) -> plts[[scen]][["plt_ppi_reg"]]
 ```
 
 ```{r}
@@ -170,13 +175,13 @@ plot_ppi(
     filter(df_polls, scenario == scen), 
     n_geographies = 1, 
     type_of_poll = "national", 
-    plt_title_prefix = scen)
+    plt_title_prefix = scen) -> plts[[scen]][["plt_ppi_nat"]]
 ```
 
 ### Win probabilities
 
 ```{r}
-tmp <- calc_prob_win(
+plts_probwin <- calc_prob_win(
     df_draws_ppi, 
     df_draws_ppi_nat, 
     election_day, 
@@ -189,15 +194,18 @@ tmp <- calc_prob_win(
 #### Election
 
 ```{r}
-plt_probwin_election <- plot_prob_win_electoral_college(
-    tmp[["df_prob_win_electoral_college"]],
+plts[["plt_probwin_election"]] <- plot_prob_win_electoral_college(
+    plts_probwin[["df_prob_win_electoral_college"]],
     plt_title_prefix = scen)
 ```
 
 #### States
 
 ```{r}
-plt_probwin_states <- plot_prob_win_states(
-    tmp[["df_prob_win_states"]],
+plts[["plt_probwin_states"]] <- plot_prob_win_states(
+    plts_probwin[["df_prob_win_states"]],
     plt_title_prefix = scen)
 ```
+
+### Export results to csv
+
