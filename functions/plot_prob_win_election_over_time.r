@@ -1,4 +1,4 @@
-plot_prob_win_election_over_time(df, plt_title_prefix) {
+plot_prob_win_election_over_time <- function(df, plt_title_prefix) {
     df %>%
     ggplot(aes(x = date, y = prob_win, fill = party, color = party)) +
     geom_bar(position = "stack", stat = "identity", width = 1) +
