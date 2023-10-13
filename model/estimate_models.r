@@ -23,11 +23,11 @@ data_for_stan[["dim_mmu_v"]] <- load_dim_mmu_v()
 data_for_stan[["offset_mmu_v"]] <- load_offset_mmu_v()
 data_for_stan[["state_weights_nat"]] <- load_pop_weights("national")
 data_for_stan[["state_weights_reg"]] <- load_pop_weights("regional")
-dates_campaign <- load_dates_election_campaign(scenario = scenario)
+dates_campaign <- load_dates_election_campaign()
 data_for_stan[["n_days"]] <- length(dates_campaign)
 
 # compile/load compiled stan model
-# model <- cmdstanr::cmdstan_model(here::here("stan", "election_model.stan"), 
+# model <- cmdstanr::cmdstan_model(here::here("model", "election_model.stan"), 
 #                                  compile=TRUE, force=TRUE)
 model <- cmdstanr::cmdstan_model(exe_file = here::here("model", "election_model.exe"), 
                                  compile=FALSE)
@@ -40,7 +40,6 @@ polls <- readRDS(here::here("data", paste0("polls.Rds")))
 
 # loop over scenarios -----
 scenarios <- load_scenarios() 
-
 for (scenario in scenarios) {
     data_for_stan[["n_polls_state"]] <- dim(polls[[scenario]]$y)[2]
     data_for_stan[["n_polls_reg"]] <- dim(polls[[scenario]]$y_reg)[2]
@@ -77,6 +76,6 @@ for (scenario in scenarios) {
                         )
     out <- rstan::read_stan_csv(fit$output_files())
 
-    save(out, file = here::here("model", paste0("mcmc_out_", scenario, ".Rds")))
+    saveRDS(out, file = here::here("model", paste0("mcmc_out_", scenario, ".Rds")))
     rm(out, data_for_stan_scenario, fit)
 }
