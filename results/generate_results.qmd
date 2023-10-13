@@ -74,7 +74,7 @@ df_polls$value = ifelse(df_polls$value == 0, NA, df_polls$value)
 
 ### Plot posterior of $\pi_T$
 
-Invert log ratio transformation on prior for $\mu_T$
+Invert log ratio transformation on prior for $\mu_T$ to get the implied prior on $\pi_T$
 ```{r}
 prior_mmuT <- as.data.frame(priors[[scen]][["m_mmu_T"]])
 names(prior_mmuT) <- "mmu"
@@ -194,7 +194,7 @@ plts_probwin <- calc_prob_win(
 #### Election
 
 ```{r}
-plts[["plt_probwin_election"]] <- plot_prob_win_electoral_college(
+plts[[scen]][["plt_probwin_election"]] <- plot_prob_win_electoral_college(
     plts_probwin[["df_prob_win_electoral_college"]],
     plt_title_prefix = scen)
 ```
@@ -202,10 +202,70 @@ plts[["plt_probwin_election"]] <- plot_prob_win_electoral_college(
 #### States
 
 ```{r}
-plts[["plt_probwin_states"]] <- plot_prob_win_states(
+plts[[scen]][["plt_probwin_states"]] <- plot_prob_win_states(
     plts_probwin[["df_prob_win_states"]],
     plt_title_prefix = scen)
 ```
 
 ### Export results to csv
 
+#### Calculate mean expected vote share 
+
+
+## Plot results
+
+::: {.panel-tabset}
+
+## A
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["A"]][["plt_probwin_election"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["A"]][["plt_probwin_states"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["A"]][["plt_ppiT"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["A"]][["plt_ppi"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["A"]][["plt_ppi_reg"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["A"]][["plt_ppi_nat"]]
+```
+
+## B
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["A"]][["plt_probwin_election"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["A"]][["plt_probwin_states"]]
+```
+
+:::
