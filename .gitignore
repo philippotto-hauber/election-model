@@ -49,3 +49,6 @@ po/*~
 rsconnect/
 
 stan/*.exe
+
+# ignore mcmc output files because of their size!
+model/*.rds
