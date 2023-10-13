@@ -1,11 +1,11 @@
-plot_prob_win_states_over_time <- function(
+plot_prob_win_states <- function(
     df,
     filter_t, 
     plt_title_prefix){
   n_geographies <- length(load_states())
   stopifnot(n_geographies == length(unique(df$geography)))
 
-  ggplot(filter(df, date == t), 
+  ggplot(filter(df, date == filter_t), 
          aes(x = party, 
              y = prob_win, 
              fill = party)
