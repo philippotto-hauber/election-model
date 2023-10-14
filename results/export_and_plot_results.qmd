@@ -47,7 +47,7 @@ priors <- readRDS(here::here("priors", "priors.Rds"))
 
 ```{r}
 scenarios <- load_scenarios()
-scenarios <- scenarios[1:2] # for now only A and B
+scenarios <- scenarios[2] # for now only A and B
 ```
 
 List to store plots
