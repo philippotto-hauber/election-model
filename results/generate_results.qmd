@@ -42,174 +42,196 @@ priors <- readRDS(here::here("priors", "priors.Rds"))
 ```
 
 
-## Loop over scenarios
+## Generate results for different scenarios
 
+```{r}
+scenarios <- load_scenarios()
+scenarios <- scenarios[1:2] # for now only A and B
+```
+
+List to store plots
 ```{r}
 plts <- list()
 ```
 
-```{r}
-scen <- "A"
-```
+Define a function to generate csv output and plots for each scenario
 
 ```{r}
-plts[[scen]] <- list()
-```
+gen_results <- function(plts, scen) {
+    print(scen)
+    out <- readRDS(here::here("model", paste0("mcmc_out_", scen, ".Rds")))
 
-Load mcmc output
-```{r}
-load(here::here("model", paste0("mcmc_out_", scen, ".RDA")))
-#out <- readRDS(here::here("model", paste0("mcmc_out_", scen, ".Rds")))
-```
+    df_polls <- read.csv(here::here("data", paste0("df_polls_", scen, ".csv")))
+    df_polls$date <- as.Date(df_polls$date)
+    # make non-zero polls more visible in plots
+    df_polls$value = ifelse(df_polls$value == 0, 
+                            NA, 
+                            df_polls$value) 
 
-Load polls
+    df_prior_ppi <- invert_alr_on_prior(priors[[scen]][["m_mmu_T"]])
 
-```{r}
-df_polls <- read.csv(here::here("data", paste0("df_polls_", scen, ".csv")))
-df_polls$date <- as.Date(df_polls$date)
+    df_draws_ppi <- convert_draws_to_df(
+        rstan::extract(out, pars = "ppi")[["ppi"]],                        
+        geographies = states,
+        parties = parties,
+        dates_campaign = dates_campaign)
+    
+    df_draws_ppi_reg <- convert_draws_to_df(
+        rstan::extract(out, pars = "ppi_reg")[["ppi_reg"]],
+        geographies = regions,
+        parties = parties,
+        dates_campaign = dates_campaign)
 
-# set zero values for SSP in non-Synapse Territories to NA for better visibility of other polls
-df_polls$value = ifelse(df_polls$value == 0, NA, df_polls$value)
-```
+    df_draws_ppi_nat <- convert_draws_to_df(
+        rstan::extract(out, pars = "ppi_nat")[["ppi_nat"]],                        
+        geographies = "national",
+        parties = parties, 
+        dates_campaign = dates_campaign)
 
-### Plot posterior of $\pi_T$
+    print("start calculating win probs")
 
-Invert log ratio transformation on prior for $\mu_T$ to get the implied prior on $\pi_T$
-```{r}
-prior_mmuT <- as.data.frame(priors[[scen]][["m_mmu_T"]])
-names(prior_mmuT) <- "mmu"
+    df_prob_win_election <- do.call(
+        "rbind", 
+        lapply(
+            dates_campaign, 
+            calc_prob_win_election,
+            df_draws_ppi = df_draws_ppi,
+            df_draws_ppi_nat = df_draws_ppi_nat,
+            states = states,
+            parties = parties,
+            electoral_votes = electoral_votes
+            )
+        )
+    df_prob_win_states <- do.call(
+        "rbind", 
+        lapply(
+            dates_campaign, 
+            calc_prob_win_states,
+            df_draws_ppi = df_draws_ppi,
+            states = states,
+            parties = parties
+            )
+        ) 
 
-prior_mmuT %>% 
-    tibble::rownames_to_column(var = "tmp") %>%
-    tidyr::separate(
-        tmp, 
-        into = c("state", "party"), 
-        sep = "_") %>% 
+    print("done calculating win probs")
+
+    # Export mean vote share and win probabilities to read 
+    df_draws_ppi %>% 
+    group_by(t, party, geography) %>% 
+    summarise(mean_vote_share = mean(values)) %>%
+    rename(date = t, province = geography) %>%
+    mutate(party = tolower(party)) %>%
     tidyr::pivot_wider(
         names_from = "party", 
-        values_from = "mmu") %>% 
-     mutate(SSP = NA) -> df_prior_mmuT
+        values_from = "mean_vote_share",
+        names_glue = "{party}_{.value}") -> df_out_mean
 
-df_prior_mmuT[is.na(df_prior_mmuT)] <- 0.0
+    df_prob_win_states %>%
+    mutate(party = tolower(party)) %>%
+    rename(province = geography) %>%
+    tidyr::pivot_wider(
+        names_from = "party", 
+        values_from = "prob_win",
+        names_glue = "{party}_{.value}") -> df_out_probwin_states
 
-prior_ppi <- matrix(NA, 
-                    nrow = length(states), 
-                    ncol = length(parties),
-                    dimnames = list(states, parties))
+    write.csv(
+        merge(
+            df_out_mean, 
+            df_out_probwin_states, 
+            by = c("date", "province")
+        ), 
+        file = here::here(paste0("provincial_forecast_", scen, ".csv")),
+        row.names = FALSE
+    )
+  
+    df_draws_ppi_nat %>% 
+        select(-geography) %>%
+        group_by(t, party) %>% 
+        summarise(mean_vote_share = mean(values)) %>%
+        rename(date = t) %>%
+        mutate(party = tolower(party)) %>%
+        tidyr::pivot_wider(
+            names_from = "party", 
+            values_from = "mean_vote_share",
+            names_glue = "{party}_{.value}") -> df_out_mean_nat
 
-for (s in seq(1, length(states))) {
-    parties_s <- parties[1:(n_parties_by_state[s])]
-    ppi_s <- inv_additive_log_ratio(unlist(df_prior_mmuT[s, parties_s]))
-    prior_ppi[s, 1:n_parties_by_state[s]] <- ppi_s 
+    df_prob_win_election %>%
+        mutate(party = tolower(party)) %>%
+        tidyr::pivot_wider(
+            names_from = "party", 
+            values_from = "prob_win",
+            names_glue = "{party}_{.value}") -> df_out_probwin_election
+
+    write.csv(
+        merge(
+            df_out_mean_nat, 
+            df_out_probwin_election, 
+            by = "date"
+        ), 
+        file = here::here(paste0("national_forecast_", scen, ".csv")),
+        row.names = FALSE
+    )
+
+    # Plots    
+    plot_prob_win_election(
+        df_prob_win_election, 
+        election_day, 
+        scen) -> plts[[scen]][["plt_prob_win_election"]]
+
+
+    plot_prob_win_election_over_time(
+        df_prob_win_election, 
+        scen) -> plts[[scen]][["plt_prob_win_election_over_time"]]
+
+    plot_prob_win_states(
+        df_prob_win_states,
+        election_day,
+        scen) -> plts[[scen]][["plt_prob_win_states"]]
+
+    plot_prob_win_states_over_time(
+        df_prob_win_states, 
+        scen) -> plts[[scen]][["plt_prob_win_states_over_time"]]
+
+    plot_ppiT(
+        df_draws_ppi, 
+        df_prior_ppi, 
+        election_day, 
+        n_geographies = length(states), 
+        scen) -> plts[[scen]][["plt_ppiT"]]
+    
+    plot_ppi(
+        df_draws_ppi, 
+        filter(df_polls, scenario == scen), 
+        n_geographies = length(states), 
+        type_of_poll = "state", 
+        plt_title_prefix = scen) -> plts[[scen]][["plt_ppi"]]
+
+    plot_ppi(
+        df_draws_ppi_reg, 
+        filter(df_polls, scenario == scen), 
+        n_geographies = length(regions), 
+        type_of_poll = "regional", 
+        plt_title_prefix = scen) -> plts[[scen]][["plt_ppi_reg"]]    
+    
+
+    plot_ppi(
+        df_draws_ppi_nat, 
+        filter(df_polls, scenario == scen), 
+        n_geographies = 1, 
+        type_of_poll = "national", 
+        plt_title_prefix = scen) -> plts[[scen]][["plt_ppi_nat"]]
+
+    plts 
 }
-
-prior_ppi %>% 
-    as.data.frame() %>% 
-    tibble::rownames_to_column(var = "geography") %>% 
-    tidyr::pivot_longer(
-        cols = -geography, 
-        names_to = "party", 
-        values_to = "value"
-        ) -> df_prior_ppi
 ```
 
-Convert draws of $\pi$ to `data.frame()` 
+
+Loop over scenarios
 ```{r}
-df_draws_ppi <- convert_draws_to_df(
-    rstan::extract(out, pars = "ppi")[["ppi"]],                        
-    geographies = states,
-    parties = parties,
-    dates_campaign = dates_campaign)
+for (scen in scenarios) {
+    plts <- gen_results(plts, scen)
+}
 ```
-
-```{r}
-plot_ppiT(
-    df_draws_ppi, 
-    df_prior_ppi, 
-    election_day, 
-    n_geographies = length(states), 
-    scen) -> plts[[scen]][["plt_ppiT"]]
-```
-
-### Plot posterior distribution of $\pi_{1:T}$
-
-```{r}
-plot_ppi(
-    df_draws_ppi, 
-    filter(df_polls, scenario == scen), 
-    n_geographies = length(states), 
-    type_of_poll = "state", 
-    plt_title_prefix = scen) -> plts[[scen]][["plt_ppi"]]
-```
-
-```{r}
-df_draws_ppi_reg <- convert_draws_to_df(
-    rstan::extract(out, pars = "ppi_reg")[["ppi_reg"]],
-    geographies = regions,
-    parties = parties,
-    dates_campaign = dates_campaign
-)
-```
-
-
-```{r}
-plot_ppi(
-    df_draws_ppi_reg, 
-    filter(df_polls, scenario == scen), 
-    n_geographies = length(regions), 
-    type_of_poll = "regional", 
-    plt_title_prefix = scen) -> plts[[scen]][["plt_ppi_reg"]]
-```
-
-```{r}
-df_draws_ppi_nat <- convert_draws_to_df(
-    rstan::extract(out, pars = "ppi_nat")[["ppi_nat"]],                        
-    geographies = "national",
-    parties = parties, 
-    dates_campaign = dates_campaign)
-```
-
-```{r}
-plot_ppi(
-    df_draws_ppi_nat, 
-    filter(df_polls, scenario == scen), 
-    n_geographies = 1, 
-    type_of_poll = "national", 
-    plt_title_prefix = scen) -> plts[[scen]][["plt_ppi_nat"]]
-```
-
-### Win probabilities
-
-```{r}
-plts_probwin <- calc_prob_win(
-    df_draws_ppi, 
-    df_draws_ppi_nat, 
-    election_day, 
-    states, 
-    parties, 
-    electoral_votes)
-```
-
-
-#### Election
-
-```{r}
-plts[[scen]][["plt_probwin_election"]] <- plot_prob_win_electoral_college(
-    plts_probwin[["df_prob_win_electoral_college"]],
-    plt_title_prefix = scen)
-```
-
-#### States
-
-```{r}
-plts[[scen]][["plt_probwin_states"]] <- plot_prob_win_states(
-    plts_probwin[["df_prob_win_states"]],
-    plt_title_prefix = scen)
-```
-
-### Export results to csv
-
-#### Calculate mean expected vote share 
 
 
 ## Plot results
@@ -221,13 +243,13 @@ plts[[scen]][["plt_probwin_states"]] <- plot_prob_win_states(
 ```{r}
 #| echo: false
 #| warning: false
-plts[["A"]][["plt_probwin_election"]]
+plts[["A"]][["plt_prob_win_election_over_time"]]
 ```
 
 ```{r}
 #| echo: false
 #| warning: false
-plts[["A"]][["plt_probwin_states"]]
+plts[["A"]][["plt_prob_win_states_over_time"]]
 ```
 
 ```{r}
@@ -259,13 +281,37 @@ plts[["A"]][["plt_ppi_nat"]]
 ```{r}
 #| echo: false
 #| warning: false
-plts[["A"]][["plt_probwin_election"]]
+plts[["B"]][["plt_prob_win_election_over_time"]]
 ```
 
 ```{r}
 #| echo: false
 #| warning: false
-plts[["A"]][["plt_probwin_states"]]
+plts[["B"]][["plt_prob_win_states_over_time"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["B"]][["plt_ppiT"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["B"]][["plt_ppi"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["B"]][["plt_ppi_reg"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["B"]][["plt_ppi_nat"]]
 ```
 
 :::
