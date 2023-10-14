@@ -34,9 +34,10 @@ calc_prob_win_election <- function(
   for (m in seq(1, n_draws)){
     winning_parties <- df_ev$party[df_ev$draw == m]
     if (length(winning_parties) > 1) {
-      winning_party <- break_ties_in_electoral_college(winning_parties,
-                                                       filter(df_state_winner, draw == m),
-                                                       filter(df_draws_ppi_nat, draw == 5, t == filter_t)) 
+      winning_party <- break_ties(
+        winning_parties,
+        filter(df_state_winner, draw == m),
+        filter(df_draws_ppi_nat, draw == m, t == filter_t)) 
     } else {
       winning_party <- winning_parties
     }
@@ -44,7 +45,7 @@ calc_prob_win_election <- function(
   }
   
   
-  # calculate probability of winning the election
+ # calculate probability of winning the election
   df_prob_win_election <- data.frame(
     date = filter_t,
     party = names(count_win),
