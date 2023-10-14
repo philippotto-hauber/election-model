@@ -1,5 +1,5 @@
 ---
-title: "Generate results from MCMC output"
+title: "Export and plot results from MCMC output"
 format:
     html:
         page-layout: full
@@ -16,6 +16,7 @@ format:
 #| output: false
 library(ggplot2)
 library(dplyr)
+library(data.table)
 names_functions = list.files(here::here("functions"))
 for (f in names_functions)
     source(here::here("functions", f))
@@ -70,19 +71,20 @@ gen_results <- function(plts, scen) {
 
     df_prior_ppi <- invert_alr_on_prior(priors[[scen]][["m_mmu_T"]])
 
-    df_draws_ppi <- convert_draws_to_df(
+    # use data.table -> much, much quicker than tidyverse!
+    df_draws_ppi <- convert_draws_to_dt(
         rstan::extract(out, pars = "ppi")[["ppi"]],                        
         geographies = states,
         parties = parties,
         dates_campaign = dates_campaign)
     
-    df_draws_ppi_reg <- convert_draws_to_df(
+    df_draws_ppi_reg <- convert_draws_to_dt(
         rstan::extract(out, pars = "ppi_reg")[["ppi_reg"]],
         geographies = regions,
         parties = parties,
         dates_campaign = dates_campaign)
 
-    df_draws_ppi_nat <- convert_draws_to_df(
+    df_draws_ppi_nat <- convert_draws_to_dt(
         rstan::extract(out, pars = "ppi_nat")[["ppi_nat"]],                        
         geographies = "national",
         parties = parties, 
@@ -94,7 +96,7 @@ gen_results <- function(plts, scen) {
         "rbind", 
         lapply(
             dates_campaign, 
-            calc_prob_win_election,
+            FUN = calc_prob_win_election,
             df_draws_ppi = df_draws_ppi,
             df_draws_ppi_nat = df_draws_ppi_nat,
             states = states,
@@ -106,7 +108,7 @@ gen_results <- function(plts, scen) {
         "rbind", 
         lapply(
             dates_campaign, 
-            calc_prob_win_states,
+            FUN = calc_prob_win_states,
             df_draws_ppi = df_draws_ppi,
             states = states,
             parties = parties
@@ -220,7 +222,20 @@ gen_results <- function(plts, scen) {
         n_geographies = 1, 
         type_of_poll = "national", 
         plt_title_prefix = scen) -> plts[[scen]][["plt_ppi_nat"]]
-
+    rm(df_draws_ppi, 
+        df_draws_ppi_reg, 
+        df_draws_ppi_nat, 
+        df_polls,
+        df_prior_ppi,
+        df_prob_win_election,
+        df_prob_win_states,
+        df_out_prob_win_election,
+        df_out_prob_win_states,
+        df_mean,
+        df_mean_nat,
+        df_out_mean, 
+        df_out_mean_nat,
+        out)
     plts 
 }
 ```
