@@ -15,7 +15,7 @@ plot_prob_win_states <- function(
     ggsci::scale_fill_jco()+
     scale_y_continuous(breaks=seq(0, 1, 0.2), limits = c(0, 1))+
     facet_wrap(~geography, ceiling(sqrt(n_geographies)))+
-    labs(title = paste0(plt_title_prefix, ": Probability of winning electoral votes on", filter_t))+
+    labs(title = paste0(plt_title_prefix, ": Probability of winning electoral votes on ", filter_t))+
     ylab("probability")+
     xlab("") -> plt
   plt
