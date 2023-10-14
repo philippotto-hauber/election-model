@@ -11,7 +11,7 @@
   #' @param df_pop_vote data.frame containng the share of the popular vote of each party for a given draw
   #'
   #' @return winning_party string containing the name of the winning party
-  break_ties_in_electoral_college <- function(tied_parties, df_state_winner, df_pop_vote){
+  break_ties <- function(tied_parties, df_state_winner, df_pop_vote){
     
     states_won <- vector(mode = "numeric", length = length(tied_parties))
     names(states_won) <- tied_parties
