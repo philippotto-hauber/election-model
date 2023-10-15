@@ -146,7 +146,7 @@ if (!(nrow(mat_results) == n_elections &
 
 corr_mat <- cor(mat_results)
 # James-Stein type shirnkage estimator
-corr_mat_js <- corpcor::cor.shrink(mat_results)
+corr_mat_shrink <- corpcor::cor.shrink(mat_results)
 ```
 
 Compare original and shrunk version of corr matrix
