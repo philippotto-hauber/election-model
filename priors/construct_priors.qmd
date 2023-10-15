@@ -14,11 +14,12 @@ This notebook constructs the **priors for the model estimation**. See `model_des
 
 ## To-dos
 
-- regularization of $\boldsymbol{\hat{W}}$
-- simulate trajectories of $\mu_{1:T}$ for different values of $\kappa$ given $\boldsymbol{\hat{W}}$
-- simulate house effects by drawing from -> use a sequence of polls from previous election as starting point
+- ~~regularization of $\boldsymbol{\hat{W}}$~~ -> James-Stein type estimator from pkg `corpcor` 
+- use historic polls to inform $\boldsymbol{\hat{W}}$
+- simulate trajectories of $\mu_{1:T}$ for different values of $\kappa$ given $\boldsymbol{\hat{W}}$ -> **prior predictive distribution**
+- simulate house effects by drawing from prior and using a sequence of polls from previous election as starting point -> **prior predictive distribution**
 - differences in $V_{\mu_T}$ across scenarios
-- add forecasts from fundamental model
+- ~~add forecasts from fundamental model~~
 
 ```{r}
 #| output: false
@@ -51,6 +52,19 @@ Load election results -> needed to estimate $\boldsymbol{W}$
 ```{r}
 election_results <- load_election_vote_shares()
 n_elections <- length(unique(election_results$year))
+```
+
+Calculate the dim names of $\mu_T$, i.e. the state and party that each entry refers to. These are also the dimnames of $\boldsymbol{W}$ and $V_{\mu_T}$. These serve as a cross-check that the priors are ordered in the same way as in the data preparation and estimation! 
+
+```{r}
+names_mmu_T <- c()
+parties <- load_parties()
+for (s in seq(1, length(n_parties_by_state))) {
+    tmp <- paste0(names(n_parties_by_state)[s], "_")
+    for (p in seq(1, n_parties_by_state[s] - 1)) {
+        names_mmu_T <- c(names_mmu_T, paste0(tmp, parties[p]))        
+    }
+}
 ```
 
 ## Scenario-independent priors
@@ -131,7 +145,48 @@ if (!(nrow(mat_results) == n_elections &
     stop("Dimensions of matrix containing log ratio election results not correct. Abort!")
 
 corr_mat <- cor(mat_results)
+# James-Stein type shirnkage estimator
+corr_mat_js <- corpcor::cor.shrink(mat_results)
 ```
+
+Compare original and shrunk version of corr matrix
+
+```{r}
+corpcor::is.positive.definite(corr_mat)
+corpcor::rank.condition(corr_mat)
+MASS::mvrnorm(
+    n = 1,
+    mu = rep(0, nrow(corr_mat)),
+    Sigma = corr_mat)
+```
+
+```{r}
+corpcor::is.positive.definite(corr_mat_shrink)
+corpcor::rank.condition(corr_mat_shrink)
+MASS::mvrnorm(
+    n = 1,
+    mu = rep(0, nrow(corr_mat_shrink)),
+    Sigma = corr_mat_shrink)
+```
+
+```{r}
+heatmap(
+    corr_mat, 
+    Rowv = NA, 
+    Colv = NA, 
+    main = "original correlation matrix"
+)
+```
+
+```{r}
+heatmap(
+    corr_mat_shrink,
+    Rowv = NA, 
+    Colv = NA,
+    main = "shrunk correlation matrix")
+```
+
+Both matrices are PD and can be sampled from but shrunk matrix much better conditioned! 
 
 #### Scale factor $\kappa$
 
@@ -141,6 +196,7 @@ For the time being, simply set $\boldsymbol{W}$ to a diagonal matrix:
 
 ```{r}
 W <- diag(0.01, nrow = sum(n_parties_by_state-1))
+dimnames(W) <- list(names_mmu_T, names_mmu_T)
 ```
 
 Store in list
@@ -161,7 +217,6 @@ sig_ddelta <- sqrt(0.01) # specify in terms of standard deviation for Stan!
 Store in list
 
 ```{r}
-
 priors[["A"]][["sig_ddelta"]] <- 
     priors[["B"]][["sig_ddelta"]] <- 
     priors[["C"]][["sig_ddelta"]] <- 
@@ -178,19 +233,6 @@ scenarios <- load_scenarios()
 ```
 
 ### $m_{\mu_T}$
-
-Calculate 
-
-```{r}
-names_mmu_T <- c()
-parties <- load_parties()
-for (s in seq(1, length(n_parties_by_state))) {
-    tmp <- paste0(names(n_parties_by_state)[s], "_")
-    for (p in seq(1, n_parties_by_state[s] - 1)) {
-        names_mmu_T <- c(names_mmu_T, paste0(tmp, parties[p]))        
-    }
-}
-```
 
 Load fundamental forecast
 ```{r}
@@ -242,6 +284,7 @@ For the time being, however, I set a relatively uninformative prior that is the 
 
 ```{r}
 V_mmu_T <- diag(rep(1, sum(n_parties_by_state-1)))
+dimnames(V_mmu_T) <- list(names_mmu_T, names_mmu_T)
 ```
 
 Store in list
