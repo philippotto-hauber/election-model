@@ -53,3 +53,5 @@ stan/*.exe
 # ignore mcmc output files because of their size!
 model/*.rds
 model/*.rda
+
+dev
