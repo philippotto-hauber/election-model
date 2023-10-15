@@ -1,0 +1,252 @@
+---
+title: "Forecast expected vote shares using fundamentals"
+format:
+    html:
+        page-layout: full
+        embed-resources: true
+        toc: true
+        toc-location: left
+        self-contained-math: true
+        html-math-method: katex
+---
+
+## Libs and functions
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+names_functions = list.files(here::here("functions"))
+for (f in names_functions)
+    source(here::here("functions", f))
+rm(f, names_functions)
+```
+
+## Data
+
+### Election results
+
+Load election results
+```{r}
+elec_dat <- read.csv(here::here("data", "dataland_election_results_1984_2023.csv"))
+elec_dat <- rename(
+    elec_dat, 
+    cc = cc_share,
+    dgm = dgm_share,
+    pdal = pdal_share,
+    ssp = ssp_share
+)
+```
+
+```{r}
+elec_dat %>%
+    select(year, province, cc, dgm, pdal, ssp) %>%
+    tidyr::pivot_longer(
+        cols = -c("year", "province"), 
+        names_to = "party", 
+        values_to = "vote_share"
+    ) %>%
+    mutate(vote_share = ifelse(vote_share == 0, NA, vote_share)) %>%
+    ggplot(aes(x = year, y = vote_share, color = party)) + 
+    geom_point()+
+    ggsci::scale_color_jco() + 
+    facet_wrap(~province, nrow = 4) + 
+    theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+### Macroeconomic data
+
+Load historic macro data
+
+```{r}
+macro_dat <- read.csv(here::here("data", "dataland_economic_data_1984_2023.csv"))
+macro_dat$date <- as.Date(macro_dat$date)
+macro_dat$year <- as.numeric(format(macro_dat$date, "%Y"))
+macro_dat$quarter <- ceiling(as.numeric(format(macro_dat$date, "%m")) / 3)
+macro_dat$election <- ifelse(macro_dat$quarter == 1, macro_dat$year, macro_dat$year + 1)
+
+macro_dat <- rename(
+    macro_dat,
+    y   = year_on_year_gdp_pct_change,
+    u   = unemployment_rate,
+    inf = year_on_year_inflation,
+    sto = year_on_year_stock_mkt_pct_change
+)
+```
+
+Load macro scenarios
+
+```{r}
+macro_scenarios <- read.csv(here::here("data", "dataland_economic_data_2024_scenarios.csv"))
+macro_scenarios$election <- 2024
+
+macro_scenarios <- rename(
+    macro_scenarios,
+    y   = year_on_year_gdp_pct_change,
+    u   = unemployment_rate,
+    inf = year_on_year_inflation,
+    sto = year_on_year_stock_mkt_pct_change
+)
+```
+
+Plot evolution of macro variables in different scenarios
+
+```{r}
+macro_dat %>% 
+    select(date, y, u, inf, sto) %>%
+    tidyr::pivot_longer(
+        cols = -date,
+        names_to = "var",
+        values_to = "value"
+    ) %>% 
+    mutate(scenario = "historic") -> df_plt_hist
+
+macro_scenarios %>%
+    select(date, scenario, y, u, inf, sto) %>%
+    tidyr::pivot_longer(
+        cols = -c("date", "scenario"),
+        names_to = "var",
+        values_to = "value"
+    ) -> df_plt_scen
+```
+
+
+```{r}
+df_plt <- rbind(df_plt_hist, df_plt_scen)
+
+df_plt %>% 
+    tidyr::pivot_wider(
+        id_cols = c("date", "var"), 
+        names_from = "scenario",
+        values_from = "value"
+    ) %>% 
+    mutate(
+        A = ifelse(is.na(A), historic, A),
+        B = ifelse(is.na(B), historic, B),
+        C = ifelse(is.na(C), historic, C),
+        D = ifelse(is.na(D), historic, D),
+        E = ifelse(is.na(E), historic, E)
+    ) %>% 
+    tidyr::pivot_longer(
+        cols = -c("date", "var"),
+        names_to = "scenario",
+        values_to = "value"
+    ) -> df_plt
+
+df_plt %>%
+    filter(date >= as.Date("2022-01-01")) %>%
+    ggplot(aes(
+        x = date, 
+        y = value, 
+        color = scenario,
+        fill = scenario)) + 
+    geom_line() + 
+    scale_color_manual(
+        values = c(
+            "historic"  = "black",
+            "A"         = "firebrick3",
+            "B"         = "royalblue4",
+            "C"         = "violetred3",
+            "D"         = "orange3",
+            "E"         = "steelblue3"       
+        )
+    )+
+    facet_wrap(~ var, scales = "free_y")
+```
+
+### Summary
+
+- stable vote shares over time with only a few outliers -> sample means (scaled so that vote shares sum to 1) is a plausible benchmark prior (that ignores macroeconomic fundamentals)
+
+- scenarios B and E: "business as usual", scenarios A and D: "boom", scenario C: "bust"
+
+- clear correlation across macro variables suggesting informational redundancies -> can maybe get away with including only one macro regressor. However, this assumes that the historical relationship between macro regressors and election outcomes is similar, i.e. that both unemployment rate and GDP growth can explain the historical vote shares equally well which need not be the case! Also, historically, the correlation between macro variables is not as strong as in the scenarios -> think fairly stable unemployment and massive swings in GDP growth during Covid
+
+## Construct benchmark forecast
+
+Calculate the mean vote share of each party in each state
+
+```{r}
+elec_dat %>% 
+    select(year, province, region, cc, dgm, pdal, ssp) %>%
+    tidyr::pivot_longer(
+        cols = -c("year", "province", "region"),
+        names_to = "party",
+        values_to = "vote_share"
+    ) %>%
+    group_by(party, province) %>%
+    mutate(
+        mean_vote_share = mean(vote_share)
+        ) %>% 
+    filter(!(party == "ssp" & region != "Synapse Territories")) %>%
+    select(-c("region", "vote_share", "year")) %>%
+    distinct() %>% 
+    ungroup() %>% 
+    group_by(province) %>%
+    mutate(sum_vote_share = sum(mean_vote_share),
+           mean_vote_share = mean_vote_share / sum_vote_share) %>% 
+    select(-sum_vote_share) %>% 
+    rename(vote_share = mean_vote_share) -> df_mean_vote_share
+```
+
+Add scenario as additional variable and export to rds
+```{r}
+
+df_priors <- data.frame()
+for (scen in load_scenarios()) {
+    df_tmp <- df_mean_vote_share
+    df_tmp$scenario <- scen
+    df_priors <- rbind(
+        df_priors,
+        df_tmp
+    )
+}
+
+saveRDS(df_priors, file = here::here("fundamental_forecast", "fundamental_forecast.rds"))
+```
+
+## Models
+
+### Simple model using alr-transformed vote shares, Q1-GDP growth and party in power
+
+Get vote shares in one province
+
+```{r}
+province_select <- "Amperville"
+```
+
+Plot historic election results
+```{r}
+elec_dat %>%
+ filter(province == province_select) %>%
+    select(year, cc, dgm, pdal, ssp) %>%
+    tidyr::pivot_longer(
+        cols = -year, 
+        names_to = "party", 
+        values_to = "vote_share"
+    ) %>%
+    ggplot(aes(x = year, y = vote_share, color = party)) + 
+    geom_point()+
+    ggsci::scale_color_jco()
+```
+
+Convert to log ratios
+
+```{r}
+elec_tmp <- elec_dat[, c("year", "cc", "dgm", "pdal")]
+
+
+elec_tmp_lr <- cbind(elec_tmp$year, elec_tmp$cc / elec_tmp$pdal, elec_tmp$dgm / elec_tmp$pdal)
+```
+
+```{r}
+# if (region_select == "Synapse Territories") {
+#     dat_reg <- elec_dat[, c("year", 
+#                         paste0(c("cc", "dgm", "pdal", "ssp"), "_share"))]
+#     dat_reg <- 
+# }
+```
+
+Add macro regressor
+
+
