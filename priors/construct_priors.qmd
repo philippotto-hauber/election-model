@@ -171,9 +171,15 @@ priors[["A"]][["sig_ddelta"]] <-
 
 ## Scenario-dependent priors
 
-For the time being, I center the prior mean of $\mu_T$ on an equal vote share for all parties running in a given state
+For the time being, the prior mean of $\mu_T$ is based on the historical average of vote shares
+
+```{r}
+scenarios <- load_scenarios()
+```
 
 ### $m_{\mu_T}$
+
+Calculate 
 
 ```{r}
 names_mmu_T <- c()
@@ -186,18 +192,40 @@ for (s in seq(1, length(n_parties_by_state))) {
 }
 ```
 
+Load fundamental forecast
 ```{r}
-m_mmu_T <- rep(0, sum(n_parties_by_state-1))
-names(m_mmu_T) <- names_mmu_T
+df_fcast <- readRDS(here::here("fundamental_forecast", "fundamental_forecast.rds"))
 ```
 
-Store in list
+Loop over scenarios, convert to log ratio scale and store in list
+
 ```{r}
-priors[["A"]][["m_mmu_T"]] <- 
-    priors[["B"]][["m_mmu_T"]] <- 
-    priors[["C"]][["m_mmu_T"]] <- 
-    priors[["D"]][["m_mmu_T"]] <- 
-    priors[["E"]][["m_mmu_T"]] <- m_mmu_T
+for (scen in scenarios) {
+    df_fcast %>% 
+    inner_join(
+        load_dataland_states_regions(), 
+        by = join_by(province == state)) %>%
+    filter(scenario == scen) %>%
+    select(-scenario) %>%
+    mutate(party = toupper(party)) %>%
+    group_by(province) %>%
+    mutate(vote_share_lr = additive_log_ratio(vote_share)) %>% 
+    filter(vote_share_lr != 0) %>% 
+    arrange(region, province) %>%
+    tidyr::unite(
+        name, 
+        province, 
+        party, 
+        sep = "_") -> df_m_mmu_T
+    
+    # check calc
+    stopifnot(all(df_m_mmu_T$name == names_mmu_T))
+
+    # store in list
+    priors[[scen]][["m_mmu_T"]] <- df_m_mmu_T$vote_share_lr
+    names(priors[[scen]][["m_mmu_T"]]) <- names_mmu_T
+    rm(df_m_mmu_T)
+}
 ```
 
 ### $V_{\mu_T}$
