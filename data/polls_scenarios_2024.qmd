@@ -96,7 +96,7 @@ pollsters <- load_pollsters()
 Load the dates of the election campaign -> start = earliest recorded poll
 
 ```{r}
-dates_campaign <- load_dates_election_campaign(scenario)
+dates_campaign <- load_dates_election_campaign()
 ```
 
 ## Explore poll data
