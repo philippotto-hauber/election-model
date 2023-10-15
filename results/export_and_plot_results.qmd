@@ -14,6 +14,7 @@ format:
 
 ```{r}
 #| output: false
+library(tictoc)
 library(ggplot2)
 library(dplyr)
 library(data.table)
@@ -47,7 +48,7 @@ priors <- readRDS(here::here("priors", "priors.Rds"))
 
 ```{r}
 scenarios <- load_scenarios()
-scenarios <- scenarios[2] # for now only A and B
+scenarios <- scenarios[1:2] # for now only A and B
 ```
 
 List to store plots
@@ -92,6 +93,7 @@ gen_results <- function(plts, scen) {
 
     print("start calculating win probs")
 
+    tic("calc prob win election")
     df_prob_win_election <- do.call(
         "rbind", 
         lapply(
@@ -104,6 +106,8 @@ gen_results <- function(plts, scen) {
             electoral_votes = electoral_votes
             )
         )
+    toc()
+    tic("calc prob win states")
     df_prob_win_states <- do.call(
         "rbind", 
         lapply(
@@ -114,10 +118,12 @@ gen_results <- function(plts, scen) {
             parties = parties
             )
         ) 
+    toc()
 
     print("done calculating win probs")
 
     # Export mean vote share and win probabilities to read 
+    tic("calc mean vote states")
     df_draws_ppi %>% 
     group_by(t, party, geography) %>% 
     summarise(mean_vote_share = mean(values)) %>%
@@ -127,25 +133,26 @@ gen_results <- function(plts, scen) {
         names_from = "party", 
         values_from = "mean_vote_share",
         names_glue = "{party}_{.value}") -> df_out_mean
-
+    toc()
+    
     df_prob_win_states %>%
     mutate(party = tolower(party)) %>%
     rename(province = geography) %>%
     tidyr::pivot_wider(
         names_from = "party", 
         values_from = "prob_win",
-        names_glue = "{party}_{.value}") -> df_out_probwin_states
-
+        names_glue = "{party}_{.value}") -> df_out_prob_win_states
+    
     write.csv(
         merge(
             df_out_mean, 
-            df_out_probwin_states, 
+            df_out_prob_win_states, 
             by = c("date", "province")
         ), 
         file = here::here(paste0("provincial_forecast_", scen, ".csv")),
         row.names = FALSE
     )
-  
+    tic("calc mean vote share national")
     df_draws_ppi_nat %>% 
         select(-geography) %>%
         group_by(t, party) %>% 
@@ -156,18 +163,18 @@ gen_results <- function(plts, scen) {
             names_from = "party", 
             values_from = "mean_vote_share",
             names_glue = "{party}_{.value}") -> df_out_mean_nat
-
+    toc()
     df_prob_win_election %>%
         mutate(party = tolower(party)) %>%
         tidyr::pivot_wider(
             names_from = "party", 
             values_from = "prob_win",
-            names_glue = "{party}_{.value}") -> df_out_probwin_election
+            names_glue = "{party}_{.value}") -> df_out_prob_win_election
 
     write.csv(
         merge(
             df_out_mean_nat, 
-            df_out_probwin_election, 
+            df_out_prob_win_election, 
             by = "date"
         ), 
         file = here::here(paste0("national_forecast_", scen, ".csv")),
@@ -175,16 +182,17 @@ gen_results <- function(plts, scen) {
     )
 
     # Plots    
+    
     plot_prob_win_election(
         df_prob_win_election, 
         election_day, 
         scen) -> plts[[scen]][["plt_prob_win_election"]]
 
-
+    tic("plot win prob election over time")
     plot_prob_win_election_over_time(
         df_prob_win_election, 
         scen) -> plts[[scen]][["plt_prob_win_election_over_time"]]
-
+    toc()
     plot_prob_win_states(
         df_prob_win_states,
         election_day,
@@ -231,8 +239,6 @@ gen_results <- function(plts, scen) {
         df_prob_win_states,
         df_out_prob_win_election,
         df_out_prob_win_states,
-        df_mean,
-        df_mean_nat,
         df_out_mean, 
         df_out_mean_nat,
         out)
