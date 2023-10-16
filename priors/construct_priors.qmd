@@ -90,64 +90,10 @@ When calculating the correlation of latent vote share across states and parties,
 > [...] although parties’ vote shares in each province oscillate from year to year—possibly for quantifiable reasons like the strength of the economy, and possibly for unquantifiable ones like the comparative appeal of their candidates or of their proposed policies—the baseline popularity of each party in each province is constant all the way from 1984 to 2024, as are the characteristics of each pollster. There is no equivalent in Dataland of, say, West Virginia in the United States shifting over time from a reliably Democratic-voting state to a reliably Republican-voting one, because there are no long-run time trends. As a result, when predicting elections in 2024, **you should treat historical results and polls from 1984 as being just as informative as those from 2023 are**. (background material on Dataland, my emphasis)
 
 ```{r}
-# loop over elections
-df_res <- data.frame()
-for (y in seq(min(election_results$year), max(election_results$year))){
-    election_results %>% 
-        filter(year == y) %>%
-        select(
-            year,
-            state,
-            region,
-            cc,
-            dgm,
-            pdal,
-            ssp
-        ) %>% 
-        arrange(region, state) %>% 
-        tidyr::pivot_longer(
-            cols = -c("state", "region", "year"),
-            names_to = "party",
-            values_to = "vote_share"
-        ) %>%
-        mutate(party = toupper(party)) %>%
-        group_by(state) %>% 
-        # rm ssp from states in which it is not running
-        filter(vote_share != 0) %>% 
-        mutate(vote_share_lr = additive_log_ratio(vote_share)) %>%
-        # rm "last" party in each state that is 0 due to alr
-        filter(vote_share_lr != 0) %>% 
-        arrange(region, state) %>%
-        select(-c("region", "vote_share")) %>% 
-        tidyr::unite(
-            col = "state_party", 
-            state, 
-            party) %>%
-        tidyr::pivot_wider(
-            names_from = state_party, 
-            values_from = vote_share_lr
-        ) %>% 
-        rbind(df_res) -> df_res
-}
+# calculate correlation acroos elections
+mat_res <- calc_cor_election_results(elections_results)
 
-df_res %>% 
-    select(-year) %>% 
-    as.matrix -> mat_res
-
-dimnames(mat_res) <- list(df_res$year, names(df_res)[2:ncol(df_res)])
-
-# check dims
-if (!(nrow(mat_res) == n_elections & 
-        ncol(mat_res) == sum(n_parties_by_state-1)))
-    stop("Dimensions of matrix containing log ratio election results not correct. Abort!")
-
-# check names
-stopifnot(all(colnames(mat_res) == names_mmu_T))
 corr_mat <- cor(mat_res)
-
-# James-Stein type shirnkage estimator
-# see function documentation
-corr_mat_shrink <- corpcor::cor.shrink(mat_res)
 ```
 
 ```{r}
@@ -160,11 +106,10 @@ heatmap(
 )
 ```
 
-Original correlation matrix is positive definite...
+In addition, I consider a James-Stein-type shrinkage estimator of the correlation matrix (the degree of shrinkage is estimated from the data, see the documentation of `cor.shrink`)
 
 ```{r}
-corpcor::is.positive.definite(corr_mat)
-corpcor::rank.condition(corr_mat)$condition
+corr_mat_shrink <- corpcor::cor.shrink(mat_res)
 ```
 
 ```{r}
@@ -178,7 +123,14 @@ heatmap(
 )
 ```
 
-... shrunk correlation matrix is much better conditioned
+While the original correlation matrix is positive definite...
+
+```{r}
+corpcor::is.positive.definite(corr_mat)
+corpcor::rank.condition(corr_mat)$condition
+```
+
+... the shrunk correlation matrix is much better conditioned (and also positive definitve)
 
 ```{r}
 corpcor::is.positive.definite(corr_mat_shrink)
