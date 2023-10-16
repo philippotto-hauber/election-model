@@ -79,15 +79,13 @@ $$
 
 where $\boldsymbol{\hat{W}}$ is a correlation matrix and $\kappa$ a scale factor. Intuitively, $\boldsymbol{\hat{W}}$ accounts for the comovement of the changes in latent voting intentions across parties and states while $\kappa$ governs how large changes in voting intentions are!
 
-To estimate $\boldsymbol{\hat{W}}$ I consider the correlation of historical election outcomes across parties and states. This is not a perfect measure of how latent voting intentions co-move! Additionally, I could consider the same correlation but across all polls in previous election campaigns. This has the advantage of actually tracking changes in voting intentions although polls also  
+To estimate $\boldsymbol{\hat{W}}$ I consider the correlation of *historical election outcomes* across parties and states. These correlations are far from a perfect measure of how latent voting intentions co-move because there is no variation in vote shares within an election campaign (which is what I am after). But using the historic results has the advantage of being straight-forward to calculate!
 
-- actual election results
-- historical polls
-- similarities in demographics across states
+An additional source of information could be the correlation across parties and states of *polls from previous elections* but it's less obvious to me how these would need to be handled. Aggregated over time in some way? Does it make sense to compare a poll in Amperville on May 5th in 1984 with one in Circuiton on June 7th in 2023? What does that say about the evolution of the underlying voting intentions? Polls also don't just track the voting intentions but also noise like house effects. Although these might be constant from day to day so actual movement in polls would be down to changes in voting intentions. On the whole, I am not sure how useful these data are or at least how I could extract useful information from them for my goal. 
 
-None of these are perfect measures of how the unobserved voting intentions might co-move! 
+Lastly, *demographic information* like ethnicity could be useful in specifying the correlation of changes in voting intentions between states. But they don't necessarily reveal anything about correlations between parties. One way to utilize this information, however, would be as plausibility check of a correlation matrix calculated from historical polls or election results. 
 
-I use all the available election results since 
+When calculating the correlation of latent vote share across states and parties, I use all the available historical election results since 
 
 > [...] although parties’ vote shares in each province oscillate from year to year—possibly for quantifiable reasons like the strength of the economy, and possibly for unquantifiable ones like the comparative appeal of their candidates or of their proposed policies—the baseline popularity of each party in each province is constant all the way from 1984 to 2024, as are the characteristics of each pollster. There is no equivalent in Dataland of, say, West Virginia in the United States shifting over time from a reliably Democratic-voting state to a reliably Republican-voting one, because there are no long-run time trends. As a result, when predicting elections in 2024, **you should treat historical results and polls from 1984 as being just as informative as those from 2023 are**. (background material on Dataland, my emphasis)
 
