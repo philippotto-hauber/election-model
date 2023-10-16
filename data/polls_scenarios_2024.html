@@ -3121,6 +3121,10 @@ vertical-align: -.125em;
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>pollsters <span class="ot">&lt;-</span> <span class="fu">load_pollsters</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>Load the dates of the election campaign -&gt; start = earliest recorded poll</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>dates_campaign <span class="ot">&lt;-</span> <span class="fu">load_dates_election_campaign</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="explore-poll-data" class="level2">
 <h2 class="anchored" data-anchor-id="explore-poll-data">Explore poll data</h2>
@@ -3153,165 +3157,163 @@ vertical-align: -.125em;
 <section id="convert-polls-to-a-stan-friendly-list" class="level2">
 <h2 class="anchored" data-anchor-id="convert-polls-to-a-stan-friendly-list">Convert polls to a Stan-friendly list</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>keep_cols_stan <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;scenario&quot;</span>, <span class="st">&quot;type_of_poll&quot;</span>, <span class="st">&quot;date&quot;</span>,</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                    <span class="st">&quot;pollster&quot;</span>, <span class="st">&quot;geography&quot;</span>, <span class="st">&quot;sample_size&quot;</span>, </span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                    <span class="st">&quot;cc_share&quot;</span>, <span class="st">&quot;dgm_share&quot;</span>, </span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                    <span class="st">&quot;pdal_share&quot;</span>, <span class="st">&quot;ssp_share&quot;</span>)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> dat[, keep_cols_stan]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>keep_cols_stan <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;scenario&quot;</span>, <span class="st">&quot;type_of_poll&quot;</span>, <span class="st">&quot;date&quot;</span>,</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                    <span class="st">&quot;pollster&quot;</span>, <span class="st">&quot;geography&quot;</span>, <span class="st">&quot;sample_size&quot;</span>, </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>                    <span class="st">&quot;cc_share&quot;</span>, <span class="st">&quot;dgm_share&quot;</span>, </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                    <span class="st">&quot;pdal_share&quot;</span>, <span class="st">&quot;ssp_share&quot;</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> dat[, keep_cols_stan]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Loop over scenarios</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>scenarios <span class="ot">&lt;-</span> <span class="fu">load_scenarios</span>()</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>polls <span class="ot">&lt;-</span> <span class="fu">list</span>() <span class="co"># initialize empty list</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (scenario <span class="cf">in</span> scenarios){</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]] <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># load the dates of the election campaign for the scenario</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    dates_campaign <span class="ot">&lt;-</span> <span class="fu">load_dates_election_campaign</span>(scenario)</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># state polls----</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    dat <span class="sc">%&gt;%</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(scenario <span class="sc">==</span> .env<span class="sc">$</span>scenario,</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>               type_of_poll <span class="sc">==</span> <span class="st">&quot;state&quot;</span>) <span class="sc">%&gt;%</span>        </span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">arrange</span>(date) <span class="ot">-&gt;</span> df_polls_state</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># convert vote shares to votes</span></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    df_polls_state <span class="sc">%&gt;%</span></span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>( <span class="at">cc_n      =</span> <span class="fu">round</span>(cc_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>),</span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>                <span class="at">dgm_n     =</span> <span class="fu">round</span>(dgm_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>),</span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>                <span class="at">pdal_n    =</span> <span class="fu">round</span>(pdal_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>),</span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>                <span class="at">ssp_n     =</span> <span class="fu">round</span>(ssp_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>)) <span class="ot">-&gt;</span> df_polls_state</span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># store data in list</span></span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;n_responses&quot;</span>]]   <span class="ot">&lt;-</span> df_polls_state<span class="sc">$</span>sample_size</span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;day_poll&quot;</span>]]      <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df_polls_state<span class="sc">$</span>date, </span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>                                                <span class="cf">function</span>(x){ <span class="fu">which</span>(dates_campaign <span class="sc">==</span> x)})</span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;house_poll&quot;</span>]]    <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df_polls_state<span class="sc">$</span>pollster, </span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>                                                <span class="cf">function</span>(x){<span class="fu">which</span>(pollsters <span class="sc">==</span> x)})</span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;state_poll&quot;</span>]]    <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df_polls_state<span class="sc">$</span>geography, </span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>                                                <span class="cf">function</span>(x){<span class="fu">which</span>(states_regions<span class="sc">$</span>state <span class="sc">==</span> x)}) </span>
-<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;y&quot;</span>]]             <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">as.matrix</span>(df_polls_state[, <span class="fu">c</span>(<span class="st">&quot;cc_n&quot;</span>, <span class="st">&quot;dgm_n&quot;</span>, <span class="st">&quot;pdal_n&quot;</span>, <span class="st">&quot;ssp_n&quot;</span>)]))</span>
-<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># regional polls ----</span></span>
-<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>    dat <span class="sc">%&gt;%</span></span>
-<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(scenario <span class="sc">==</span> .env<span class="sc">$</span>scenario,</span>
-<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>               type_of_poll <span class="sc">==</span> <span class="st">&quot;regional&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>        <span class="fu">arrange</span>(date) <span class="ot">-&gt;</span> df_polls_region  </span>
-<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>    <span class="co"># convert vote shares to votes</span></span>
-<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>    df_polls_region <span class="sc">%&gt;%</span></span>
-<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>( <span class="at">cc_n      =</span> <span class="fu">round</span>(cc_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>),</span>
-<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>                <span class="at">dgm_n     =</span> <span class="fu">round</span>(dgm_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>),</span>
-<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>                <span class="at">pdal_n    =</span> <span class="fu">round</span>(pdal_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>),</span>
-<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>                <span class="at">ssp_n     =</span> <span class="fu">round</span>(ssp_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>)) <span class="ot">-&gt;</span> df_polls_region</span>
-<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;n_responses_reg&quot;</span>]]   <span class="ot">&lt;-</span> df_polls_region<span class="sc">$</span>sample_size</span>
-<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;day_poll_reg&quot;</span>]]      <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df_polls_region<span class="sc">$</span>date, </span>
-<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>                                                        <span class="cf">function</span>(x){ <span class="fu">which</span>(dates_campaign <span class="sc">==</span> x)})</span>
-<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;house_poll_reg&quot;</span>]]    <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df_polls_region<span class="sc">$</span>pollster, </span>
-<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>                                                        <span class="cf">function</span>(x){<span class="fu">which</span>(pollsters <span class="sc">==</span> x)})</span>
-<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;region_poll&quot;</span>]]       <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df_polls_region<span class="sc">$</span>geography,</span>
-<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a>                                                        <span class="cf">function</span>(x){<span class="fu">which</span>(<span class="fu">unique</span>(states_regions<span class="sc">$</span>region) <span class="sc">==</span> x)}) </span>
-<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;y_reg&quot;</span>]]             <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">as.matrix</span>(df_polls_region[, <span class="fu">c</span>(<span class="st">&quot;cc_n&quot;</span>, <span class="st">&quot;dgm_n&quot;</span>, <span class="st">&quot;pdal_n&quot;</span>, <span class="st">&quot;ssp_n&quot;</span>)]))</span>
-<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>    <span class="co"># national polls ----</span></span>
-<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a>    dat <span class="sc">%&gt;%</span></span>
-<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(scenario <span class="sc">==</span> .env<span class="sc">$</span>scenario,</span>
-<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a>               type_of_poll <span class="sc">==</span> <span class="st">&quot;national&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a>        <span class="fu">arrange</span>(date) <span class="ot">-&gt;</span> df_polls_national</span>
-<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>    <span class="co"># convert vote shares to votes</span></span>
-<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a>    df_polls_national <span class="sc">%&gt;%</span></span>
-<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>( <span class="at">cc_n      =</span> <span class="fu">round</span>(cc_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>),</span>
-<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a>                <span class="at">dgm_n     =</span> <span class="fu">round</span>(dgm_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>),</span>
-<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a>                <span class="at">pdal_n    =</span> <span class="fu">round</span>(pdal_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>),</span>
-<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a>                <span class="at">ssp_n     =</span> <span class="fu">round</span>(ssp_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>)) <span class="ot">-&gt;</span> df_polls_national</span>
-<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;n_responses_nat&quot;</span>]]   <span class="ot">&lt;-</span> df_polls_national<span class="sc">$</span>sample_size</span>
-<span id="cb12-70"><a href="#cb12-70" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;day_poll_nat&quot;</span>]]      <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df_polls_national<span class="sc">$</span>date, </span>
-<span id="cb12-71"><a href="#cb12-71" aria-hidden="true" tabindex="-1"></a>                                                    <span class="cf">function</span>(x){ <span class="fu">which</span>(dates_campaign <span class="sc">==</span> x)})</span>
-<span id="cb12-72"><a href="#cb12-72" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;house_poll_nat&quot;</span>]]    <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df_polls_national<span class="sc">$</span>pollster, </span>
-<span id="cb12-73"><a href="#cb12-73" aria-hidden="true" tabindex="-1"></a>                                                    <span class="cf">function</span>(x){<span class="fu">which</span>(pollsters <span class="sc">==</span> x)})</span>
-<span id="cb12-74"><a href="#cb12-74" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;y_nat&quot;</span>]]             <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">as.matrix</span>(df_polls_national[, <span class="fu">c</span>(<span class="st">&quot;cc_n&quot;</span>, <span class="st">&quot;dgm_n&quot;</span>, <span class="st">&quot;pdal_n&quot;</span>, <span class="st">&quot;ssp_n&quot;</span>)]))</span>
-<span id="cb12-75"><a href="#cb12-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-76"><a href="#cb12-76" aria-hidden="true" tabindex="-1"></a>    <span class="co"># merge and convert polls to long format </span></span>
-<span id="cb12-77"><a href="#cb12-77" aria-hidden="true" tabindex="-1"></a>    <span class="fu">do.call</span>(<span class="st">&quot;rbind&quot;</span>, </span>
-<span id="cb12-78"><a href="#cb12-78" aria-hidden="true" tabindex="-1"></a>            <span class="fu">list</span>(df_polls_state, df_polls_region, df_polls_national)) <span class="sc">%&gt;%</span></span>
-<span id="cb12-79"><a href="#cb12-79" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">CC =</span> cc_n, </span>
-<span id="cb12-80"><a href="#cb12-80" aria-hidden="true" tabindex="-1"></a>           <span class="at">DGM =</span> dgm_n, </span>
-<span id="cb12-81"><a href="#cb12-81" aria-hidden="true" tabindex="-1"></a>           <span class="at">PDAL =</span> pdal_n, </span>
-<span id="cb12-82"><a href="#cb12-82" aria-hidden="true" tabindex="-1"></a>           <span class="at">SSP =</span> ssp_n) <span class="sc">%&gt;%</span></span>
-<span id="cb12-83"><a href="#cb12-83" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span><span class="fu">ends_with</span>(<span class="st">&quot;_share&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb12-84"><a href="#cb12-84" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span><span class="fu">c</span>(<span class="st">&quot;scenario&quot;</span>,</span>
-<span id="cb12-85"><a href="#cb12-85" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">&quot;date&quot;</span>, </span>
-<span id="cb12-86"><a href="#cb12-86" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">&quot;geography&quot;</span>, </span>
-<span id="cb12-87"><a href="#cb12-87" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">&quot;sample_size&quot;</span>,</span>
-<span id="cb12-88"><a href="#cb12-88" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">&quot;pollster&quot;</span>,</span>
-<span id="cb12-89"><a href="#cb12-89" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">&quot;type_of_poll&quot;</span>),</span>
-<span id="cb12-90"><a href="#cb12-90" aria-hidden="true" tabindex="-1"></a>                        <span class="at">names_to =</span> <span class="st">&quot;party&quot;</span>, </span>
-<span id="cb12-91"><a href="#cb12-91" aria-hidden="true" tabindex="-1"></a>                        <span class="at">values_to =</span> <span class="st">&quot;value&quot;</span>) <span class="ot">-&gt;</span> df_polls</span>
-<span id="cb12-92"><a href="#cb12-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-93"><a href="#cb12-93" aria-hidden="true" tabindex="-1"></a>    <span class="co"># export polls to csv</span></span>
-<span id="cb12-94"><a href="#cb12-94" aria-hidden="true" tabindex="-1"></a>    <span class="fu">write.csv</span>(df_polls, </span>
-<span id="cb12-95"><a href="#cb12-95" aria-hidden="true" tabindex="-1"></a>              <span class="at">file =</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="fu">paste0</span>(<span class="st">&quot;df_polls_&quot;</span>, scenario, <span class="st">&quot;.csv&quot;</span>)), </span>
-<span id="cb12-96"><a href="#cb12-96" aria-hidden="true" tabindex="-1"></a>              <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb12-97"><a href="#cb12-97" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb12-98"><a href="#cb12-98" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Clean up ----</span></span>
-<span id="cb12-99"><a href="#cb12-99" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rm</span>(df_polls_state, df_polls_region, df_polls_national, df_polls)</span>
-<span id="cb12-100"><a href="#cb12-100" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb12-101"><a href="#cb12-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-102"><a href="#cb12-102" aria-hidden="true" tabindex="-1"></a><span class="co"># Export ----</span></span>
-<span id="cb12-103"><a href="#cb12-103" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(polls, <span class="at">file =</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="fu">paste0</span>(<span class="st">&quot;polls.Rds&quot;</span>)))</span>
-<span id="cb12-104"><a href="#cb12-104" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(polls)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>scenarios <span class="ot">&lt;-</span> <span class="fu">load_scenarios</span>()</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>polls <span class="ot">&lt;-</span> <span class="fu">list</span>() <span class="co"># initialize empty list</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (scenario <span class="cf">in</span> scenarios){</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]] <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># state polls----</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    dat <span class="sc">%&gt;%</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(scenario <span class="sc">==</span> .env<span class="sc">$</span>scenario,</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>               type_of_poll <span class="sc">==</span> <span class="st">&quot;state&quot;</span>) <span class="sc">%&gt;%</span>        </span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>        <span class="fu">arrange</span>(date) <span class="ot">-&gt;</span> df_polls_state</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># convert vote shares to votes</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    df_polls_state <span class="sc">%&gt;%</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>( <span class="at">cc_n      =</span> <span class="fu">round</span>(cc_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>),</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>                <span class="at">dgm_n     =</span> <span class="fu">round</span>(dgm_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>),</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>                <span class="at">pdal_n    =</span> <span class="fu">round</span>(pdal_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>),</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>                <span class="at">ssp_n     =</span> <span class="fu">round</span>(ssp_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>)) <span class="ot">-&gt;</span> df_polls_state</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># store data in list</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;n_responses&quot;</span>]]   <span class="ot">&lt;-</span> df_polls_state<span class="sc">$</span>sample_size</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;day_poll&quot;</span>]]      <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df_polls_state<span class="sc">$</span>date, </span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>                                                <span class="cf">function</span>(x){ <span class="fu">which</span>(dates_campaign <span class="sc">==</span> x)})</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;house_poll&quot;</span>]]    <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df_polls_state<span class="sc">$</span>pollster, </span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>                                                <span class="cf">function</span>(x){<span class="fu">which</span>(pollsters <span class="sc">==</span> x)})</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;state_poll&quot;</span>]]    <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df_polls_state<span class="sc">$</span>geography, </span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>                                                <span class="cf">function</span>(x){<span class="fu">which</span>(states_regions<span class="sc">$</span>state <span class="sc">==</span> x)}) </span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;y&quot;</span>]]             <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">as.matrix</span>(df_polls_state[, <span class="fu">c</span>(<span class="st">&quot;cc_n&quot;</span>, <span class="st">&quot;dgm_n&quot;</span>, <span class="st">&quot;pdal_n&quot;</span>, <span class="st">&quot;ssp_n&quot;</span>)]))</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># regional polls ----</span></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>    dat <span class="sc">%&gt;%</span></span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(scenario <span class="sc">==</span> .env<span class="sc">$</span>scenario,</span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>               type_of_poll <span class="sc">==</span> <span class="st">&quot;regional&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>        <span class="fu">arrange</span>(date) <span class="ot">-&gt;</span> df_polls_region  </span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># convert vote shares to votes</span></span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>    df_polls_region <span class="sc">%&gt;%</span></span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>( <span class="at">cc_n      =</span> <span class="fu">round</span>(cc_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>),</span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>                <span class="at">dgm_n     =</span> <span class="fu">round</span>(dgm_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>),</span>
+<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>                <span class="at">pdal_n    =</span> <span class="fu">round</span>(pdal_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>),</span>
+<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>                <span class="at">ssp_n     =</span> <span class="fu">round</span>(ssp_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>)) <span class="ot">-&gt;</span> df_polls_region</span>
+<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;n_responses_reg&quot;</span>]]   <span class="ot">&lt;-</span> df_polls_region<span class="sc">$</span>sample_size</span>
+<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;day_poll_reg&quot;</span>]]      <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df_polls_region<span class="sc">$</span>date, </span>
+<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>                                                        <span class="cf">function</span>(x){ <span class="fu">which</span>(dates_campaign <span class="sc">==</span> x)})</span>
+<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;house_poll_reg&quot;</span>]]    <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df_polls_region<span class="sc">$</span>pollster, </span>
+<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a>                                                        <span class="cf">function</span>(x){<span class="fu">which</span>(pollsters <span class="sc">==</span> x)})</span>
+<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;region_poll&quot;</span>]]       <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df_polls_region<span class="sc">$</span>geography,</span>
+<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a>                                                        <span class="cf">function</span>(x){<span class="fu">which</span>(<span class="fu">unique</span>(states_regions<span class="sc">$</span>region) <span class="sc">==</span> x)}) </span>
+<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;y_reg&quot;</span>]]             <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">as.matrix</span>(df_polls_region[, <span class="fu">c</span>(<span class="st">&quot;cc_n&quot;</span>, <span class="st">&quot;dgm_n&quot;</span>, <span class="st">&quot;pdal_n&quot;</span>, <span class="st">&quot;ssp_n&quot;</span>)]))</span>
+<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a>    <span class="co"># national polls ----</span></span>
+<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a>    dat <span class="sc">%&gt;%</span></span>
+<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(scenario <span class="sc">==</span> .env<span class="sc">$</span>scenario,</span>
+<span id="cb13-57"><a href="#cb13-57" aria-hidden="true" tabindex="-1"></a>               type_of_poll <span class="sc">==</span> <span class="st">&quot;national&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb13-58"><a href="#cb13-58" aria-hidden="true" tabindex="-1"></a>        <span class="fu">arrange</span>(date) <span class="ot">-&gt;</span> df_polls_national</span>
+<span id="cb13-59"><a href="#cb13-59" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-60"><a href="#cb13-60" aria-hidden="true" tabindex="-1"></a>    <span class="co"># convert vote shares to votes</span></span>
+<span id="cb13-61"><a href="#cb13-61" aria-hidden="true" tabindex="-1"></a>    df_polls_national <span class="sc">%&gt;%</span></span>
+<span id="cb13-62"><a href="#cb13-62" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>( <span class="at">cc_n      =</span> <span class="fu">round</span>(cc_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>),</span>
+<span id="cb13-63"><a href="#cb13-63" aria-hidden="true" tabindex="-1"></a>                <span class="at">dgm_n     =</span> <span class="fu">round</span>(dgm_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>),</span>
+<span id="cb13-64"><a href="#cb13-64" aria-hidden="true" tabindex="-1"></a>                <span class="at">pdal_n    =</span> <span class="fu">round</span>(pdal_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>),</span>
+<span id="cb13-65"><a href="#cb13-65" aria-hidden="true" tabindex="-1"></a>                <span class="at">ssp_n     =</span> <span class="fu">round</span>(ssp_share <span class="sc">*</span> sample_size, <span class="at">digits =</span> <span class="dv">0</span>)) <span class="ot">-&gt;</span> df_polls_national</span>
+<span id="cb13-66"><a href="#cb13-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-67"><a href="#cb13-67" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;n_responses_nat&quot;</span>]]   <span class="ot">&lt;-</span> df_polls_national<span class="sc">$</span>sample_size</span>
+<span id="cb13-68"><a href="#cb13-68" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;day_poll_nat&quot;</span>]]      <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df_polls_national<span class="sc">$</span>date, </span>
+<span id="cb13-69"><a href="#cb13-69" aria-hidden="true" tabindex="-1"></a>                                                    <span class="cf">function</span>(x){ <span class="fu">which</span>(dates_campaign <span class="sc">==</span> x)})</span>
+<span id="cb13-70"><a href="#cb13-70" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;house_poll_nat&quot;</span>]]    <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df_polls_national<span class="sc">$</span>pollster, </span>
+<span id="cb13-71"><a href="#cb13-71" aria-hidden="true" tabindex="-1"></a>                                                    <span class="cf">function</span>(x){<span class="fu">which</span>(pollsters <span class="sc">==</span> x)})</span>
+<span id="cb13-72"><a href="#cb13-72" aria-hidden="true" tabindex="-1"></a>    polls[[scenario]][[<span class="st">&quot;y_nat&quot;</span>]]             <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">as.matrix</span>(df_polls_national[, <span class="fu">c</span>(<span class="st">&quot;cc_n&quot;</span>, <span class="st">&quot;dgm_n&quot;</span>, <span class="st">&quot;pdal_n&quot;</span>, <span class="st">&quot;ssp_n&quot;</span>)]))</span>
+<span id="cb13-73"><a href="#cb13-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-74"><a href="#cb13-74" aria-hidden="true" tabindex="-1"></a>    <span class="co"># merge and convert polls to long format </span></span>
+<span id="cb13-75"><a href="#cb13-75" aria-hidden="true" tabindex="-1"></a>    <span class="fu">do.call</span>(<span class="st">&quot;rbind&quot;</span>, </span>
+<span id="cb13-76"><a href="#cb13-76" aria-hidden="true" tabindex="-1"></a>            <span class="fu">list</span>(df_polls_state, df_polls_region, df_polls_national)) <span class="sc">%&gt;%</span></span>
+<span id="cb13-77"><a href="#cb13-77" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">CC =</span> cc_n, </span>
+<span id="cb13-78"><a href="#cb13-78" aria-hidden="true" tabindex="-1"></a>           <span class="at">DGM =</span> dgm_n, </span>
+<span id="cb13-79"><a href="#cb13-79" aria-hidden="true" tabindex="-1"></a>           <span class="at">PDAL =</span> pdal_n, </span>
+<span id="cb13-80"><a href="#cb13-80" aria-hidden="true" tabindex="-1"></a>           <span class="at">SSP =</span> ssp_n) <span class="sc">%&gt;%</span></span>
+<span id="cb13-81"><a href="#cb13-81" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span><span class="fu">ends_with</span>(<span class="st">&quot;_share&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb13-82"><a href="#cb13-82" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span><span class="fu">c</span>(<span class="st">&quot;scenario&quot;</span>,</span>
+<span id="cb13-83"><a href="#cb13-83" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">&quot;date&quot;</span>, </span>
+<span id="cb13-84"><a href="#cb13-84" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">&quot;geography&quot;</span>, </span>
+<span id="cb13-85"><a href="#cb13-85" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">&quot;sample_size&quot;</span>,</span>
+<span id="cb13-86"><a href="#cb13-86" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">&quot;pollster&quot;</span>,</span>
+<span id="cb13-87"><a href="#cb13-87" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">&quot;type_of_poll&quot;</span>),</span>
+<span id="cb13-88"><a href="#cb13-88" aria-hidden="true" tabindex="-1"></a>                        <span class="at">names_to =</span> <span class="st">&quot;party&quot;</span>, </span>
+<span id="cb13-89"><a href="#cb13-89" aria-hidden="true" tabindex="-1"></a>                        <span class="at">values_to =</span> <span class="st">&quot;value&quot;</span>) <span class="ot">-&gt;</span> df_polls</span>
+<span id="cb13-90"><a href="#cb13-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-91"><a href="#cb13-91" aria-hidden="true" tabindex="-1"></a>    <span class="co"># export polls to csv</span></span>
+<span id="cb13-92"><a href="#cb13-92" aria-hidden="true" tabindex="-1"></a>    <span class="fu">write.csv</span>(df_polls, </span>
+<span id="cb13-93"><a href="#cb13-93" aria-hidden="true" tabindex="-1"></a>              <span class="at">file =</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="fu">paste0</span>(<span class="st">&quot;df_polls_&quot;</span>, scenario, <span class="st">&quot;.csv&quot;</span>)), </span>
+<span id="cb13-94"><a href="#cb13-94" aria-hidden="true" tabindex="-1"></a>              <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb13-95"><a href="#cb13-95" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-96"><a href="#cb13-96" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Clean up ----</span></span>
+<span id="cb13-97"><a href="#cb13-97" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rm</span>(df_polls_state, df_polls_region, df_polls_national, df_polls)</span>
+<span id="cb13-98"><a href="#cb13-98" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-99"><a href="#cb13-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-100"><a href="#cb13-100" aria-hidden="true" tabindex="-1"></a><span class="co"># Export ----</span></span>
+<span id="cb13-101"><a href="#cb13-101" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(polls, <span class="at">file =</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="fu">paste0</span>(<span class="st">&quot;polls.Rds&quot;</span>)))</span>
+<span id="cb13-102"><a href="#cb13-102" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(polls)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="plot-polls" class="level2">
 <h2 class="anchored" data-anchor-id="plot-polls">Plot polls</h2>
 <p>Define auxiliary functions to generate plots for a given scenario</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>plot_state_polls <span class="ot">&lt;-</span> <span class="cf">function</span>(scen) {</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    df_polls <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="fu">paste0</span>(<span class="st">&quot;df_polls_&quot;</span>, scen, <span class="st">&quot;.csv&quot;</span>)), <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    df_polls<span class="sc">$</span>date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(df_polls<span class="sc">$</span>date)</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    df_polls <span class="sc">%&gt;%</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(type_of_poll <span class="sc">==</span> <span class="st">&quot;state&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>        <span class="co"># set zero values for SSP in non-Synapse Territories to NA for better visibility</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">value =</span> <span class="fu">ifelse</span>(value <span class="sc">==</span> <span class="dv">0</span>, </span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>                                <span class="cn">NA</span>, </span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>                                value)) <span class="sc">%&gt;%</span></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> value<span class="sc">/</span>sample_size, <span class="at">color =</span> party)) <span class="sc">+</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>        ggsci<span class="sc">::</span><span class="fu">scale_color_jco</span>() <span class="sc">+</span> </span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_x_date</span>(<span class="at">date_labels =</span> <span class="st">&quot;%b-%d&quot;</span>) <span class="sc">+</span></span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">facet_wrap</span>(<span class="sc">~</span>geography, <span class="at">nrow =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>        <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste0</span>(scen, <span class="st">&quot;: state polls&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="ot">-&gt;</span> plt_state</span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    plt_state</span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>plot_state_polls <span class="ot">&lt;-</span> <span class="cf">function</span>(scen) {</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    df_polls <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="fu">paste0</span>(<span class="st">&quot;df_polls_&quot;</span>, scen, <span class="st">&quot;.csv&quot;</span>)), <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    df_polls<span class="sc">$</span>date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(df_polls<span class="sc">$</span>date)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    df_polls <span class="sc">%&gt;%</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(type_of_poll <span class="sc">==</span> <span class="st">&quot;state&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>        <span class="co"># set zero values for SSP in non-Synapse Territories to NA for better visibility</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">value =</span> <span class="fu">ifelse</span>(value <span class="sc">==</span> <span class="dv">0</span>, </span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>                                <span class="cn">NA</span>, </span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>                                value)) <span class="sc">%&gt;%</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> value<span class="sc">/</span>sample_size, <span class="at">color =</span> party)) <span class="sc">+</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>        ggsci<span class="sc">::</span><span class="fu">scale_color_jco</span>() <span class="sc">+</span> </span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_x_date</span>(<span class="at">date_labels =</span> <span class="st">&quot;%b-%d&quot;</span>) <span class="sc">+</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">facet_wrap</span>(<span class="sc">~</span>geography, <span class="at">nrow =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>        <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste0</span>(scen, <span class="st">&quot;: state polls&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="ot">-&gt;</span> plt_state</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>    plt_state</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>plot_regnat_polls <span class="ot">&lt;-</span> <span class="cf">function</span>(scen) {</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    df_polls <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="fu">paste0</span>(<span class="st">&quot;df_polls_&quot;</span>, scen, <span class="st">&quot;.csv&quot;</span>)), <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    df_polls<span class="sc">$</span>date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(df_polls<span class="sc">$</span>date)</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    df_polls <span class="sc">%&gt;%</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(type_of_poll <span class="sc">!=</span> <span class="st">&quot;state&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>        <span class="co"># set zero values for SSP in non-Synapse Territories to NA for better visibility</span></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">value =</span> <span class="fu">ifelse</span>(value <span class="sc">==</span> <span class="dv">0</span>, </span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>                                <span class="cn">NA</span>, </span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>                                value)) <span class="sc">%&gt;%</span></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> value<span class="sc">/</span>sample_size, <span class="at">color =</span> party)) <span class="sc">+</span></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>        ggsci<span class="sc">::</span><span class="fu">scale_color_jco</span>() <span class="sc">+</span> </span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">facet_wrap</span>(<span class="sc">~</span>geography, <span class="at">nrow =</span> <span class="dv">2</span>) <span class="sc">+</span> </span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>        <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste0</span>(scen, <span class="st">&quot;: regional and national polls&quot;</span>)) <span class="sc">+</span> </span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="ot">-&gt;</span> plt_regnat</span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>    plt_regnat</span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>plot_regnat_polls <span class="ot">&lt;-</span> <span class="cf">function</span>(scen) {</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    df_polls <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="fu">paste0</span>(<span class="st">&quot;df_polls_&quot;</span>, scen, <span class="st">&quot;.csv&quot;</span>)), <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    df_polls<span class="sc">$</span>date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(df_polls<span class="sc">$</span>date)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    df_polls <span class="sc">%&gt;%</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(type_of_poll <span class="sc">!=</span> <span class="st">&quot;state&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>        <span class="co"># set zero values for SSP in non-Synapse Territories to NA for better visibility</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">value =</span> <span class="fu">ifelse</span>(value <span class="sc">==</span> <span class="dv">0</span>, </span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>                                <span class="cn">NA</span>, </span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>                                value)) <span class="sc">%&gt;%</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> value<span class="sc">/</span>sample_size, <span class="at">color =</span> party)) <span class="sc">+</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>        ggsci<span class="sc">::</span><span class="fu">scale_color_jco</span>() <span class="sc">+</span> </span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">facet_wrap</span>(<span class="sc">~</span>geography, <span class="at">nrow =</span> <span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>        <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste0</span>(scen, <span class="st">&quot;: regional and national polls&quot;</span>)) <span class="sc">+</span> </span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="ot">-&gt;</span> plt_regnat</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    plt_regnat</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="scenarios" class="level3">
 <h3 class="anchored" data-anchor-id="scenarios">Scenarios</h3>
@@ -3417,28 +3419,28 @@ vertical-align: -.125em;
 <p>As a consequence of rounding the product of vote share and number of poll respondents to an integer, the sum of votes for the parties may not exactly match the total number of respondents in the poll.</p>
 <p>How large are these discrepancies?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>polls <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;polls.Rds&quot;</span>))</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>df_diff <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> scenarios){</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">c</span>(<span class="st">&quot;&quot;</span>, <span class="st">&quot;_reg&quot;</span>, <span class="st">&quot;_nat&quot;</span>)){</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>        y <span class="ot">&lt;-</span> polls[[s]][[<span class="fu">paste0</span>(<span class="st">&quot;y&quot;</span>, i)]]</span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>        n_responses <span class="ot">&lt;-</span> polls[[s]][[<span class="fu">paste0</span>(<span class="st">&quot;n_responses&quot;</span>, i)]] </span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>        diff_response <span class="ot">&lt;-</span> <span class="fu">apply</span>(y, <span class="fu">c</span>(<span class="dv">2</span>), sum) <span class="sc">-</span> n_responses</span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>        df_diff <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df_diff, <span class="fu">data.frame</span>(<span class="at">scenario =</span> s,</span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">type =</span> <span class="fu">ifelse</span>(i <span class="sc">==</span> <span class="st">&quot;&quot;</span>,<span class="st">&quot;state&quot;</span>, <span class="fu">substr</span>(i, <span class="dv">2</span>, <span class="fu">nchar</span>(i))),</span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">n_diff =</span> <span class="fu">sum</span>(diff_response <span class="sc">!=</span> <span class="dv">0</span>),</span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">n_polls =</span> <span class="fu">length</span>(diff_response),</span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">ratio_n_diff =</span> <span class="fu">sum</span>(diff_response <span class="sc">!=</span> <span class="dv">0</span>)<span class="sc">/</span><span class="fu">length</span>(diff_response),</span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">max_abs_diff =</span> <span class="fu">max</span>(<span class="fu">abs</span>(diff_response)),</span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">min_N =</span> <span class="fu">min</span>(n_responses),</span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">ratio_maxdiff_minN =</span> <span class="fu">max</span>(<span class="fu">abs</span>(diff_response))<span class="sc">/</span><span class="fu">min</span>(n_responses)</span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>                                        )</span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>                        )</span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>df_diff <span class="sc">%&gt;%</span> </span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(<span class="fu">desc</span>(ratio_maxdiff_minN))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>polls <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;polls.Rds&quot;</span>))</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>df_diff <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> scenarios){</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">c</span>(<span class="st">&quot;&quot;</span>, <span class="st">&quot;_reg&quot;</span>, <span class="st">&quot;_nat&quot;</span>)){</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>        y <span class="ot">&lt;-</span> polls[[s]][[<span class="fu">paste0</span>(<span class="st">&quot;y&quot;</span>, i)]]</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>        n_responses <span class="ot">&lt;-</span> polls[[s]][[<span class="fu">paste0</span>(<span class="st">&quot;n_responses&quot;</span>, i)]] </span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>        diff_response <span class="ot">&lt;-</span> <span class="fu">apply</span>(y, <span class="fu">c</span>(<span class="dv">2</span>), sum) <span class="sc">-</span> n_responses</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>        df_diff <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df_diff, <span class="fu">data.frame</span>(<span class="at">scenario =</span> s,</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">type =</span> <span class="fu">ifelse</span>(i <span class="sc">==</span> <span class="st">&quot;&quot;</span>,<span class="st">&quot;state&quot;</span>, <span class="fu">substr</span>(i, <span class="dv">2</span>, <span class="fu">nchar</span>(i))),</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">n_diff =</span> <span class="fu">sum</span>(diff_response <span class="sc">!=</span> <span class="dv">0</span>),</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">n_polls =</span> <span class="fu">length</span>(diff_response),</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">ratio_n_diff =</span> <span class="fu">sum</span>(diff_response <span class="sc">!=</span> <span class="dv">0</span>)<span class="sc">/</span><span class="fu">length</span>(diff_response),</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">max_abs_diff =</span> <span class="fu">max</span>(<span class="fu">abs</span>(diff_response)),</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">min_N =</span> <span class="fu">min</span>(n_responses),</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">ratio_maxdiff_minN =</span> <span class="fu">max</span>(<span class="fu">abs</span>(diff_response))<span class="sc">/</span><span class="fu">min</span>(n_responses)</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>                                        )</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>                        )</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>df_diff <span class="sc">%&gt;%</span> </span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(<span class="fu">desc</span>(ratio_maxdiff_minN))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   scenario  type n_diff n_polls ratio_n_diff max_abs_diff min_N
 1         A   nat     27      88    0.3068182            1   200
