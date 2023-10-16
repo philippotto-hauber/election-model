@@ -48,7 +48,6 @@ priors <- readRDS(here::here("priors", "priors.Rds"))
 
 ```{r}
 scenarios <- load_scenarios()
-scenarios <- scenarios[1:2] # for now only A and B
 ```
 
 List to store plots
@@ -91,8 +90,6 @@ gen_results <- function(plts, scen) {
         parties = parties, 
         dates_campaign = dates_campaign)
 
-    print("start calculating win probs")
-
     tic("calc prob win election")
     df_prob_win_election <- do.call(
         "rbind", 
@@ -120,8 +117,6 @@ gen_results <- function(plts, scen) {
         ) 
     toc()
 
-    print("done calculating win probs")
-
     # Export mean vote share and win probabilities to read 
     tic("calc mean vote states")
     df_draws_ppi %>% 
@@ -145,8 +140,9 @@ gen_results <- function(plts, scen) {
     
     write.csv(
         merge(
-            df_out_mean, 
-            df_out_prob_win_states, 
+            # only export until day of latest available poll
+            filter(df_out_mean, date <= max(df_polls$date)), 
+            filter(df_out_prob_win_states, date <= max(df_polls$date)),
             by = c("date", "province")
         ), 
         file = here::here(paste0("provincial_forecast_", scen, ".csv")),
@@ -164,17 +160,20 @@ gen_results <- function(plts, scen) {
             values_from = "mean_vote_share",
             names_glue = "{party}_{.value}") -> df_out_mean_nat
     toc()
+    tic("transform win prob election for export")
     df_prob_win_election %>%
         mutate(party = tolower(party)) %>%
         tidyr::pivot_wider(
             names_from = "party", 
             values_from = "prob_win",
             names_glue = "{party}_{.value}") -> df_out_prob_win_election
-
+    toc()
+    
     write.csv(
         merge(
-            df_out_mean_nat, 
-            df_out_prob_win_election, 
+            # only export until day of latest available poll
+            filter(df_out_mean_nat, date <= max(df_polls$date)), 
+            filter(df_out_prob_win_election, date <= max(df_polls$date)), 
             by = "date"
         ), 
         file = here::here(paste0("national_forecast_", scen, ".csv")),
@@ -333,6 +332,125 @@ plts[["B"]][["plt_ppi_reg"]]
 #| echo: false
 #| warning: false
 plts[["B"]][["plt_ppi_nat"]]
+```
+
+## C
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["C"]][["plt_prob_win_election_over_time"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["C"]][["plt_prob_win_states_over_time"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["C"]][["plt_ppiT"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["C"]][["plt_ppi"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["C"]][["plt_ppi_reg"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["C"]][["plt_ppi_nat"]]
+```
+
+## D
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["D"]][["plt_prob_win_election_over_time"]]
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["D"]][["plt_prob_win_states_over_time"]]
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["D"]][["plt_ppiT"]]
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["D"]][["plt_ppi"]]
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["D"]][["plt_ppi_reg"]]
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["D"]][["plt_ppi_nat"]]
+```
+
+## E
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["E"]][["plt_prob_win_election_over_time"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["E"]][["plt_prob_win_states_over_time"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["E"]][["plt_ppiT"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["E"]][["plt_ppi"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["E"]][["plt_ppi_reg"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["E"]][["plt_ppi_nat"]]
 ```
 
 :::
