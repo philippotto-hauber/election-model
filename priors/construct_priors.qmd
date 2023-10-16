@@ -79,97 +79,85 @@ $$
 
 where $\boldsymbol{\hat{W}}$ is a correlation matrix and $\kappa$ a scale factor. Intuitively, $\boldsymbol{\hat{W}}$ accounts for the comovement of the changes in latent voting intentions across parties and states while $\kappa$ governs how large changes in voting intentions are!
 
-#### Correlation matrix $\boldsymbol{\hat{W}}$
-
-To calculate the correlation matrix I rely on two sources of information: 
+To estimate $\boldsymbol{\hat{W}}$ I consider the correlation of historical election outcomes across parties and states. This is not a perfect measure of how latent voting intentions co-move! Additionally, I could consider the same correlation but across all polls in previous election campaigns. This has the advantage of actually tracking changes in voting intentions although polls also  
 
 - actual election results
+- historical polls
 - similarities in demographics across states
 
-For the former I use all the available election results since 
+None of these are perfect measures of how the unobserved voting intentions might co-move! 
 
+I use all the available election results since 
 
 > [...] although parties’ vote shares in each province oscillate from year to year—possibly for quantifiable reasons like the strength of the economy, and possibly for unquantifiable ones like the comparative appeal of their candidates or of their proposed policies—the baseline popularity of each party in each province is constant all the way from 1984 to 2024, as are the characteristics of each pollster. There is no equivalent in Dataland of, say, West Virginia in the United States shifting over time from a reliably Democratic-voting state to a reliably Republican-voting one, because there are no long-run time trends. As a result, when predicting elections in 2024, **you should treat historical results and polls from 1984 as being just as informative as those from 2023 are**. (background material on Dataland, my emphasis)
 
+```{r}
+df_polls <- read.csv("../data/dataland_polls_1984_2023.csv")
+```
 
 ```{r}
 # loop over elections
-df_corr <- data.frame()
+df_res <- data.frame()
 for (y in seq(min(election_results$year), max(election_results$year))){
-
     election_results %>% 
         filter(year == y) %>%
-        select(state, region, cc, dgm, pdal, ssp) %>% 
-        arrange(region, state) -> election_result
-
-    # convert to log ratios
-    result_lr <- election_result
-    result_lr[, c("cc", "dgm", "pdal", "ssp")] <- NA
-
-    for (i in seq(1, nrow(election_result))) {
-        n_parties_i <- n_parties_by_state[election_result$state[i]]
-        # return vote shares as vector -> not sure why drop = TRUE returns list!?
-        tmp_voteshares <- unlist(election_result[i, c("cc", "dgm", "pdal", "ssp"), 
-                                                 drop = TRUE])
-        if (n_parties_i == 3)
-            tmp_voteshares <- tmp_voteshares[1:3] 
-        tmp_lr <- additive_log_ratio(tmp_voteshares)
-        if (n_parties_i == 3)
-            result_lr[i, c("cc", "dgm", "pdal")] <- tmp_lr
-        else 
-            result_lr[i, c("cc", "dgm", "pdal", "ssp")] <- tmp_lr
-    }
-
-    result_lr %>% 
-        mutate(year = y) %>%
-        tidyr::pivot_longer(cols = c("cc", "dgm", "pdal", "ssp"),
-                            names_to = "party", 
-                            values_to = "value") -> result_lr_long
-
-    result_lr_long %>% 
-        select(-region) %>% 
-        filter(!is.na(value), value != 0) %>%
-        tidyr::unite(col = "state_party", state, party) %>%
-        tidyr::pivot_wider(names_from = state_party, values_from = value) -> df_corr_tmp
-
-    df_corr <- rbind(df_corr, df_corr_tmp)
+        select(
+            year,
+            state,
+            region,
+            cc,
+            dgm,
+            pdal,
+            ssp
+        ) %>% 
+        arrange(region, state) %>% 
+        tidyr::pivot_longer(
+            cols = -c("state", "region", "year"),
+            names_to = "party",
+            values_to = "vote_share"
+        ) %>%
+        mutate(party = toupper(party)) %>%
+        group_by(state) %>% 
+        # rm ssp from states in which it is not running
+        filter(vote_share != 0) %>% 
+        mutate(vote_share_lr = additive_log_ratio(vote_share)) %>%
+        # rm "last" party in each state that is 0 due to alr
+        filter(vote_share_lr != 0) %>% 
+        arrange(region, state) %>%
+        select(-c("region", "vote_share")) %>% 
+        tidyr::unite(
+            col = "state_party", 
+            state, 
+            party) %>%
+        tidyr::pivot_wider(
+            names_from = state_party, 
+            values_from = vote_share_lr
+        ) %>% 
+        rbind(df_res) -> df_res
 }
 
-df_corr %>% 
+df_res %>% 
     select(-year) %>% 
-    as.matrix -> mat_results 
+    as.matrix -> mat_res
+
+dimnames(mat_res) <- list(df_res$year, names(df_res)[2:ncol(df_res)])
 
 # check dims
-if (!(nrow(mat_results) == n_elections & 
-        ncol(mat_results) == sum(n_parties_by_state-1)))
+if (!(nrow(mat_res) == n_elections & 
+        ncol(mat_res) == sum(n_parties_by_state-1)))
     stop("Dimensions of matrix containing log ratio election results not correct. Abort!")
 
-corr_mat <- cor(mat_results)
+# check names
+stopifnot(all(colnames(mat_res) == names_mmu_T))
+corr_mat <- cor(mat_res)
+
 # James-Stein type shirnkage estimator
-corr_mat_shrink <- corpcor::cor.shrink(mat_results)
-```
-
-Compare original and shrunk version of corr matrix
-
-```{r}
-corpcor::is.positive.definite(corr_mat)
-corpcor::rank.condition(corr_mat)
-MASS::mvrnorm(
-    n = 1,
-    mu = rep(0, nrow(corr_mat)),
-    Sigma = corr_mat)
+# see function documentation
+corr_mat_shrink <- corpcor::cor.shrink(mat_res)
 ```
 
 ```{r}
-corpcor::is.positive.definite(corr_mat_shrink)
-corpcor::rank.condition(corr_mat_shrink)
-MASS::mvrnorm(
-    n = 1,
-    mu = rep(0, nrow(corr_mat_shrink)),
-    Sigma = corr_mat_shrink)
-```
-
-```{r}
+#| echo: false
 heatmap(
     corr_mat, 
     Rowv = NA, 
@@ -178,25 +166,49 @@ heatmap(
 )
 ```
 
+Original correlation matrix is positive definite...
+
 ```{r}
-heatmap(
-    corr_mat_shrink,
-    Rowv = NA, 
-    Colv = NA,
-    main = "shrunk correlation matrix")
+corpcor::is.positive.definite(corr_mat)
+corpcor::rank.condition(corr_mat)$condition
 ```
 
-Both matrices are PD and can be sampled from but shrunk matrix much better conditioned! 
+```{r}
+#| echo: false
+heatmap(
+    corr_mat_shrink, 
+    Rowv = NA, 
+    Colv = NA, 
+    main = "shrunk correlation matrix", 
+    add = TRUE
+)
+```
+
+... shrunk correlation matrix is much better conditioned
+
+```{r}
+corpcor::is.positive.definite(corr_mat_shrink)
+corpcor::rank.condition(corr_mat_shrink)$condition
+```
+
+#### Correlation matrix $\boldsymbol{\hat{W}}$
+
+Use shrunk correlation matrix! 
+
+```{r}
+W_bar <- corr_mat_shrink
+```
 
 #### Scale factor $\kappa$
 
+```{r}
+kappa <- 0.01
+```
+
 #### Calculate $\boldsymbol{W}$ and store in list
 
-For the time being, simply set $\boldsymbol{W}$ to a diagonal matrix: 
-
 ```{r}
-W <- diag(0.01, nrow = sum(n_parties_by_state-1))
-dimnames(W) <- list(names_mmu_T, names_mmu_T)
+W <- kappa * W_bar
 ```
 
 Store in list
@@ -298,7 +310,9 @@ priors[["A"]][["V_mmu_T"]] <-
 
 ## Export
 
-
 ```{r}
 saveRDS(priors, file = here::here("priors", "priors.Rds"))
 ```
+
+## Prior predictive distribution
+
