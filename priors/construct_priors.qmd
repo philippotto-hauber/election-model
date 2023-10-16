@@ -15,7 +15,8 @@ This notebook constructs the **priors for the model estimation**. See `model_des
 ## To-dos
 
 - ~~regularization of $\boldsymbol{\hat{W}}$~~ -> James-Stein type estimator from pkg `corpcor` 
-- use historic polls to inform $\boldsymbol{\hat{W}}$
+- ~~use historic polls to inform $\boldsymbol{\hat{W}}$~~ -> discussed but not implemented
+- compare correlation of historical election results with correlation of ethnicity across states 
 - simulate trajectories of $\mu_{1:T}$ for different values of $\kappa$ given $\boldsymbol{\hat{W}}$ -> **prior predictive distribution**
 - simulate house effects by drawing from prior and using a sequence of polls from previous election as starting point -> **prior predictive distribution**
 - differences in $V_{\mu_T}$ across scenarios
@@ -91,7 +92,7 @@ When calculating the correlation of latent vote share across states and parties,
 
 ```{r}
 # calculate correlation acroos elections
-mat_res <- calc_cor_election_results(elections_results)
+mat_res <- calc_cor_election_results(election_results)
 
 corr_mat <- cor(mat_res)
 ```
@@ -155,10 +156,6 @@ kappa <- 0.01
 
 ```{r}
 W <- kappa * W_hat
-```
-
-Store in list
-```{r}
 priors[["A"]][["W"]] <- 
     priors[["B"]][["W"]] <- 
     priors[["C"]][["W"]] <- 
@@ -184,13 +181,13 @@ priors[["A"]][["sig_ddelta"]] <-
 
 ## Scenario-dependent priors
 
-For the time being, the prior mean of $\mu_T$ is based on the historical average of vote shares
-
 ```{r}
 scenarios <- load_scenarios()
 ```
 
 ### $m_{\mu_T}$
+
+For the time being, the prior mean of $\mu_T$ is based on the historical average of vote shares
 
 Load fundamental forecast
 ```{r}
@@ -230,7 +227,7 @@ for (scen in scenarios) {
 
 ### $V_{\mu_T}$
 
-The prior variance can across scenarios to reflect how far advanced the campaign is. 
+The prior variance can vary across scenarios to reflect how far advanced the campaign is. 
 
 ![](./../plots/available_polls_over_time.png)
 
@@ -258,7 +255,11 @@ priors[["A"]][["V_mmu_T"]] <-
 
 ```{r}
 saveRDS(priors, file = here::here("priors", "priors.Rds"))
+rm(priors)
 ```
 
 ## Prior predictive distribution
 
+```{r}
+priors <- readRDS(file = here::here("priors", "priors.Rds"))
+```
