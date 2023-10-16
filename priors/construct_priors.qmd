@@ -103,7 +103,8 @@ heatmap(
     corr_mat, 
     Rowv = NA, 
     Colv = NA, 
-    main = "original correlation matrix"
+    main = "original correlation matrix",
+    symm  = TRUE
 )
 ```
 
@@ -120,7 +121,7 @@ heatmap(
     Rowv = NA, 
     Colv = NA, 
     main = "shrunk correlation matrix", 
-    add = TRUE
+    symm = TRUE
 )
 ```
 
