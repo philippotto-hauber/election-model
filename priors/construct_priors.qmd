@@ -92,10 +92,6 @@ I use all the available election results since
 > [...] although parties’ vote shares in each province oscillate from year to year—possibly for quantifiable reasons like the strength of the economy, and possibly for unquantifiable ones like the comparative appeal of their candidates or of their proposed policies—the baseline popularity of each party in each province is constant all the way from 1984 to 2024, as are the characteristics of each pollster. There is no equivalent in Dataland of, say, West Virginia in the United States shifting over time from a reliably Democratic-voting state to a reliably Republican-voting one, because there are no long-run time trends. As a result, when predicting elections in 2024, **you should treat historical results and polls from 1984 as being just as informative as those from 2023 are**. (background material on Dataland, my emphasis)
 
 ```{r}
-df_polls <- read.csv("../data/dataland_polls_1984_2023.csv")
-```
-
-```{r}
 # loop over elections
 df_res <- data.frame()
 for (y in seq(min(election_results$year), max(election_results$year))){
@@ -196,7 +192,7 @@ corpcor::rank.condition(corr_mat_shrink)$condition
 Use shrunk correlation matrix! 
 
 ```{r}
-W_bar <- corr_mat_shrink
+W_hat <- corr_mat_shrink
 ```
 
 #### Scale factor $\kappa$
@@ -208,7 +204,7 @@ kappa <- 0.01
 #### Calculate $\boldsymbol{W}$ and store in list
 
 ```{r}
-W <- kappa * W_bar
+W <- kappa * W_hat
 ```
 
 Store in list
