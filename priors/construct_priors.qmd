@@ -27,6 +27,8 @@ This notebook constructs the **priors for the model estimation**. See `model_des
 
 # libraries
 library(dplyr)
+library(ggplot2)
+library(forcats)
 
 # source functions
 names_functions = list.files(here::here("functions"))
@@ -80,15 +82,36 @@ $$
 
 where $\boldsymbol{\hat{W}}$ is a correlation matrix and $\kappa$ a scale factor. Intuitively, $\boldsymbol{\hat{W}}$ accounts for the comovement of the changes in latent voting intentions across parties and states while $\kappa$ governs how large changes in voting intentions are!
 
-To estimate $\boldsymbol{\hat{W}}$ I consider the correlation of *historical election outcomes* across parties and states. These correlations are far from a perfect measure of how latent voting intentions co-move because there is no variation in vote shares within an election campaign (which is what I am after). But using the historic results has the advantage of being straight-forward to calculate!
+To estimate $\boldsymbol{\hat{W}}$ I consider the correlation of *historical election outcomes* across parties and states. These correlations are far from a perfect measure of what I am after because there is no variation in vote shares/intentions within an election campaign. But using the historic results has the advantage of being straight-forward to calculate!
 
 An additional source of information could be the correlation across parties and states of *polls from previous elections* but it's less obvious to me how these would need to be handled. Aggregated over time in some way? Does it make sense to compare a poll in Amperville on May 5th in 1984 with one in Circuiton on June 7th in 2023? What does that say about the evolution of the underlying voting intentions? Polls also don't just track the voting intentions but also noise like house effects. Although these might be constant from day to day so actual movement in polls would be down to changes in voting intentions. On the whole, I am not sure how useful these data are or at least how I could extract useful information from them for my goal. 
 
-Lastly, *demographic information* like ethnicity could be useful in specifying the correlation of changes in voting intentions between states. But they don't necessarily reveal anything about correlations between parties. One way to utilize this information, however, would be as plausibility check of a correlation matrix calculated from historical polls or election results. 
+Lastly, *demographic information* like ethnicity could be useful in specifying the correlation of changes in voting intentions between states. But similarities or differences in ethnicities across states don't necessarily reveal anything about correlations between parties. 
 
 When calculating the correlation of latent vote share across states and parties, I use all the available historical election results since 
 
 > [...] although parties’ vote shares in each province oscillate from year to year—possibly for quantifiable reasons like the strength of the economy, and possibly for unquantifiable ones like the comparative appeal of their candidates or of their proposed policies—the baseline popularity of each party in each province is constant all the way from 1984 to 2024, as are the characteristics of each pollster. There is no equivalent in Dataland of, say, West Virginia in the United States shifting over time from a reliably Democratic-voting state to a reliably Republican-voting one, because there are no long-run time trends. As a result, when predicting elections in 2024, **you should treat historical results and polls from 1984 as being just as informative as those from 2023 are**. (background material on Dataland, my emphasis)
+
+Plot historical election results
+
+```{r}
+election_results %>% 
+    tidyr::pivot_longer(
+        cols = c("cc", "dgm", "pdal", "ssp"),
+        names_to = "party",
+        values_to = "vote_share"
+    ) %>% 
+    filter(vote_share != 0) %>%
+    ggplot(aes(
+        x = year, 
+        y = vote_share,
+        color = party
+        )
+    ) + 
+    geom_point() + 
+    facet_wrap(~state) + 
+    ggsci::scale_color_jco()
+```
 
 ```{r}
 # calculate correlation acroos elections
@@ -99,13 +122,39 @@ corr_mat <- cor(mat_res)
 
 ```{r}
 #| echo: false
-heatmap(
-    corr_mat, 
-    Rowv = NA, 
-    Colv = NA, 
-    main = "original correlation matrix",
-    symm  = TRUE
-)
+corr_mat_plt <- corr_mat
+corr_mat_plt[lower.tri(corr_mat_plt)] <- NA
+corr_mat_plt %>% 
+    as.data.frame() %>%
+    tibble::rownames_to_column(var = "names1") %>% 
+    tidyr::pivot_longer(
+        cols = -names1, 
+        names_to = "names2", 
+        values_to = "value"
+    ) %>% 
+    filter(!is.na(value)) %>%
+    mutate(value = round(value, 2)) -> df_cor
+
+ggplot(df_cor, aes(fct_inorder(names1), fct_inorder(names2))) +
+    geom_raster(aes(fill=value)) +
+    scale_fill_gradient2(
+        low = "blue",
+        high = "red",
+        mid = "white", 
+        midpoint = 0,
+        limit = c(-1,1)
+    ) +
+    labs(
+        x = "",
+        y = "",
+        title = "Election results: correlation matrix"
+    ) +
+    theme(
+        axis.text.x = element_text(size = 7,angle = 90),
+        axis.text.y = element_text(size = 7),
+        legend.position = "top"
+    ) -> p 
+plotly::ggplotly(p)
 ```
 
 In addition, I consider a James-Stein-type shrinkage estimator of the correlation matrix (the degree of shrinkage is estimated from the data, see the documentation of `cor.shrink`)
@@ -116,13 +165,47 @@ corr_mat_shrink <- corpcor::cor.shrink(mat_res)
 
 ```{r}
 #| echo: false
-heatmap(
-    corr_mat_shrink, 
-    Rowv = NA, 
-    Colv = NA, 
-    main = "shrunk correlation matrix", 
-    symm = TRUE
-)
+# manually convert to matrix class first
+corr_mat_shrink_plt <- corr_mat_shrink
+class(corr_mat_shrink_plt) <- "matrix"
+corr_mat_shrink_plt[lower.tri(corr_mat_shrink_plt)] <- NA
+corr_mat_shrink_plt %>% 
+    as.data.frame() %>%
+    tibble::rownames_to_column(var = "names1") %>% 
+    tidyr::pivot_longer(
+        cols = -names1, 
+        names_to = "names2", 
+        values_to = "value"
+    ) %>%
+    filter(!is.na(value)) %>%
+    mutate(value = round(value, 2)) -> df_cor
+
+ggplot(
+    df_cor, 
+    aes(
+        x = fct_inorder(names1),
+        y = fct_inorder(names2)
+        )
+    ) +
+    geom_raster(aes(fill=value)) +
+    scale_fill_gradient2(
+        low = "blue",
+        high = "red",
+        mid = "white", 
+        midpoint = 0,
+        limit = c(-1,1)
+    ) +
+    labs(
+        x = "",
+        y = "",
+        title = "Election results: shrunk correlation matrix"
+    ) +
+    theme(
+        axis.text.x = element_text(size = 7,angle = 90),
+        axis.text.y = element_text(size = 7),
+        legend.position = "top"
+    ) -> p 
+plotly::ggplotly(p)
 ```
 
 While the original correlation matrix is positive definite...
@@ -138,6 +221,113 @@ corpcor::rank.condition(corr_mat)$condition
 corpcor::is.positive.definite(corr_mat_shrink)
 corpcor::rank.condition(corr_mat_shrink)$condition
 ```
+
+Plot correlation of ethnicity across states
+```{r}
+dat <- read.csv(
+    here::here("data", "dataland_demographics.csv"),
+    stringsAsFactors = FALSE
+)
+
+A <- as.matrix(dat[, grepl("_share", names(dat))])
+rownames(A) <- dat$province
+
+states_regions <- load_dataland_states_regions()
+corr_mat <- cor(t(A))
+corr_mat[lower.tri(corr_mat)] <- NA
+as.data.frame(corr_mat) %>% 
+    tibble::rownames_to_column(var = "state1") %>% 
+    tidyr::pivot_longer(
+        cols = -state1, 
+        names_to = "state2", 
+        values_to = "value"
+    ) %>%
+    filter(!is.na(value)) %>%
+    mutate(value = round(value, 2)) -> df_cor
+# plot
+ggplot(df_cor, aes(state1, state2)) +
+  geom_raster(aes(fill=value)) +
+    scale_fill_gradient2(
+        low = "blue",
+        high = "red",
+        mid = "white",
+        midpoint = 0,
+        limit = c(-1,1)
+    ) +
+    labs(
+        x = "",
+        y = "",
+        title = "Ethnicity: correlation matrix"
+    ) +
+    theme(
+        axis.text.x = element_text(size = 7,angle = 90),
+        axis.text.y = element_text(size = 7),
+        legend.position = "top"
+    ) -> p 
+plotly::ggplotly(p)
+```
+
+Function to plot submatrix
+
+```{r}
+get_submatrix <- function(
+    mat,
+    str_row,
+    str_col
+) {
+    return(
+        mat[grepl(
+            str_row, 
+            rownames(mat)
+            ),
+            grepl(str_col,
+            colnames(mat)
+            )
+        ]
+    )
+}
+```
+
+```{r}
+get_submatrix(
+    corr_mat_shrink,
+    "Amperville",
+    "Voltagea"
+)
+```
+
+```{r}
+get_submatrix(
+    corr_mat_shrink,
+    "Amperville",
+    "Quantumridge"
+)
+```
+
+```{r}
+get_submatrix(
+    corr_mat_shrink,
+    "Amperville",
+    "Neuronia"
+)
+```
+
+```{r}
+get_submatrix(
+    corr_mat_shrink,
+    "Infinitron Peninsula",
+    "Voltagea"
+)
+```
+
+```{r}
+get_submatrix(
+    corr_mat_shrink,
+    "Infinitron Peninsula",
+    "Quantumridge"
+)
+```
+
 
 #### Correlation matrix $\boldsymbol{\hat{W}}$
 
@@ -164,7 +354,7 @@ priors[["A"]][["W"]] <-
     priors[["E"]][["W"]] <- W
 ```
 
-### $\sigma^2_{\delta}$
+### variance of house effects $\sigma^2_{\delta}$
 
 ```{r}
 sig_ddelta <- sqrt(0.01) # specify in terms of standard deviation for Stan!
