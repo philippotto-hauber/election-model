@@ -161,13 +161,13 @@ In addition, I consider a James-Stein-type shrinkage estimator of the correlatio
 
 ```{r}
 corr_mat_shrink <- corpcor::cor.shrink(mat_res)
+# manually convert to matrix class first
+class(corr_mat_shrink) <- "matrix"
 ```
 
 ```{r}
 #| echo: false
-# manually convert to matrix class first
 corr_mat_shrink_plt <- corr_mat_shrink
-class(corr_mat_shrink_plt) <- "matrix"
 corr_mat_shrink_plt[lower.tri(corr_mat_shrink_plt)] <- NA
 corr_mat_shrink_plt %>% 
     as.data.frame() %>%
