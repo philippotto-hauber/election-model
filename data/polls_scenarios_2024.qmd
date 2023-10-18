@@ -417,3 +417,4 @@ df_diff %>%
     arrange(desc(ratio_maxdiff_minN))
 ```
 
+Differences occur in all scenarios and quite a few polls (`n_diff`) but the rounding errors are never larger than 1 (`max_abs_diff`). The afflicted polls have at least 200 resondents (`min_N`), leading to only minimal distortions of the actual vote shares. It's therefore unlikely that these discrepancies would have an effect on the results. 
