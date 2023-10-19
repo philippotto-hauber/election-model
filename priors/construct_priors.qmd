@@ -420,11 +420,11 @@ for (scen in scenarios) {
 
 The prior variance can vary across scenarios to reflect how far advanced the campaign is. 
 
-![](./../plots/polls_over_time.png)
+![](./../plots/polls_by_date.png)
 
 In addition, it can also be set to a smaller value - placing greater weight on the fundamental forecast - in those states where within a given scenario fewer or no polls are available
 
-![](./../plots/polls_by_geography.png)
+![](./../plots/polls_by_type.png)
 
 For the time being, however, I set a relatively uninformative prior that is the same in all scenarios and states
 
