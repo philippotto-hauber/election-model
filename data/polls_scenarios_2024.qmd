@@ -12,7 +12,7 @@ format:
 
 This notebook **loads and prepares the scenarios of polling data in the 2024 election cycle**. The transformed data are converted to lists and exported as  `polls.Rda`.
 
-## Load libraries and functions
+## Libraries and functions
 
 ```{r}
 #| output: false
@@ -24,17 +24,28 @@ for (f in names_functions)
 rm(f, names_functions)
 ```
 
-## Load and wrangle polling data for 2024
+## Load polls for 2024, pollsters and dates
 
 ```{r}
-rawdat <- read.csv(here::here("data", "dataland_polls_2024_scenarios.csv"), stringsAsFactors = FALSE)
-keep_cols <- c("scenario", "date_published",
-                "pollster", "geography", "sponsor",
-                "sample_size", "cc_poll_share",
-                "dgm_poll_share", "pdal_poll_share",
-                "ssp_poll_share")
-dat <- rawdat[, keep_cols]
+rawdat <- read.csv(
+    here::here("data", "dataland_polls_2024_scenarios.csv"), stringsAsFactors = FALSE)
+dat <- rawdat
 ```
+
+Load list of pollsters 
+```{r}
+pollsters <- load_pollsters()
+```
+
+Load the dates of the election campaign -> start = earliest recorded poll
+
+```{r}
+dates_campaign <- load_dates_election_campaign()
+```
+
+## Transform and explore data
+
+### Polls
 
 Add column indicating the *type of poll*: national, regional or state
 
@@ -80,78 +91,149 @@ dat <- rename(dat,
     ssp_share     = ssp_poll_share)
 ```
 
-Rename and convert date column to `Date`-format
+### Date
+
+ The publication lags of polls do not vary much and are at most two days so it probably does not make much of a difference which of the two variables - `date_conducted` or `date_published` is chosen as the "date" of a poll 
+
+```{r}
+publication_lag <- as.Date(dat$date_published) - 
+                    as.Date(dat$date_conducted)
+hist(
+    as.numeric(publication_lag), 
+    xlab = "", 
+    main = "Publication lag of polls (in days)"
+)
+```
+
+Since results reflect the voting intentions when the poll was *conducted*, set `date_conducted` to `date`.
 
 ```{r}
 dat %>% 
-    mutate(date = as.Date(date_published)) %>%
-    select(-date_published) -> dat
+    mutate(
+        date = as.Date(date_conducted)) %>%
+    select(
+        -c("date_published", "date_conducted")
+     ) -> dat
 ```
 
-Load list of pollsters 
-```{r}
-pollsters <- load_pollsters()
-```
+### Plots
 
-Load the dates of the election campaign -> start = earliest recorded poll
-
-```{r}
-dates_campaign <- load_dates_election_campaign()
-```
-
-## Explore poll data
-
-This can be useful information when choosing how tight the prior on the election day voting intentions should be!
+#### By month
 
 ```{r}
 #| echo: false
-# add column with the month of the poll and store in new data frame
 dat %>%
-    mutate(month = format(date, "%B")) -> df_plot
-```
-
-```{r}
-#| echo: false
-ggplot(df_plot, aes(x = date, fill = type_of_poll)) +
-    geom_bar() +
-    ggsci::scale_fill_jco() +
-    facet_wrap(~scenario) + 
-    labs(title = "Availability of polls over time", subtitle = "By type of poll")
-
-ggsave(file = here::here("plots", "available_polls_over_time.png"))
-```
-
-```{r}
-#| echo: false
-ggplot(filter(df_plot), 
+    mutate(month = format(date, "%B")) %>%
+ggplot(
         aes(x = geography, fill = month)) +
     geom_bar() + 
-    ggsci::scale_fill_jco() +
+    ggsci::scale_fill_d3() +
     facet_wrap(~scenario) + 
-    labs(title = "Availability of polls by geography") +
+    labs(title = "Polls by month") +
     theme(axis.text.x = element_text(angle = 90)) +
     coord_flip() 
 
- ggsave(file = here::here("plots", "available_polls_by_geography.png"))   
+ ggsave(file = here::here("plots", "polls_by_date.png"))   
 ```
+
+#### By type
+```{r}
+#| echo: false
+dat %>%
+ggplot(aes(x = geography, fill = type_of_poll)) +
+    geom_bar() +
+    ggsci::scale_fill_d3() +
+    facet_wrap(~scenario) + 
+    labs(title = "Polls by type") +
+    coord_flip()
+ggsave(file = here::here("plots", "polls_by_type.png"))
+```
+
+#### By sponsor
 
 ```{r}
 #| echo: false
-ggplot(filter(df_plot), 
+ggplot(dat, 
         aes(x = geography, fill = sponsor)) +
     geom_bar() + 
-    ggsci::scale_fill_jco() +
+    ggsci::scale_fill_d3() +
     facet_wrap(~scenario) + 
     labs(title = "Availability of polls by sponsor") +
     theme(axis.text.x = element_text(angle = 90)) +
     coord_flip()  
 
- ggsave(file = here::here("plots", "available_polls_by_sponsor.png"))   
+ ggsave(file = here::here("plots", "polls_by_sponsor.png"))   
 ```
 
+#### By polling house
+
 ```{r}
-#| echo: false
-rm(df_plot)
+dat %>% 
+    ggplot( 
+        aes(x = geography,
+            fill = pollster)) +
+    geom_bar() + 
+    ggsci::scale_fill_d3("category20") +
+    facet_wrap(~ scenario) +
+    labs(
+        x = "",
+        y = "",
+        title = "Polls by polling house") +
+    theme(
+        axis.text.x = element_text(angle = 90, size = 7),
+        axis.text.y = element_text(size = 5),
+        legend.text = element_text(size = 5),
+        legend.title = element_blank()) +
+    coord_flip() 
+
+ggsave(file = here::here("plots", "polls_by_house.png"))   
+```
+
+#### By polling mode
+
+```{r}
+dat %>% 
+    ggplot( 
+        aes(x = geography,
+            fill = mode)) +
+    geom_bar() + 
+    ggsci::scale_fill_d3("category20") +
+    facet_wrap(~ scenario) +
+    labs(
+        x = "",
+        y = "",
+        title = "Polls by polling mode") +
+    theme(
+        axis.text.x = element_text(angle = 90, size = 7),
+        axis.text.y = element_text(size = 5),
+        legend.text = element_text(size = 5),
+        legend.title = element_blank()) +
+    coord_flip() 
+
+ggsave(file = here::here("plots", "polls_by_mode.png"))   
+```
+
+#### By population surveyed
+```{r}
+dat %>% 
+    ggplot( 
+        aes(x = geography,
+            fill = population_surveyed)) +
+    geom_bar() + 
+    ggsci::scale_fill_d3("category20") +
+    facet_wrap(~ scenario) +
+    labs(
+        x = "",
+        y = "",
+        title = "Polls by population surveyed") +
+    theme(
+        axis.text.x = element_text(angle = 90, size = 7),
+        axis.text.y = element_text(size = 5),
+        legend.text = element_text(size = 5),
+        legend.title = element_blank()) +
+    coord_flip() 
+
+ggsave(file = here::here("plots", "polls_by_population.png"))   
 ```
 
 ## Convert polls to a Stan-friendly list
