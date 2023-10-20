@@ -1,457 +1,457 @@
 "scenario","type_of_poll","date","pollster","geography","sample_size","party","value"
-"C","state",2024-04-04,"Progressive Polling","Cortexia",1000,"CC",116
-"C","state",2024-04-04,"Progressive Polling","Cortexia",1000,"DGM",226
-"C","state",2024-04-04,"Progressive Polling","Cortexia",1000,"PDAL",307
-"C","state",2024-04-04,"Progressive Polling","Cortexia",1000,"SSP",352
-"C","state",2024-04-04,"Cobolite Coalition Calling","Infoglen",2000,"CC",637
-"C","state",2024-04-04,"Cobolite Coalition Calling","Infoglen",2000,"DGM",692
-"C","state",2024-04-04,"Cobolite Coalition Calling","Infoglen",2000,"PDAL",671
-"C","state",2024-04-04,"Cobolite Coalition Calling","Infoglen",2000,"SSP",0
-"C","state",2024-04-05,"Progressive Polling","Circuiton",1000,"CC",92
-"C","state",2024-04-05,"Progressive Polling","Circuiton",1000,"DGM",553
-"C","state",2024-04-05,"Progressive Polling","Circuiton",1000,"PDAL",355
-"C","state",2024-04-05,"Progressive Polling","Circuiton",1000,"SSP",0
-"C","state",2024-04-07,"Progressive Polling","Cortexia",1000,"CC",118
-"C","state",2024-04-07,"Progressive Polling","Cortexia",1000,"DGM",310
-"C","state",2024-04-07,"Progressive Polling","Cortexia",1000,"PDAL",267
-"C","state",2024-04-07,"Progressive Polling","Cortexia",1000,"SSP",305
-"C","state",2024-04-09,"Cobolite Coalition Calling","Voltagea",2000,"CC",446
-"C","state",2024-04-09,"Cobolite Coalition Calling","Voltagea",2000,"DGM",859
-"C","state",2024-04-09,"Cobolite Coalition Calling","Voltagea",2000,"PDAL",695
-"C","state",2024-04-09,"Cobolite Coalition Calling","Voltagea",2000,"SSP",0
-"C","state",2024-04-10,"Cobolite Coalition Calling","Neuronia",2000,"CC",198
-"C","state",2024-04-10,"Cobolite Coalition Calling","Neuronia",2000,"DGM",533
-"C","state",2024-04-10,"Cobolite Coalition Calling","Neuronia",2000,"PDAL",281
-"C","state",2024-04-10,"Cobolite Coalition Calling","Neuronia",2000,"SSP",988
-"C","state",2024-04-12,"Progressive Polling","Cortexia",1000,"CC",115
-"C","state",2024-04-12,"Progressive Polling","Cortexia",1000,"DGM",240
-"C","state",2024-04-12,"Progressive Polling","Cortexia",1000,"PDAL",290
-"C","state",2024-04-12,"Progressive Polling","Cortexia",1000,"SSP",355
-"C","state",2024-04-13,"Progressive Polling","Cortexia",1000,"CC",105
-"C","state",2024-04-13,"Progressive Polling","Cortexia",1000,"DGM",275
-"C","state",2024-04-13,"Progressive Polling","Cortexia",1000,"PDAL",249
-"C","state",2024-04-13,"Progressive Polling","Cortexia",1000,"SSP",371
-"C","state",2024-04-15,"Progressive Polling","Infoglen",1000,"CC",250
-"C","state",2024-04-15,"Progressive Polling","Infoglen",1000,"DGM",431
-"C","state",2024-04-15,"Progressive Polling","Infoglen",1000,"PDAL",319
-"C","state",2024-04-15,"Progressive Polling","Infoglen",1000,"SSP",0
-"C","state",2024-04-17,"Progressive Polling","Circuiton",1000,"CC",145
-"C","state",2024-04-17,"Progressive Polling","Circuiton",1000,"DGM",495
-"C","state",2024-04-17,"Progressive Polling","Circuiton",1000,"PDAL",359
-"C","state",2024-04-17,"Progressive Polling","Circuiton",1000,"SSP",0
-"C","state",2024-04-19,"Cobolite Coalition Calling","Infinitron Peninsula",2000,"CC",923
-"C","state",2024-04-19,"Cobolite Coalition Calling","Infinitron Peninsula",2000,"DGM",667
-"C","state",2024-04-19,"Cobolite Coalition Calling","Infinitron Peninsula",2000,"PDAL",410
-"C","state",2024-04-19,"Cobolite Coalition Calling","Infinitron Peninsula",2000,"SSP",0
-"C","state",2024-04-20,"Metaflux University","Infoglen",1500,"CC",336
-"C","state",2024-04-20,"Metaflux University","Infoglen",1500,"DGM",688
-"C","state",2024-04-20,"Metaflux University","Infoglen",1500,"PDAL",476
-"C","state",2024-04-20,"Metaflux University","Infoglen",1500,"SSP",0
-"C","state",2024-04-21,"No Province Left Behind","Quantumridge",500,"CC",92
-"C","state",2024-04-21,"No Province Left Behind","Quantumridge",500,"DGM",229
-"C","state",2024-04-21,"No Province Left Behind","Quantumridge",500,"PDAL",179
-"C","state",2024-04-21,"No Province Left Behind","Quantumridge",500,"SSP",0
-"C","state",2024-04-23,"Cobolite Coalition Calling","Cortexia",2000,"CC",411
-"C","state",2024-04-23,"Cobolite Coalition Calling","Cortexia",2000,"DGM",521
-"C","state",2024-04-23,"Cobolite Coalition Calling","Cortexia",2000,"PDAL",459
-"C","state",2024-04-23,"Cobolite Coalition Calling","Cortexia",2000,"SSP",609
-"C","state",2024-04-24,"Cobolite Coalition Calling","Amperville",2000,"CC",151
-"C","state",2024-04-24,"Cobolite Coalition Calling","Amperville",2000,"DGM",475
-"C","state",2024-04-24,"Cobolite Coalition Calling","Amperville",2000,"PDAL",1374
-"C","state",2024-04-24,"Cobolite Coalition Calling","Amperville",2000,"SSP",0
-"C","state",2024-04-25,"Metaflux University","Infoglen",1500,"CC",478
-"C","state",2024-04-25,"Metaflux University","Infoglen",1500,"DGM",555
-"C","state",2024-04-25,"Metaflux University","Infoglen",1500,"PDAL",467
-"C","state",2024-04-25,"Metaflux University","Infoglen",1500,"SSP",0
-"C","state",2024-04-26,"Metaflux University","Infinitron Peninsula",1500,"CC",618
-"C","state",2024-04-26,"Metaflux University","Infinitron Peninsula",1500,"DGM",699
-"C","state",2024-04-26,"Metaflux University","Infinitron Peninsula",1500,"PDAL",183
-"C","state",2024-04-26,"Metaflux University","Infinitron Peninsula",1500,"SSP",0
-"C","state",2024-04-28,"Proudly Paid For Polling","Byteforge Domain",1000,"CC",288
-"C","state",2024-04-28,"Proudly Paid For Polling","Byteforge Domain",1000,"DGM",174
-"C","state",2024-04-28,"Proudly Paid For Polling","Byteforge Domain",1000,"PDAL",538
-"C","state",2024-04-28,"Proudly Paid For Polling","Byteforge Domain",1000,"SSP",0
-"C","state",2024-04-28,"Progressive Polling","Infoglen",1000,"CC",290
-"C","state",2024-04-28,"Progressive Polling","Infoglen",1000,"DGM",472
-"C","state",2024-04-28,"Progressive Polling","Infoglen",1000,"PDAL",238
-"C","state",2024-04-28,"Progressive Polling","Infoglen",1000,"SSP",0
-"C","state",2024-04-30,"Metaflux University","Infoglen",1500,"CC",466
-"C","state",2024-04-30,"Metaflux University","Infoglen",1500,"DGM",684
-"C","state",2024-04-30,"Metaflux University","Infoglen",1500,"PDAL",350
-"C","state",2024-04-30,"Metaflux University","Infoglen",1500,"SSP",0
-"C","state",2024-05-02,"Dataland Register-Gazette","Infoglen",1500,"CC",491
-"C","state",2024-05-02,"Dataland Register-Gazette","Infoglen",1500,"DGM",636
-"C","state",2024-05-02,"Dataland Register-Gazette","Infoglen",1500,"PDAL",373
-"C","state",2024-05-02,"Dataland Register-Gazette","Infoglen",1500,"SSP",0
-"C","state",2024-05-03,"Metaflux University","Infoglen",1500,"CC",477
-"C","state",2024-05-03,"Metaflux University","Infoglen",1500,"DGM",631
-"C","state",2024-05-03,"Metaflux University","Infoglen",1500,"PDAL",392
-"C","state",2024-05-03,"Metaflux University","Infoglen",1500,"SSP",0
-"C","state",2024-05-03,"Proudly Paid For Polling","Byteforge Domain",1000,"CC",416
-"C","state",2024-05-03,"Proudly Paid For Polling","Byteforge Domain",1000,"DGM",168
-"C","state",2024-05-03,"Proudly Paid For Polling","Byteforge Domain",1000,"PDAL",416
-"C","state",2024-05-03,"Proudly Paid For Polling","Byteforge Domain",1000,"SSP",0
-"C","state",2024-05-03,"Dataland Register-Gazette","Circuiton",1500,"CC",249
-"C","state",2024-05-03,"Dataland Register-Gazette","Circuiton",1500,"DGM",699
-"C","state",2024-05-03,"Dataland Register-Gazette","Circuiton",1500,"PDAL",551
-"C","state",2024-05-03,"Dataland Register-Gazette","Circuiton",1500,"SSP",0
-"C","state",2024-05-04,"Proudly Paid For Polling","Infinitron Peninsula",1000,"CC",354
-"C","state",2024-05-04,"Proudly Paid For Polling","Infinitron Peninsula",1000,"DGM",507
-"C","state",2024-05-04,"Proudly Paid For Polling","Infinitron Peninsula",1000,"PDAL",139
-"C","state",2024-05-04,"Proudly Paid For Polling","Infinitron Peninsula",1000,"SSP",0
-"C","state",2024-05-04,"No Province Left Behind","Quantumridge",500,"CC",109
-"C","state",2024-05-04,"No Province Left Behind","Quantumridge",500,"DGM",204
-"C","state",2024-05-04,"No Province Left Behind","Quantumridge",500,"PDAL",188
-"C","state",2024-05-04,"No Province Left Behind","Quantumridge",500,"SSP",0
-"C","state",2024-05-05,"Metaflux University","Quantumridge",1500,"CC",287
-"C","state",2024-05-05,"Metaflux University","Quantumridge",1500,"DGM",589
-"C","state",2024-05-05,"Metaflux University","Quantumridge",1500,"PDAL",624
-"C","state",2024-05-05,"Metaflux University","Quantumridge",1500,"SSP",0
-"C","state",2024-05-05,"Dataland Register-Gazette","Voltagea",1500,"CC",210
-"C","state",2024-05-05,"Dataland Register-Gazette","Voltagea",1500,"DGM",704
-"C","state",2024-05-05,"Dataland Register-Gazette","Voltagea",1500,"PDAL",586
-"C","state",2024-05-05,"Dataland Register-Gazette","Voltagea",1500,"SSP",0
-"C","state",2024-05-05,"No Province Left Behind","Infinitron Peninsula",500,"CC",220
-"C","state",2024-05-05,"No Province Left Behind","Infinitron Peninsula",500,"DGM",208
-"C","state",2024-05-05,"No Province Left Behind","Infinitron Peninsula",500,"PDAL",72
-"C","state",2024-05-05,"No Province Left Behind","Infinitron Peninsula",500,"SSP",0
-"C","state",2024-05-06,"No Province Left Behind","Quantumridge",500,"CC",67
-"C","state",2024-05-06,"No Province Left Behind","Quantumridge",500,"DGM",224
-"C","state",2024-05-06,"No Province Left Behind","Quantumridge",500,"PDAL",209
-"C","state",2024-05-06,"No Province Left Behind","Quantumridge",500,"SSP",0
-"C","state",2024-05-06,"Progressive Polling","Voltagea",1000,"CC",119
-"C","state",2024-05-06,"Progressive Polling","Voltagea",1000,"DGM",445
-"C","state",2024-05-06,"Progressive Polling","Voltagea",1000,"PDAL",437
-"C","state",2024-05-06,"Progressive Polling","Voltagea",1000,"SSP",0
-"C","state",2024-05-06,"Progressive Polling","Electropolis",1000,"CC",436
-"C","state",2024-05-06,"Progressive Polling","Electropolis",1000,"DGM",303
-"C","state",2024-05-06,"Progressive Polling","Electropolis",1000,"PDAL",260
-"C","state",2024-05-06,"Progressive Polling","Electropolis",1000,"SSP",0
-"C","state",2024-05-07,"Proudly Paid For Polling","Amperville",1000,"CC",63
-"C","state",2024-05-07,"Proudly Paid For Polling","Amperville",1000,"DGM",366
-"C","state",2024-05-07,"Proudly Paid For Polling","Amperville",1000,"PDAL",571
-"C","state",2024-05-07,"Proudly Paid For Polling","Amperville",1000,"SSP",0
-"C","state",2024-05-08,"Cobolite Coalition Calling","Binaryshire",2000,"CC",1685
-"C","state",2024-05-08,"Cobolite Coalition Calling","Binaryshire",2000,"DGM",76
-"C","state",2024-05-08,"Cobolite Coalition Calling","Binaryshire",2000,"PDAL",238
-"C","state",2024-05-08,"Cobolite Coalition Calling","Binaryshire",2000,"SSP",0
-"C","state",2024-05-08,"Cobolite Coalition Calling","Infoglen",2000,"CC",520
-"C","state",2024-05-08,"Cobolite Coalition Calling","Infoglen",2000,"DGM",777
-"C","state",2024-05-08,"Cobolite Coalition Calling","Infoglen",2000,"PDAL",703
-"C","state",2024-05-08,"Cobolite Coalition Calling","Infoglen",2000,"SSP",0
-"C","state",2024-05-08,"Metaflux University","Infoglen",1500,"CC",527
-"C","state",2024-05-08,"Metaflux University","Infoglen",1500,"DGM",675
-"C","state",2024-05-08,"Metaflux University","Infoglen",1500,"PDAL",298
-"C","state",2024-05-08,"Metaflux University","Infoglen",1500,"SSP",0
-"C","state",2024-05-09,"Cobolite Coalition Calling","Byteforge Domain",2000,"CC",802
-"C","state",2024-05-09,"Cobolite Coalition Calling","Byteforge Domain",2000,"DGM",258
-"C","state",2024-05-09,"Cobolite Coalition Calling","Byteforge Domain",2000,"PDAL",941
-"C","state",2024-05-09,"Cobolite Coalition Calling","Byteforge Domain",2000,"SSP",0
-"C","state",2024-05-09,"Progressive Polling","Cortexia",1000,"CC",134
-"C","state",2024-05-09,"Progressive Polling","Cortexia",1000,"DGM",302
-"C","state",2024-05-09,"Progressive Polling","Cortexia",1000,"PDAL",279
-"C","state",2024-05-09,"Progressive Polling","Cortexia",1000,"SSP",285
-"C","state",2024-05-10,"Dataland Register-Gazette","Byteforge Domain",1500,"CC",436
-"C","state",2024-05-10,"Dataland Register-Gazette","Byteforge Domain",1500,"DGM",257
-"C","state",2024-05-10,"Dataland Register-Gazette","Byteforge Domain",1500,"PDAL",807
-"C","state",2024-05-10,"Dataland Register-Gazette","Byteforge Domain",1500,"SSP",0
-"C","state",2024-05-11,"Proudly Paid For Polling","Infoglen",1000,"CC",343
-"C","state",2024-05-11,"Proudly Paid For Polling","Infoglen",1000,"DGM",390
-"C","state",2024-05-11,"Proudly Paid For Polling","Infoglen",1000,"PDAL",266
-"C","state",2024-05-11,"Proudly Paid For Polling","Infoglen",1000,"SSP",0
-"C","state",2024-05-11,"Proudly Paid For Polling","Electropolis",1000,"CC",325
-"C","state",2024-05-11,"Proudly Paid For Polling","Electropolis",1000,"DGM",410
-"C","state",2024-05-11,"Proudly Paid For Polling","Electropolis",1000,"PDAL",265
-"C","state",2024-05-11,"Proudly Paid For Polling","Electropolis",1000,"SSP",0
-"C","state",2024-05-11,"Proudly Paid For Polling","Infoglen",1000,"CC",268
-"C","state",2024-05-11,"Proudly Paid For Polling","Infoglen",1000,"DGM",411
-"C","state",2024-05-11,"Proudly Paid For Polling","Infoglen",1000,"PDAL",320
-"C","state",2024-05-11,"Proudly Paid For Polling","Infoglen",1000,"SSP",0
-"C","regional",2024-04-06,"Big Dataland Surveys","Metaflux Realm",10000,"CC",2931
-"C","regional",2024-04-06,"Big Dataland Surveys","Metaflux Realm",10000,"DGM",4086
-"C","regional",2024-04-06,"Big Dataland Surveys","Metaflux Realm",10000,"PDAL",2982
-"C","regional",2024-04-06,"Big Dataland Surveys","Metaflux Realm",10000,"SSP",0
-"C","regional",2024-04-12,"Cobolite Coalition Calling","Synapse Territories",2000,"CC",373
-"C","regional",2024-04-12,"Cobolite Coalition Calling","Synapse Territories",2000,"DGM",471
-"C","regional",2024-04-12,"Cobolite Coalition Calling","Synapse Territories",2000,"PDAL",588
-"C","regional",2024-04-12,"Cobolite Coalition Calling","Synapse Territories",2000,"SSP",569
-"C","regional",2024-04-14,"Synapse Strategies","Synapse Territories",1000,"CC",149
-"C","regional",2024-04-14,"Synapse Strategies","Synapse Territories",1000,"DGM",285
-"C","regional",2024-04-14,"Synapse Strategies","Synapse Territories",1000,"PDAL",224
-"C","regional",2024-04-14,"Synapse Strategies","Synapse Territories",1000,"SSP",342
-"C","regional",2024-04-23,"Big Dataland Surveys","Metaflux Realm",10000,"CC",2976
-"C","regional",2024-04-23,"Big Dataland Surveys","Metaflux Realm",10000,"DGM",4242
-"C","regional",2024-04-23,"Big Dataland Surveys","Metaflux Realm",10000,"PDAL",2782
-"C","regional",2024-04-23,"Big Dataland Surveys","Metaflux Realm",10000,"SSP",0
-"C","regional",2024-04-24,"Conference Board of Dataland","Synapse Territories",3000,"CC",479
-"C","regional",2024-04-24,"Conference Board of Dataland","Synapse Territories",3000,"DGM",967
-"C","regional",2024-04-24,"Conference Board of Dataland","Synapse Territories",3000,"PDAL",740
-"C","regional",2024-04-24,"Conference Board of Dataland","Synapse Territories",3000,"SSP",814
-"C","regional",2024-04-25,"Cobolite Coalition Calling","Synapse Territories",2000,"CC",400
-"C","regional",2024-04-25,"Cobolite Coalition Calling","Synapse Territories",2000,"DGM",398
-"C","regional",2024-04-25,"Cobolite Coalition Calling","Synapse Territories",2000,"PDAL",405
-"C","regional",2024-04-25,"Cobolite Coalition Calling","Synapse Territories",2000,"SSP",796
-"C","regional",2024-04-28,"Proudly Paid For Polling","Metaflux Realm",1000,"CC",355
-"C","regional",2024-04-28,"Proudly Paid For Polling","Metaflux Realm",1000,"DGM",348
-"C","regional",2024-04-28,"Proudly Paid For Polling","Metaflux Realm",1000,"PDAL",297
-"C","regional",2024-04-28,"Proudly Paid For Polling","Metaflux Realm",1000,"SSP",0
-"C","regional",2024-04-29,"Proudly Paid For Polling","Circuit Confederation",1000,"CC",187
-"C","regional",2024-04-29,"Proudly Paid For Polling","Circuit Confederation",1000,"DGM",499
-"C","regional",2024-04-29,"Proudly Paid For Polling","Circuit Confederation",1000,"PDAL",313
-"C","regional",2024-04-29,"Proudly Paid For Polling","Circuit Confederation",1000,"SSP",0
-"C","regional",2024-04-29,"Cobolite Coalition Calling","Metaflux Realm",2000,"CC",829
-"C","regional",2024-04-29,"Cobolite Coalition Calling","Metaflux Realm",2000,"DGM",508
-"C","regional",2024-04-29,"Cobolite Coalition Calling","Metaflux Realm",2000,"PDAL",663
-"C","regional",2024-04-29,"Cobolite Coalition Calling","Metaflux Realm",2000,"SSP",0
-"C","regional",2024-04-30,"Cobolite Coalition Calling","Synapse Territories",2000,"CC",495
-"C","regional",2024-04-30,"Cobolite Coalition Calling","Synapse Territories",2000,"DGM",560
-"C","regional",2024-04-30,"Cobolite Coalition Calling","Synapse Territories",2000,"PDAL",296
-"C","regional",2024-04-30,"Cobolite Coalition Calling","Synapse Territories",2000,"SSP",648
-"C","regional",2024-05-01,"Dataland Register-Gazette","Circuit Confederation",1500,"CC",390
-"C","regional",2024-05-01,"Dataland Register-Gazette","Circuit Confederation",1500,"DGM",468
-"C","regional",2024-05-01,"Dataland Register-Gazette","Circuit Confederation",1500,"PDAL",642
-"C","regional",2024-05-01,"Dataland Register-Gazette","Circuit Confederation",1500,"SSP",0
-"C","regional",2024-05-01,"Big Dataland Surveys","Metaflux Realm",10000,"CC",3851
-"C","regional",2024-05-01,"Big Dataland Surveys","Metaflux Realm",10000,"DGM",3749
-"C","regional",2024-05-01,"Big Dataland Surveys","Metaflux Realm",10000,"PDAL",2400
-"C","regional",2024-05-01,"Big Dataland Surveys","Metaflux Realm",10000,"SSP",0
-"C","regional",2024-05-01,"Synapse Strategies","Synapse Territories",1000,"CC",167
-"C","regional",2024-05-01,"Synapse Strategies","Synapse Territories",1000,"DGM",286
-"C","regional",2024-05-01,"Synapse Strategies","Synapse Territories",1000,"PDAL",230
-"C","regional",2024-05-01,"Synapse Strategies","Synapse Territories",1000,"SSP",317
-"C","regional",2024-05-01,"Big Dataland Surveys","Metaflux Realm",10000,"CC",2674
-"C","regional",2024-05-01,"Big Dataland Surveys","Metaflux Realm",10000,"DGM",4047
-"C","regional",2024-05-01,"Big Dataland Surveys","Metaflux Realm",10000,"PDAL",3279
-"C","regional",2024-05-01,"Big Dataland Surveys","Metaflux Realm",10000,"SSP",0
-"C","regional",2024-05-02,"Conference Board of Dataland","Circuit Confederation",3000,"CC",791
-"C","regional",2024-05-02,"Conference Board of Dataland","Circuit Confederation",3000,"DGM",1076
-"C","regional",2024-05-02,"Conference Board of Dataland","Circuit Confederation",3000,"PDAL",1133
-"C","regional",2024-05-02,"Conference Board of Dataland","Circuit Confederation",3000,"SSP",0
-"C","regional",2024-05-02,"Conference Board of Dataland","Metaflux Realm",3000,"CC",1105
-"C","regional",2024-05-02,"Conference Board of Dataland","Metaflux Realm",3000,"DGM",1031
-"C","regional",2024-05-02,"Conference Board of Dataland","Metaflux Realm",3000,"PDAL",864
-"C","regional",2024-05-02,"Conference Board of Dataland","Metaflux Realm",3000,"SSP",0
-"C","regional",2024-05-02,"Conference Board of Dataland","Synapse Territories",3000,"CC",624
-"C","regional",2024-05-02,"Conference Board of Dataland","Synapse Territories",3000,"DGM",854
-"C","regional",2024-05-02,"Conference Board of Dataland","Synapse Territories",3000,"PDAL",729
-"C","regional",2024-05-02,"Conference Board of Dataland","Synapse Territories",3000,"SSP",792
-"C","regional",2024-05-04,"Dataland Register-Gazette","Circuit Confederation",1500,"CC",366
-"C","regional",2024-05-04,"Dataland Register-Gazette","Circuit Confederation",1500,"DGM",565
-"C","regional",2024-05-04,"Dataland Register-Gazette","Circuit Confederation",1500,"PDAL",569
-"C","regional",2024-05-04,"Dataland Register-Gazette","Circuit Confederation",1500,"SSP",0
-"C","regional",2024-05-08,"Conference Board of Dataland","Circuit Confederation",3000,"CC",682
-"C","regional",2024-05-08,"Conference Board of Dataland","Circuit Confederation",3000,"DGM",1046
-"C","regional",2024-05-08,"Conference Board of Dataland","Circuit Confederation",3000,"PDAL",1272
-"C","regional",2024-05-08,"Conference Board of Dataland","Circuit Confederation",3000,"SSP",0
-"C","regional",2024-05-08,"Dataland Register-Gazette","Synapse Territories",1500,"CC",236
-"C","regional",2024-05-08,"Dataland Register-Gazette","Synapse Territories",1500,"DGM",454
-"C","regional",2024-05-08,"Dataland Register-Gazette","Synapse Territories",1500,"PDAL",436
-"C","regional",2024-05-08,"Dataland Register-Gazette","Synapse Territories",1500,"SSP",375
-"C","regional",2024-05-08,"Conference Board of Dataland","Synapse Territories",3000,"CC",511
-"C","regional",2024-05-08,"Conference Board of Dataland","Synapse Territories",3000,"DGM",835
-"C","regional",2024-05-08,"Conference Board of Dataland","Synapse Territories",3000,"PDAL",927
-"C","regional",2024-05-08,"Conference Board of Dataland","Synapse Territories",3000,"SSP",727
-"C","regional",2024-05-08,"Dataland Register-Gazette","Circuit Confederation",1500,"CC",375
-"C","regional",2024-05-08,"Dataland Register-Gazette","Circuit Confederation",1500,"DGM",522
-"C","regional",2024-05-08,"Dataland Register-Gazette","Circuit Confederation",1500,"PDAL",604
+"C","state",2024-04-02,"Cobolite Coalition Calling","Infoglen",2000,"CC",637
+"C","state",2024-04-02,"Cobolite Coalition Calling","Infoglen",2000,"DGM",692
+"C","state",2024-04-02,"Cobolite Coalition Calling","Infoglen",2000,"PDAL",671
+"C","state",2024-04-02,"Cobolite Coalition Calling","Infoglen",2000,"SSP",0
+"C","state",2024-04-03,"Progressive Polling","Cortexia",1000,"CC",116
+"C","state",2024-04-03,"Progressive Polling","Cortexia",1000,"DGM",226
+"C","state",2024-04-03,"Progressive Polling","Cortexia",1000,"PDAL",307
+"C","state",2024-04-03,"Progressive Polling","Cortexia",1000,"SSP",352
+"C","state",2024-04-04,"Progressive Polling","Circuiton",1000,"CC",92
+"C","state",2024-04-04,"Progressive Polling","Circuiton",1000,"DGM",553
+"C","state",2024-04-04,"Progressive Polling","Circuiton",1000,"PDAL",355
+"C","state",2024-04-04,"Progressive Polling","Circuiton",1000,"SSP",0
+"C","state",2024-04-06,"Progressive Polling","Cortexia",1000,"CC",118
+"C","state",2024-04-06,"Progressive Polling","Cortexia",1000,"DGM",310
+"C","state",2024-04-06,"Progressive Polling","Cortexia",1000,"PDAL",267
+"C","state",2024-04-06,"Progressive Polling","Cortexia",1000,"SSP",305
+"C","state",2024-04-08,"Cobolite Coalition Calling","Voltagea",2000,"CC",446
+"C","state",2024-04-08,"Cobolite Coalition Calling","Voltagea",2000,"DGM",859
+"C","state",2024-04-08,"Cobolite Coalition Calling","Voltagea",2000,"PDAL",695
+"C","state",2024-04-08,"Cobolite Coalition Calling","Voltagea",2000,"SSP",0
+"C","state",2024-04-08,"Cobolite Coalition Calling","Neuronia",2000,"CC",198
+"C","state",2024-04-08,"Cobolite Coalition Calling","Neuronia",2000,"DGM",533
+"C","state",2024-04-08,"Cobolite Coalition Calling","Neuronia",2000,"PDAL",281
+"C","state",2024-04-08,"Cobolite Coalition Calling","Neuronia",2000,"SSP",988
+"C","state",2024-04-11,"Progressive Polling","Cortexia",1000,"CC",115
+"C","state",2024-04-11,"Progressive Polling","Cortexia",1000,"DGM",240
+"C","state",2024-04-11,"Progressive Polling","Cortexia",1000,"PDAL",290
+"C","state",2024-04-11,"Progressive Polling","Cortexia",1000,"SSP",355
+"C","state",2024-04-12,"Progressive Polling","Cortexia",1000,"CC",105
+"C","state",2024-04-12,"Progressive Polling","Cortexia",1000,"DGM",275
+"C","state",2024-04-12,"Progressive Polling","Cortexia",1000,"PDAL",249
+"C","state",2024-04-12,"Progressive Polling","Cortexia",1000,"SSP",371
+"C","state",2024-04-13,"Progressive Polling","Infoglen",1000,"CC",250
+"C","state",2024-04-13,"Progressive Polling","Infoglen",1000,"DGM",431
+"C","state",2024-04-13,"Progressive Polling","Infoglen",1000,"PDAL",319
+"C","state",2024-04-13,"Progressive Polling","Infoglen",1000,"SSP",0
+"C","state",2024-04-16,"Progressive Polling","Circuiton",1000,"CC",145
+"C","state",2024-04-16,"Progressive Polling","Circuiton",1000,"DGM",495
+"C","state",2024-04-16,"Progressive Polling","Circuiton",1000,"PDAL",359
+"C","state",2024-04-16,"Progressive Polling","Circuiton",1000,"SSP",0
+"C","state",2024-04-18,"Cobolite Coalition Calling","Infinitron Peninsula",2000,"CC",923
+"C","state",2024-04-18,"Cobolite Coalition Calling","Infinitron Peninsula",2000,"DGM",667
+"C","state",2024-04-18,"Cobolite Coalition Calling","Infinitron Peninsula",2000,"PDAL",410
+"C","state",2024-04-18,"Cobolite Coalition Calling","Infinitron Peninsula",2000,"SSP",0
+"C","state",2024-04-18,"Metaflux University","Infoglen",1500,"CC",336
+"C","state",2024-04-18,"Metaflux University","Infoglen",1500,"DGM",688
+"C","state",2024-04-18,"Metaflux University","Infoglen",1500,"PDAL",476
+"C","state",2024-04-18,"Metaflux University","Infoglen",1500,"SSP",0
+"C","state",2024-04-19,"No Province Left Behind","Quantumridge",500,"CC",92
+"C","state",2024-04-19,"No Province Left Behind","Quantumridge",500,"DGM",229
+"C","state",2024-04-19,"No Province Left Behind","Quantumridge",500,"PDAL",179
+"C","state",2024-04-19,"No Province Left Behind","Quantumridge",500,"SSP",0
+"C","state",2024-04-22,"Cobolite Coalition Calling","Cortexia",2000,"CC",411
+"C","state",2024-04-22,"Cobolite Coalition Calling","Cortexia",2000,"DGM",521
+"C","state",2024-04-22,"Cobolite Coalition Calling","Cortexia",2000,"PDAL",459
+"C","state",2024-04-22,"Cobolite Coalition Calling","Cortexia",2000,"SSP",609
+"C","state",2024-04-23,"Cobolite Coalition Calling","Amperville",2000,"CC",151
+"C","state",2024-04-23,"Cobolite Coalition Calling","Amperville",2000,"DGM",475
+"C","state",2024-04-23,"Cobolite Coalition Calling","Amperville",2000,"PDAL",1374
+"C","state",2024-04-23,"Cobolite Coalition Calling","Amperville",2000,"SSP",0
+"C","state",2024-04-24,"Metaflux University","Infoglen",1500,"CC",478
+"C","state",2024-04-24,"Metaflux University","Infoglen",1500,"DGM",555
+"C","state",2024-04-24,"Metaflux University","Infoglen",1500,"PDAL",467
+"C","state",2024-04-24,"Metaflux University","Infoglen",1500,"SSP",0
+"C","state",2024-04-25,"Metaflux University","Infinitron Peninsula",1500,"CC",618
+"C","state",2024-04-25,"Metaflux University","Infinitron Peninsula",1500,"DGM",699
+"C","state",2024-04-25,"Metaflux University","Infinitron Peninsula",1500,"PDAL",183
+"C","state",2024-04-25,"Metaflux University","Infinitron Peninsula",1500,"SSP",0
+"C","state",2024-04-26,"Progressive Polling","Infoglen",1000,"CC",290
+"C","state",2024-04-26,"Progressive Polling","Infoglen",1000,"DGM",472
+"C","state",2024-04-26,"Progressive Polling","Infoglen",1000,"PDAL",238
+"C","state",2024-04-26,"Progressive Polling","Infoglen",1000,"SSP",0
+"C","state",2024-04-27,"Proudly Paid For Polling","Byteforge Domain",1000,"CC",288
+"C","state",2024-04-27,"Proudly Paid For Polling","Byteforge Domain",1000,"DGM",174
+"C","state",2024-04-27,"Proudly Paid For Polling","Byteforge Domain",1000,"PDAL",538
+"C","state",2024-04-27,"Proudly Paid For Polling","Byteforge Domain",1000,"SSP",0
+"C","state",2024-04-28,"Metaflux University","Infoglen",1500,"CC",466
+"C","state",2024-04-28,"Metaflux University","Infoglen",1500,"DGM",684
+"C","state",2024-04-28,"Metaflux University","Infoglen",1500,"PDAL",350
+"C","state",2024-04-28,"Metaflux University","Infoglen",1500,"SSP",0
+"C","state",2024-05-01,"Dataland Register-Gazette","Infoglen",1500,"CC",491
+"C","state",2024-05-01,"Dataland Register-Gazette","Infoglen",1500,"DGM",636
+"C","state",2024-05-01,"Dataland Register-Gazette","Infoglen",1500,"PDAL",373
+"C","state",2024-05-01,"Dataland Register-Gazette","Infoglen",1500,"SSP",0
+"C","state",2024-05-01,"Proudly Paid For Polling","Byteforge Domain",1000,"CC",416
+"C","state",2024-05-01,"Proudly Paid For Polling","Byteforge Domain",1000,"DGM",168
+"C","state",2024-05-01,"Proudly Paid For Polling","Byteforge Domain",1000,"PDAL",416
+"C","state",2024-05-01,"Proudly Paid For Polling","Byteforge Domain",1000,"SSP",0
+"C","state",2024-05-01,"Dataland Register-Gazette","Circuiton",1500,"CC",249
+"C","state",2024-05-01,"Dataland Register-Gazette","Circuiton",1500,"DGM",699
+"C","state",2024-05-01,"Dataland Register-Gazette","Circuiton",1500,"PDAL",551
+"C","state",2024-05-01,"Dataland Register-Gazette","Circuiton",1500,"SSP",0
+"C","state",2024-05-02,"Metaflux University","Infoglen",1500,"CC",477
+"C","state",2024-05-02,"Metaflux University","Infoglen",1500,"DGM",631
+"C","state",2024-05-02,"Metaflux University","Infoglen",1500,"PDAL",392
+"C","state",2024-05-02,"Metaflux University","Infoglen",1500,"SSP",0
+"C","state",2024-05-02,"Proudly Paid For Polling","Infinitron Peninsula",1000,"CC",354
+"C","state",2024-05-02,"Proudly Paid For Polling","Infinitron Peninsula",1000,"DGM",507
+"C","state",2024-05-02,"Proudly Paid For Polling","Infinitron Peninsula",1000,"PDAL",139
+"C","state",2024-05-02,"Proudly Paid For Polling","Infinitron Peninsula",1000,"SSP",0
+"C","state",2024-05-02,"No Province Left Behind","Quantumridge",500,"CC",109
+"C","state",2024-05-02,"No Province Left Behind","Quantumridge",500,"DGM",204
+"C","state",2024-05-02,"No Province Left Behind","Quantumridge",500,"PDAL",188
+"C","state",2024-05-02,"No Province Left Behind","Quantumridge",500,"SSP",0
+"C","state",2024-05-03,"No Province Left Behind","Infinitron Peninsula",500,"CC",220
+"C","state",2024-05-03,"No Province Left Behind","Infinitron Peninsula",500,"DGM",208
+"C","state",2024-05-03,"No Province Left Behind","Infinitron Peninsula",500,"PDAL",72
+"C","state",2024-05-03,"No Province Left Behind","Infinitron Peninsula",500,"SSP",0
+"C","state",2024-05-04,"Metaflux University","Quantumridge",1500,"CC",287
+"C","state",2024-05-04,"Metaflux University","Quantumridge",1500,"DGM",589
+"C","state",2024-05-04,"Metaflux University","Quantumridge",1500,"PDAL",624
+"C","state",2024-05-04,"Metaflux University","Quantumridge",1500,"SSP",0
+"C","state",2024-05-04,"Dataland Register-Gazette","Voltagea",1500,"CC",210
+"C","state",2024-05-04,"Dataland Register-Gazette","Voltagea",1500,"DGM",704
+"C","state",2024-05-04,"Dataland Register-Gazette","Voltagea",1500,"PDAL",586
+"C","state",2024-05-04,"Dataland Register-Gazette","Voltagea",1500,"SSP",0
+"C","state",2024-05-04,"Progressive Polling","Electropolis",1000,"CC",436
+"C","state",2024-05-04,"Progressive Polling","Electropolis",1000,"DGM",303
+"C","state",2024-05-04,"Progressive Polling","Electropolis",1000,"PDAL",260
+"C","state",2024-05-04,"Progressive Polling","Electropolis",1000,"SSP",0
+"C","state",2024-05-05,"No Province Left Behind","Quantumridge",500,"CC",67
+"C","state",2024-05-05,"No Province Left Behind","Quantumridge",500,"DGM",224
+"C","state",2024-05-05,"No Province Left Behind","Quantumridge",500,"PDAL",209
+"C","state",2024-05-05,"No Province Left Behind","Quantumridge",500,"SSP",0
+"C","state",2024-05-05,"Progressive Polling","Voltagea",1000,"CC",119
+"C","state",2024-05-05,"Progressive Polling","Voltagea",1000,"DGM",445
+"C","state",2024-05-05,"Progressive Polling","Voltagea",1000,"PDAL",437
+"C","state",2024-05-05,"Progressive Polling","Voltagea",1000,"SSP",0
+"C","state",2024-05-05,"Proudly Paid For Polling","Amperville",1000,"CC",63
+"C","state",2024-05-05,"Proudly Paid For Polling","Amperville",1000,"DGM",366
+"C","state",2024-05-05,"Proudly Paid For Polling","Amperville",1000,"PDAL",571
+"C","state",2024-05-05,"Proudly Paid For Polling","Amperville",1000,"SSP",0
+"C","state",2024-05-06,"Cobolite Coalition Calling","Infoglen",2000,"CC",520
+"C","state",2024-05-06,"Cobolite Coalition Calling","Infoglen",2000,"DGM",777
+"C","state",2024-05-06,"Cobolite Coalition Calling","Infoglen",2000,"PDAL",703
+"C","state",2024-05-06,"Cobolite Coalition Calling","Infoglen",2000,"SSP",0
+"C","state",2024-05-06,"Metaflux University","Infoglen",1500,"CC",527
+"C","state",2024-05-06,"Metaflux University","Infoglen",1500,"DGM",675
+"C","state",2024-05-06,"Metaflux University","Infoglen",1500,"PDAL",298
+"C","state",2024-05-06,"Metaflux University","Infoglen",1500,"SSP",0
+"C","state",2024-05-07,"Cobolite Coalition Calling","Binaryshire",2000,"CC",1685
+"C","state",2024-05-07,"Cobolite Coalition Calling","Binaryshire",2000,"DGM",76
+"C","state",2024-05-07,"Cobolite Coalition Calling","Binaryshire",2000,"PDAL",238
+"C","state",2024-05-07,"Cobolite Coalition Calling","Binaryshire",2000,"SSP",0
+"C","state",2024-05-08,"Cobolite Coalition Calling","Byteforge Domain",2000,"CC",802
+"C","state",2024-05-08,"Cobolite Coalition Calling","Byteforge Domain",2000,"DGM",258
+"C","state",2024-05-08,"Cobolite Coalition Calling","Byteforge Domain",2000,"PDAL",941
+"C","state",2024-05-08,"Cobolite Coalition Calling","Byteforge Domain",2000,"SSP",0
+"C","state",2024-05-08,"Progressive Polling","Cortexia",1000,"CC",134
+"C","state",2024-05-08,"Progressive Polling","Cortexia",1000,"DGM",302
+"C","state",2024-05-08,"Progressive Polling","Cortexia",1000,"PDAL",279
+"C","state",2024-05-08,"Progressive Polling","Cortexia",1000,"SSP",285
+"C","state",2024-05-08,"Dataland Register-Gazette","Byteforge Domain",1500,"CC",436
+"C","state",2024-05-08,"Dataland Register-Gazette","Byteforge Domain",1500,"DGM",257
+"C","state",2024-05-08,"Dataland Register-Gazette","Byteforge Domain",1500,"PDAL",807
+"C","state",2024-05-08,"Dataland Register-Gazette","Byteforge Domain",1500,"SSP",0
+"C","state",2024-05-09,"Proudly Paid For Polling","Electropolis",1000,"CC",325
+"C","state",2024-05-09,"Proudly Paid For Polling","Electropolis",1000,"DGM",410
+"C","state",2024-05-09,"Proudly Paid For Polling","Electropolis",1000,"PDAL",265
+"C","state",2024-05-09,"Proudly Paid For Polling","Electropolis",1000,"SSP",0
+"C","state",2024-05-09,"Proudly Paid For Polling","Infoglen",1000,"CC",268
+"C","state",2024-05-09,"Proudly Paid For Polling","Infoglen",1000,"DGM",411
+"C","state",2024-05-09,"Proudly Paid For Polling","Infoglen",1000,"PDAL",320
+"C","state",2024-05-09,"Proudly Paid For Polling","Infoglen",1000,"SSP",0
+"C","state",2024-05-10,"Proudly Paid For Polling","Infoglen",1000,"CC",343
+"C","state",2024-05-10,"Proudly Paid For Polling","Infoglen",1000,"DGM",390
+"C","state",2024-05-10,"Proudly Paid For Polling","Infoglen",1000,"PDAL",266
+"C","state",2024-05-10,"Proudly Paid For Polling","Infoglen",1000,"SSP",0
+"C","regional",2024-04-05,"Big Dataland Surveys","Metaflux Realm",10000,"CC",2931
+"C","regional",2024-04-05,"Big Dataland Surveys","Metaflux Realm",10000,"DGM",4086
+"C","regional",2024-04-05,"Big Dataland Surveys","Metaflux Realm",10000,"PDAL",2982
+"C","regional",2024-04-05,"Big Dataland Surveys","Metaflux Realm",10000,"SSP",0
+"C","regional",2024-04-11,"Cobolite Coalition Calling","Synapse Territories",2000,"CC",373
+"C","regional",2024-04-11,"Cobolite Coalition Calling","Synapse Territories",2000,"DGM",471
+"C","regional",2024-04-11,"Cobolite Coalition Calling","Synapse Territories",2000,"PDAL",588
+"C","regional",2024-04-11,"Cobolite Coalition Calling","Synapse Territories",2000,"SSP",569
+"C","regional",2024-04-13,"Synapse Strategies","Synapse Territories",1000,"CC",149
+"C","regional",2024-04-13,"Synapse Strategies","Synapse Territories",1000,"DGM",285
+"C","regional",2024-04-13,"Synapse Strategies","Synapse Territories",1000,"PDAL",224
+"C","regional",2024-04-13,"Synapse Strategies","Synapse Territories",1000,"SSP",342
+"C","regional",2024-04-22,"Big Dataland Surveys","Metaflux Realm",10000,"CC",2976
+"C","regional",2024-04-22,"Big Dataland Surveys","Metaflux Realm",10000,"DGM",4242
+"C","regional",2024-04-22,"Big Dataland Surveys","Metaflux Realm",10000,"PDAL",2782
+"C","regional",2024-04-22,"Big Dataland Surveys","Metaflux Realm",10000,"SSP",0
+"C","regional",2024-04-23,"Conference Board of Dataland","Synapse Territories",3000,"CC",479
+"C","regional",2024-04-23,"Conference Board of Dataland","Synapse Territories",3000,"DGM",967
+"C","regional",2024-04-23,"Conference Board of Dataland","Synapse Territories",3000,"PDAL",740
+"C","regional",2024-04-23,"Conference Board of Dataland","Synapse Territories",3000,"SSP",814
+"C","regional",2024-04-23,"Cobolite Coalition Calling","Synapse Territories",2000,"CC",400
+"C","regional",2024-04-23,"Cobolite Coalition Calling","Synapse Territories",2000,"DGM",398
+"C","regional",2024-04-23,"Cobolite Coalition Calling","Synapse Territories",2000,"PDAL",405
+"C","regional",2024-04-23,"Cobolite Coalition Calling","Synapse Territories",2000,"SSP",796
+"C","regional",2024-04-27,"Proudly Paid For Polling","Metaflux Realm",1000,"CC",355
+"C","regional",2024-04-27,"Proudly Paid For Polling","Metaflux Realm",1000,"DGM",348
+"C","regional",2024-04-27,"Proudly Paid For Polling","Metaflux Realm",1000,"PDAL",297
+"C","regional",2024-04-27,"Proudly Paid For Polling","Metaflux Realm",1000,"SSP",0
+"C","regional",2024-04-28,"Proudly Paid For Polling","Circuit Confederation",1000,"CC",187
+"C","regional",2024-04-28,"Proudly Paid For Polling","Circuit Confederation",1000,"DGM",499
+"C","regional",2024-04-28,"Proudly Paid For Polling","Circuit Confederation",1000,"PDAL",313
+"C","regional",2024-04-28,"Proudly Paid For Polling","Circuit Confederation",1000,"SSP",0
+"C","regional",2024-04-28,"Cobolite Coalition Calling","Metaflux Realm",2000,"CC",829
+"C","regional",2024-04-28,"Cobolite Coalition Calling","Metaflux Realm",2000,"DGM",508
+"C","regional",2024-04-28,"Cobolite Coalition Calling","Metaflux Realm",2000,"PDAL",663
+"C","regional",2024-04-28,"Cobolite Coalition Calling","Metaflux Realm",2000,"SSP",0
+"C","regional",2024-04-28,"Cobolite Coalition Calling","Synapse Territories",2000,"CC",495
+"C","regional",2024-04-28,"Cobolite Coalition Calling","Synapse Territories",2000,"DGM",560
+"C","regional",2024-04-28,"Cobolite Coalition Calling","Synapse Territories",2000,"PDAL",296
+"C","regional",2024-04-28,"Cobolite Coalition Calling","Synapse Territories",2000,"SSP",648
+"C","regional",2024-04-29,"Big Dataland Surveys","Metaflux Realm",10000,"CC",2674
+"C","regional",2024-04-29,"Big Dataland Surveys","Metaflux Realm",10000,"DGM",4047
+"C","regional",2024-04-29,"Big Dataland Surveys","Metaflux Realm",10000,"PDAL",3279
+"C","regional",2024-04-29,"Big Dataland Surveys","Metaflux Realm",10000,"SSP",0
+"C","regional",2024-04-30,"Dataland Register-Gazette","Circuit Confederation",1500,"CC",390
+"C","regional",2024-04-30,"Dataland Register-Gazette","Circuit Confederation",1500,"DGM",468
+"C","regional",2024-04-30,"Dataland Register-Gazette","Circuit Confederation",1500,"PDAL",642
+"C","regional",2024-04-30,"Dataland Register-Gazette","Circuit Confederation",1500,"SSP",0
+"C","regional",2024-04-30,"Big Dataland Surveys","Metaflux Realm",10000,"CC",3851
+"C","regional",2024-04-30,"Big Dataland Surveys","Metaflux Realm",10000,"DGM",3749
+"C","regional",2024-04-30,"Big Dataland Surveys","Metaflux Realm",10000,"PDAL",2400
+"C","regional",2024-04-30,"Big Dataland Surveys","Metaflux Realm",10000,"SSP",0
+"C","regional",2024-04-30,"Synapse Strategies","Synapse Territories",1000,"CC",167
+"C","regional",2024-04-30,"Synapse Strategies","Synapse Territories",1000,"DGM",286
+"C","regional",2024-04-30,"Synapse Strategies","Synapse Territories",1000,"PDAL",230
+"C","regional",2024-04-30,"Synapse Strategies","Synapse Territories",1000,"SSP",317
+"C","regional",2024-04-30,"Conference Board of Dataland","Circuit Confederation",3000,"CC",791
+"C","regional",2024-04-30,"Conference Board of Dataland","Circuit Confederation",3000,"DGM",1076
+"C","regional",2024-04-30,"Conference Board of Dataland","Circuit Confederation",3000,"PDAL",1133
+"C","regional",2024-04-30,"Conference Board of Dataland","Circuit Confederation",3000,"SSP",0
+"C","regional",2024-04-30,"Conference Board of Dataland","Metaflux Realm",3000,"CC",1105
+"C","regional",2024-04-30,"Conference Board of Dataland","Metaflux Realm",3000,"DGM",1031
+"C","regional",2024-04-30,"Conference Board of Dataland","Metaflux Realm",3000,"PDAL",864
+"C","regional",2024-04-30,"Conference Board of Dataland","Metaflux Realm",3000,"SSP",0
+"C","regional",2024-04-30,"Conference Board of Dataland","Synapse Territories",3000,"CC",624
+"C","regional",2024-04-30,"Conference Board of Dataland","Synapse Territories",3000,"DGM",854
+"C","regional",2024-04-30,"Conference Board of Dataland","Synapse Territories",3000,"PDAL",729
+"C","regional",2024-04-30,"Conference Board of Dataland","Synapse Territories",3000,"SSP",792
+"C","regional",2024-05-02,"Dataland Register-Gazette","Circuit Confederation",1500,"CC",366
+"C","regional",2024-05-02,"Dataland Register-Gazette","Circuit Confederation",1500,"DGM",565
+"C","regional",2024-05-02,"Dataland Register-Gazette","Circuit Confederation",1500,"PDAL",569
+"C","regional",2024-05-02,"Dataland Register-Gazette","Circuit Confederation",1500,"SSP",0
+"C","regional",2024-05-06,"Dataland Register-Gazette","Circuit Confederation",1500,"CC",375
+"C","regional",2024-05-06,"Dataland Register-Gazette","Circuit Confederation",1500,"DGM",522
+"C","regional",2024-05-06,"Dataland Register-Gazette","Circuit Confederation",1500,"PDAL",604
+"C","regional",2024-05-06,"Dataland Register-Gazette","Circuit Confederation",1500,"SSP",0
+"C","regional",2024-05-06,"Big Dataland Surveys","Metaflux Realm",10000,"CC",3318
+"C","regional",2024-05-06,"Big Dataland Surveys","Metaflux Realm",10000,"DGM",3668
+"C","regional",2024-05-06,"Big Dataland Surveys","Metaflux Realm",10000,"PDAL",3014
+"C","regional",2024-05-06,"Big Dataland Surveys","Metaflux Realm",10000,"SSP",0
+"C","regional",2024-05-07,"Conference Board of Dataland","Circuit Confederation",3000,"CC",682
+"C","regional",2024-05-07,"Conference Board of Dataland","Circuit Confederation",3000,"DGM",1046
+"C","regional",2024-05-07,"Conference Board of Dataland","Circuit Confederation",3000,"PDAL",1272
+"C","regional",2024-05-07,"Conference Board of Dataland","Circuit Confederation",3000,"SSP",0
+"C","regional",2024-05-07,"Dataland Register-Gazette","Synapse Territories",1500,"CC",236
+"C","regional",2024-05-07,"Dataland Register-Gazette","Synapse Territories",1500,"DGM",454
+"C","regional",2024-05-07,"Dataland Register-Gazette","Synapse Territories",1500,"PDAL",436
+"C","regional",2024-05-07,"Dataland Register-Gazette","Synapse Territories",1500,"SSP",375
+"C","regional",2024-05-07,"Conference Board of Dataland","Synapse Territories",3000,"CC",511
+"C","regional",2024-05-07,"Conference Board of Dataland","Synapse Territories",3000,"DGM",835
+"C","regional",2024-05-07,"Conference Board of Dataland","Synapse Territories",3000,"PDAL",927
+"C","regional",2024-05-07,"Conference Board of Dataland","Synapse Territories",3000,"SSP",727
+"C","regional",2024-05-07,"Conference Board of Dataland","Metaflux Realm",3000,"CC",971
+"C","regional",2024-05-07,"Conference Board of Dataland","Metaflux Realm",3000,"DGM",988
+"C","regional",2024-05-07,"Conference Board of Dataland","Metaflux Realm",3000,"PDAL",1041
+"C","regional",2024-05-07,"Conference Board of Dataland","Metaflux Realm",3000,"SSP",0
+"C","regional",2024-05-08,"Dataland Register-Gazette","Circuit Confederation",1500,"CC",354
+"C","regional",2024-05-08,"Dataland Register-Gazette","Circuit Confederation",1500,"DGM",571
+"C","regional",2024-05-08,"Dataland Register-Gazette","Circuit Confederation",1500,"PDAL",576
 "C","regional",2024-05-08,"Dataland Register-Gazette","Circuit Confederation",1500,"SSP",0
-"C","regional",2024-05-08,"Big Dataland Surveys","Metaflux Realm",10000,"CC",3318
-"C","regional",2024-05-08,"Big Dataland Surveys","Metaflux Realm",10000,"DGM",3668
-"C","regional",2024-05-08,"Big Dataland Surveys","Metaflux Realm",10000,"PDAL",3014
-"C","regional",2024-05-08,"Big Dataland Surveys","Metaflux Realm",10000,"SSP",0
-"C","regional",2024-05-09,"Dataland Register-Gazette","Circuit Confederation",1500,"CC",354
-"C","regional",2024-05-09,"Dataland Register-Gazette","Circuit Confederation",1500,"DGM",571
-"C","regional",2024-05-09,"Dataland Register-Gazette","Circuit Confederation",1500,"PDAL",576
+"C","regional",2024-05-09,"Dataland Register-Gazette","Circuit Confederation",1500,"CC",314
+"C","regional",2024-05-09,"Dataland Register-Gazette","Circuit Confederation",1500,"DGM",484
+"C","regional",2024-05-09,"Dataland Register-Gazette","Circuit Confederation",1500,"PDAL",702
 "C","regional",2024-05-09,"Dataland Register-Gazette","Circuit Confederation",1500,"SSP",0
-"C","regional",2024-05-09,"Conference Board of Dataland","Metaflux Realm",3000,"CC",971
-"C","regional",2024-05-09,"Conference Board of Dataland","Metaflux Realm",3000,"DGM",988
-"C","regional",2024-05-09,"Conference Board of Dataland","Metaflux Realm",3000,"PDAL",1041
-"C","regional",2024-05-09,"Conference Board of Dataland","Metaflux Realm",3000,"SSP",0
-"C","regional",2024-05-11,"Big Dataland Surveys","Synapse Territories",10000,"CC",1517
-"C","regional",2024-05-11,"Big Dataland Surveys","Synapse Territories",10000,"DGM",3169
-"C","regional",2024-05-11,"Big Dataland Surveys","Synapse Territories",10000,"PDAL",2787
-"C","regional",2024-05-11,"Big Dataland Surveys","Synapse Territories",10000,"SSP",2528
-"C","regional",2024-05-11,"Dataland Register-Gazette","Circuit Confederation",1500,"CC",314
-"C","regional",2024-05-11,"Dataland Register-Gazette","Circuit Confederation",1500,"DGM",484
-"C","regional",2024-05-11,"Dataland Register-Gazette","Circuit Confederation",1500,"PDAL",702
-"C","regional",2024-05-11,"Dataland Register-Gazette","Circuit Confederation",1500,"SSP",0
-"C","regional",2024-05-12,"Dataland Register-Gazette","Metaflux Realm",1500,"CC",459
-"C","regional",2024-05-12,"Dataland Register-Gazette","Metaflux Realm",1500,"DGM",508
-"C","regional",2024-05-12,"Dataland Register-Gazette","Metaflux Realm",1500,"PDAL",534
-"C","regional",2024-05-12,"Dataland Register-Gazette","Metaflux Realm",1500,"SSP",0
-"C","national",2024-04-03,"Dataland Daily","National",200,"CC",49
-"C","national",2024-04-03,"Dataland Daily","National",200,"DGM",70
-"C","national",2024-04-03,"Dataland Daily","National",200,"PDAL",63
-"C","national",2024-04-03,"Dataland Daily","National",200,"SSP",18
-"C","national",2024-04-04,"Dataland Daily","National",200,"CC",58
-"C","national",2024-04-04,"Dataland Daily","National",200,"DGM",61
-"C","national",2024-04-04,"Dataland Daily","National",200,"PDAL",66
-"C","national",2024-04-04,"Dataland Daily","National",200,"SSP",15
-"C","national",2024-04-06,"Dataland Daily","National",200,"CC",32
-"C","national",2024-04-06,"Dataland Daily","National",200,"DGM",88
-"C","national",2024-04-06,"Dataland Daily","National",200,"PDAL",65
-"C","national",2024-04-06,"Dataland Daily","National",200,"SSP",14
-"C","national",2024-04-06,"Dataland Daily","National",200,"CC",44
-"C","national",2024-04-06,"Dataland Daily","National",200,"DGM",81
-"C","national",2024-04-06,"Dataland Daily","National",200,"PDAL",63
-"C","national",2024-04-06,"Dataland Daily","National",200,"SSP",11
-"C","national",2024-04-08,"Dataland Daily","National",200,"CC",50
-"C","national",2024-04-08,"Dataland Daily","National",200,"DGM",69
-"C","national",2024-04-08,"Dataland Daily","National",200,"PDAL",64
-"C","national",2024-04-08,"Dataland Daily","National",200,"SSP",18
-"C","national",2024-04-08,"Big Dataland Surveys","National",10000,"CC",2368
-"C","national",2024-04-08,"Big Dataland Surveys","National",10000,"DGM",4123
-"C","national",2024-04-08,"Big Dataland Surveys","National",10000,"PDAL",2788
-"C","national",2024-04-08,"Big Dataland Surveys","National",10000,"SSP",721
-"C","national",2024-04-09,"Dataland Daily","National",200,"CC",43
-"C","national",2024-04-09,"Dataland Daily","National",200,"DGM",80
-"C","national",2024-04-09,"Dataland Daily","National",200,"PDAL",66
-"C","national",2024-04-09,"Dataland Daily","National",200,"SSP",11
-"C","national",2024-04-10,"Dataland Daily","National",200,"CC",41
-"C","national",2024-04-10,"Dataland Daily","National",200,"DGM",82
-"C","national",2024-04-10,"Dataland Daily","National",200,"PDAL",57
+"C","regional",2024-05-10,"Big Dataland Surveys","Synapse Territories",10000,"CC",1517
+"C","regional",2024-05-10,"Big Dataland Surveys","Synapse Territories",10000,"DGM",3169
+"C","regional",2024-05-10,"Big Dataland Surveys","Synapse Territories",10000,"PDAL",2787
+"C","regional",2024-05-10,"Big Dataland Surveys","Synapse Territories",10000,"SSP",2528
+"C","regional",2024-05-10,"Dataland Register-Gazette","Metaflux Realm",1500,"CC",459
+"C","regional",2024-05-10,"Dataland Register-Gazette","Metaflux Realm",1500,"DGM",508
+"C","regional",2024-05-10,"Dataland Register-Gazette","Metaflux Realm",1500,"PDAL",534
+"C","regional",2024-05-10,"Dataland Register-Gazette","Metaflux Realm",1500,"SSP",0
+"C","national",2024-04-02,"Dataland Daily","National",200,"CC",49
+"C","national",2024-04-02,"Dataland Daily","National",200,"DGM",70
+"C","national",2024-04-02,"Dataland Daily","National",200,"PDAL",63
+"C","national",2024-04-02,"Dataland Daily","National",200,"SSP",18
+"C","national",2024-04-03,"Dataland Daily","National",200,"CC",58
+"C","national",2024-04-03,"Dataland Daily","National",200,"DGM",61
+"C","national",2024-04-03,"Dataland Daily","National",200,"PDAL",66
+"C","national",2024-04-03,"Dataland Daily","National",200,"SSP",15
+"C","national",2024-04-04,"Dataland Daily","National",200,"CC",44
+"C","national",2024-04-04,"Dataland Daily","National",200,"DGM",81
+"C","national",2024-04-04,"Dataland Daily","National",200,"PDAL",63
+"C","national",2024-04-04,"Dataland Daily","National",200,"SSP",11
+"C","national",2024-04-05,"Dataland Daily","National",200,"CC",32
+"C","national",2024-04-05,"Dataland Daily","National",200,"DGM",88
+"C","national",2024-04-05,"Dataland Daily","National",200,"PDAL",65
+"C","national",2024-04-05,"Dataland Daily","National",200,"SSP",14
+"C","national",2024-04-06,"Dataland Daily","National",200,"CC",50
+"C","national",2024-04-06,"Dataland Daily","National",200,"DGM",69
+"C","national",2024-04-06,"Dataland Daily","National",200,"PDAL",64
+"C","national",2024-04-06,"Dataland Daily","National",200,"SSP",18
+"C","national",2024-04-06,"Big Dataland Surveys","National",10000,"CC",2368
+"C","national",2024-04-06,"Big Dataland Surveys","National",10000,"DGM",4123
+"C","national",2024-04-06,"Big Dataland Surveys","National",10000,"PDAL",2788
+"C","national",2024-04-06,"Big Dataland Surveys","National",10000,"SSP",721
+"C","national",2024-04-07,"Dataland Daily","National",200,"CC",43
+"C","national",2024-04-07,"Dataland Daily","National",200,"DGM",80
+"C","national",2024-04-07,"Dataland Daily","National",200,"PDAL",66
+"C","national",2024-04-07,"Dataland Daily","National",200,"SSP",11
+"C","national",2024-04-08,"Dataland Daily","National",200,"CC",41
+"C","national",2024-04-08,"Dataland Daily","National",200,"DGM",82
+"C","national",2024-04-08,"Dataland Daily","National",200,"PDAL",57
+"C","national",2024-04-08,"Dataland Daily","National",200,"SSP",20
+"C","national",2024-04-09,"Dataland Daily","National",200,"CC",49
+"C","national",2024-04-09,"Dataland Daily","National",200,"DGM",57
+"C","national",2024-04-09,"Dataland Daily","National",200,"PDAL",84
+"C","national",2024-04-09,"Dataland Daily","National",200,"SSP",10
+"C","national",2024-04-10,"Dataland Daily","National",200,"CC",52
+"C","national",2024-04-10,"Dataland Daily","National",200,"DGM",64
+"C","national",2024-04-10,"Dataland Daily","National",200,"PDAL",65
 "C","national",2024-04-10,"Dataland Daily","National",200,"SSP",20
-"C","national",2024-04-11,"Dataland Daily","National",200,"CC",52
-"C","national",2024-04-11,"Dataland Daily","National",200,"DGM",64
-"C","national",2024-04-11,"Dataland Daily","National",200,"PDAL",65
-"C","national",2024-04-11,"Dataland Daily","National",200,"SSP",20
-"C","national",2024-04-11,"Dataland Daily","National",200,"CC",49
-"C","national",2024-04-11,"Dataland Daily","National",200,"DGM",57
-"C","national",2024-04-11,"Dataland Daily","National",200,"PDAL",84
-"C","national",2024-04-11,"Dataland Daily","National",200,"SSP",10
-"C","national",2024-04-12,"Dataland Daily","National",200,"CC",50
-"C","national",2024-04-12,"Dataland Daily","National",200,"DGM",66
-"C","national",2024-04-12,"Dataland Daily","National",200,"PDAL",76
-"C","national",2024-04-12,"Dataland Daily","National",200,"SSP",8
-"C","national",2024-04-12,"Big Dataland Surveys","National",10000,"CC",2260
-"C","national",2024-04-12,"Big Dataland Surveys","National",10000,"DGM",3942
-"C","national",2024-04-12,"Big Dataland Surveys","National",10000,"PDAL",3113
-"C","national",2024-04-12,"Big Dataland Surveys","National",10000,"SSP",685
-"C","national",2024-04-14,"Dataland Daily","National",200,"CC",43
-"C","national",2024-04-14,"Dataland Daily","National",200,"DGM",81
-"C","national",2024-04-14,"Dataland Daily","National",200,"PDAL",61
+"C","national",2024-04-11,"Dataland Daily","National",200,"CC",50
+"C","national",2024-04-11,"Dataland Daily","National",200,"DGM",66
+"C","national",2024-04-11,"Dataland Daily","National",200,"PDAL",76
+"C","national",2024-04-11,"Dataland Daily","National",200,"SSP",8
+"C","national",2024-04-11,"Big Dataland Surveys","National",10000,"CC",2260
+"C","national",2024-04-11,"Big Dataland Surveys","National",10000,"DGM",3942
+"C","national",2024-04-11,"Big Dataland Surveys","National",10000,"PDAL",3113
+"C","national",2024-04-11,"Big Dataland Surveys","National",10000,"SSP",685
+"C","national",2024-04-12,"Dataland Daily","National",200,"CC",43
+"C","national",2024-04-12,"Dataland Daily","National",200,"DGM",81
+"C","national",2024-04-12,"Dataland Daily","National",200,"PDAL",61
+"C","national",2024-04-12,"Dataland Daily","National",200,"SSP",15
+"C","national",2024-04-13,"Dataland Daily","National",200,"CC",52
+"C","national",2024-04-13,"Dataland Daily","National",200,"DGM",73
+"C","national",2024-04-13,"Dataland Daily","National",200,"PDAL",63
+"C","national",2024-04-13,"Dataland Daily","National",200,"SSP",13
+"C","national",2024-04-14,"Dataland Daily","National",200,"CC",25
+"C","national",2024-04-14,"Dataland Daily","National",200,"DGM",84
+"C","national",2024-04-14,"Dataland Daily","National",200,"PDAL",76
 "C","national",2024-04-14,"Dataland Daily","National",200,"SSP",15
-"C","national",2024-04-15,"Dataland Daily","National",200,"CC",52
-"C","national",2024-04-15,"Dataland Daily","National",200,"DGM",73
-"C","national",2024-04-15,"Dataland Daily","National",200,"PDAL",63
-"C","national",2024-04-15,"Dataland Daily","National",200,"SSP",13
-"C","national",2024-04-16,"Dataland Daily","National",200,"CC",25
-"C","national",2024-04-16,"Dataland Daily","National",200,"DGM",84
-"C","national",2024-04-16,"Dataland Daily","National",200,"PDAL",76
-"C","national",2024-04-16,"Dataland Daily","National",200,"SSP",15
-"C","national",2024-04-17,"Dataland Daily","National",200,"CC",34
-"C","national",2024-04-17,"Dataland Daily","National",200,"DGM",66
-"C","national",2024-04-17,"Dataland Daily","National",200,"PDAL",83
-"C","national",2024-04-17,"Dataland Daily","National",200,"SSP",17
-"C","national",2024-04-17,"Dataland Daily","National",200,"CC",49
-"C","national",2024-04-17,"Dataland Daily","National",200,"DGM",86
-"C","national",2024-04-17,"Dataland Daily","National",200,"PDAL",58
-"C","national",2024-04-17,"Dataland Daily","National",200,"SSP",7
-"C","national",2024-04-18,"Dataland Daily","National",200,"CC",32
-"C","national",2024-04-18,"Dataland Daily","National",200,"DGM",88
-"C","national",2024-04-18,"Dataland Daily","National",200,"PDAL",68
-"C","national",2024-04-18,"Dataland Daily","National",200,"SSP",12
-"C","national",2024-04-20,"Dataland Daily","National",200,"CC",31
-"C","national",2024-04-20,"Dataland Daily","National",200,"DGM",104
-"C","national",2024-04-20,"Dataland Daily","National",200,"PDAL",52
-"C","national",2024-04-20,"Dataland Daily","National",200,"SSP",13
-"C","national",2024-04-21,"Dataland Daily","National",200,"CC",38
-"C","national",2024-04-21,"Dataland Daily","National",200,"DGM",77
-"C","national",2024-04-21,"Dataland Daily","National",200,"PDAL",71
-"C","national",2024-04-21,"Dataland Daily","National",200,"SSP",14
-"C","national",2024-04-21,"Dataland Daily","National",200,"CC",43
-"C","national",2024-04-21,"Dataland Daily","National",200,"DGM",75
-"C","national",2024-04-21,"Dataland Daily","National",200,"PDAL",63
-"C","national",2024-04-21,"Dataland Daily","National",200,"SSP",19
-"C","national",2024-04-23,"Dataland Daily","National",200,"CC",38
-"C","national",2024-04-23,"Dataland Daily","National",200,"DGM",74
-"C","national",2024-04-23,"Dataland Daily","National",200,"PDAL",73
-"C","national",2024-04-23,"Dataland Daily","National",200,"SSP",14
-"C","national",2024-04-23,"No Province Left Behind","National",500,"CC",116
-"C","national",2024-04-23,"No Province Left Behind","National",500,"DGM",193
-"C","national",2024-04-23,"No Province Left Behind","National",500,"PDAL",161
-"C","national",2024-04-23,"No Province Left Behind","National",500,"SSP",30
-"C","national",2024-04-23,"Dataland Daily","National",200,"CC",49
-"C","national",2024-04-23,"Dataland Daily","National",200,"DGM",71
-"C","national",2024-04-23,"Dataland Daily","National",200,"PDAL",68
-"C","national",2024-04-23,"Dataland Daily","National",200,"SSP",12
-"C","national",2024-04-25,"Dataland Daily","National",200,"CC",35
-"C","national",2024-04-25,"Dataland Daily","National",200,"DGM",78
-"C","national",2024-04-25,"Dataland Daily","National",200,"PDAL",66
-"C","national",2024-04-25,"Dataland Daily","National",200,"SSP",22
-"C","national",2024-04-26,"Dataland Daily","National",200,"CC",47
-"C","national",2024-04-26,"Dataland Daily","National",200,"DGM",80
-"C","national",2024-04-26,"Dataland Daily","National",200,"PDAL",62
-"C","national",2024-04-26,"Dataland Daily","National",200,"SSP",11
-"C","national",2024-04-27,"Dataland Daily","National",200,"CC",45
+"C","national",2024-04-15,"Dataland Daily","National",200,"CC",49
+"C","national",2024-04-15,"Dataland Daily","National",200,"DGM",86
+"C","national",2024-04-15,"Dataland Daily","National",200,"PDAL",58
+"C","national",2024-04-15,"Dataland Daily","National",200,"SSP",7
+"C","national",2024-04-16,"Dataland Daily","National",200,"CC",34
+"C","national",2024-04-16,"Dataland Daily","National",200,"DGM",66
+"C","national",2024-04-16,"Dataland Daily","National",200,"PDAL",83
+"C","national",2024-04-16,"Dataland Daily","National",200,"SSP",17
+"C","national",2024-04-17,"Dataland Daily","National",200,"CC",32
+"C","national",2024-04-17,"Dataland Daily","National",200,"DGM",88
+"C","national",2024-04-17,"Dataland Daily","National",200,"PDAL",68
+"C","national",2024-04-17,"Dataland Daily","National",200,"SSP",12
+"C","national",2024-04-18,"Dataland Daily","National",200,"CC",31
+"C","national",2024-04-18,"Dataland Daily","National",200,"DGM",104
+"C","national",2024-04-18,"Dataland Daily","National",200,"PDAL",52
+"C","national",2024-04-18,"Dataland Daily","National",200,"SSP",13
+"C","national",2024-04-19,"Dataland Daily","National",200,"CC",43
+"C","national",2024-04-19,"Dataland Daily","National",200,"DGM",75
+"C","national",2024-04-19,"Dataland Daily","National",200,"PDAL",63
+"C","national",2024-04-19,"Dataland Daily","National",200,"SSP",19
+"C","national",2024-04-20,"Dataland Daily","National",200,"CC",38
+"C","national",2024-04-20,"Dataland Daily","National",200,"DGM",77
+"C","national",2024-04-20,"Dataland Daily","National",200,"PDAL",71
+"C","national",2024-04-20,"Dataland Daily","National",200,"SSP",14
+"C","national",2024-04-21,"Dataland Daily","National",200,"CC",49
+"C","national",2024-04-21,"Dataland Daily","National",200,"DGM",71
+"C","national",2024-04-21,"Dataland Daily","National",200,"PDAL",68
+"C","national",2024-04-21,"Dataland Daily","National",200,"SSP",12
+"C","national",2024-04-22,"Dataland Daily","National",200,"CC",38
+"C","national",2024-04-22,"Dataland Daily","National",200,"DGM",74
+"C","national",2024-04-22,"Dataland Daily","National",200,"PDAL",73
+"C","national",2024-04-22,"Dataland Daily","National",200,"SSP",14
+"C","national",2024-04-22,"No Province Left Behind","National",500,"CC",116
+"C","national",2024-04-22,"No Province Left Behind","National",500,"DGM",193
+"C","national",2024-04-22,"No Province Left Behind","National",500,"PDAL",161
+"C","national",2024-04-22,"No Province Left Behind","National",500,"SSP",30
+"C","national",2024-04-23,"Dataland Daily","National",200,"CC",35
+"C","national",2024-04-23,"Dataland Daily","National",200,"DGM",78
+"C","national",2024-04-23,"Dataland Daily","National",200,"PDAL",66
+"C","national",2024-04-23,"Dataland Daily","National",200,"SSP",22
+"C","national",2024-04-24,"Dataland Daily","National",200,"CC",47
+"C","national",2024-04-24,"Dataland Daily","National",200,"DGM",80
+"C","national",2024-04-24,"Dataland Daily","National",200,"PDAL",62
+"C","national",2024-04-24,"Dataland Daily","National",200,"SSP",11
+"C","national",2024-04-25,"Dataland Daily","National",200,"CC",45
+"C","national",2024-04-25,"Dataland Daily","National",200,"DGM",80
+"C","national",2024-04-25,"Dataland Daily","National",200,"PDAL",56
+"C","national",2024-04-25,"Dataland Daily","National",200,"SSP",18
+"C","national",2024-04-26,"Dataland Daily","National",200,"CC",54
+"C","national",2024-04-26,"Dataland Daily","National",200,"DGM",72
+"C","national",2024-04-26,"Dataland Daily","National",200,"PDAL",60
+"C","national",2024-04-26,"Dataland Daily","National",200,"SSP",13
+"C","national",2024-04-27,"Dataland Daily","National",200,"CC",47
 "C","national",2024-04-27,"Dataland Daily","National",200,"DGM",80
-"C","national",2024-04-27,"Dataland Daily","National",200,"PDAL",56
-"C","national",2024-04-27,"Dataland Daily","National",200,"SSP",18
-"C","national",2024-04-28,"Dataland Daily","National",200,"CC",54
-"C","national",2024-04-28,"Dataland Daily","National",200,"DGM",72
-"C","national",2024-04-28,"Dataland Daily","National",200,"PDAL",60
-"C","national",2024-04-28,"Dataland Daily","National",200,"SSP",13
-"C","national",2024-04-29,"Dataland Daily","National",200,"CC",47
-"C","national",2024-04-29,"Dataland Daily","National",200,"DGM",80
-"C","national",2024-04-29,"Dataland Daily","National",200,"PDAL",61
-"C","national",2024-04-29,"Dataland Daily","National",200,"SSP",12
-"C","national",2024-04-30,"Dataland Daily","National",200,"CC",48
-"C","national",2024-04-30,"Dataland Daily","National",200,"DGM",75
-"C","national",2024-04-30,"Dataland Daily","National",200,"PDAL",72
-"C","national",2024-04-30,"Dataland Daily","National",200,"SSP",5
-"C","national",2024-04-30,"Dataland Daily","National",200,"CC",34
-"C","national",2024-04-30,"Dataland Daily","National",200,"DGM",68
-"C","national",2024-04-30,"Dataland Daily","National",200,"PDAL",82
-"C","national",2024-04-30,"Dataland Daily","National",200,"SSP",16
-"C","national",2024-05-01,"Proudly Paid For Polling","National",1000,"CC",309
-"C","national",2024-05-01,"Proudly Paid For Polling","National",1000,"DGM",332
-"C","national",2024-05-01,"Proudly Paid For Polling","National",1000,"PDAL",300
-"C","national",2024-05-01,"Proudly Paid For Polling","National",1000,"SSP",59
-"C","national",2024-05-02,"Dataland Daily","National",200,"CC",45
-"C","national",2024-05-02,"Dataland Daily","National",200,"DGM",67
-"C","national",2024-05-02,"Dataland Daily","National",200,"PDAL",71
-"C","national",2024-05-02,"Dataland Daily","National",200,"SSP",17
-"C","national",2024-05-03,"Dataland Daily","National",200,"CC",41
-"C","national",2024-05-03,"Dataland Daily","National",200,"DGM",80
-"C","national",2024-05-03,"Dataland Daily","National",200,"PDAL",62
-"C","national",2024-05-03,"Dataland Daily","National",200,"SSP",16
-"C","national",2024-05-03,"Dataland Daily","National",200,"CC",50
-"C","national",2024-05-03,"Dataland Daily","National",200,"DGM",62
-"C","national",2024-05-03,"Dataland Daily","National",200,"PDAL",70
-"C","national",2024-05-03,"Dataland Daily","National",200,"SSP",18
-"C","national",2024-05-04,"Dataland Daily","National",200,"CC",51
-"C","national",2024-05-04,"Dataland Daily","National",200,"DGM",72
-"C","national",2024-05-04,"Dataland Daily","National",200,"PDAL",66
-"C","national",2024-05-04,"Dataland Daily","National",200,"SSP",10
-"C","national",2024-05-05,"Dataland Daily","National",200,"CC",52
-"C","national",2024-05-05,"Dataland Daily","National",200,"DGM",61
-"C","national",2024-05-05,"Dataland Daily","National",200,"PDAL",71
-"C","national",2024-05-05,"Dataland Daily","National",200,"SSP",16
-"C","national",2024-05-06,"Dataland Daily","National",200,"CC",42
-"C","national",2024-05-06,"Dataland Daily","National",200,"DGM",71
-"C","national",2024-05-06,"Dataland Daily","National",200,"PDAL",72
-"C","national",2024-05-06,"Dataland Daily","National",200,"SSP",14
-"C","national",2024-05-08,"Dataland Daily","National",200,"CC",49
-"C","national",2024-05-08,"Dataland Daily","National",200,"DGM",64
-"C","national",2024-05-08,"Dataland Daily","National",200,"PDAL",76
-"C","national",2024-05-08,"Dataland Daily","National",200,"SSP",11
-"C","national",2024-05-08,"Dataland Daily","National",200,"CC",35
-"C","national",2024-05-08,"Dataland Daily","National",200,"DGM",95
-"C","national",2024-05-08,"Dataland Daily","National",200,"PDAL",53
-"C","national",2024-05-08,"Dataland Daily","National",200,"SSP",18
-"C","national",2024-05-10,"Dataland Daily","National",200,"CC",29
-"C","national",2024-05-10,"Dataland Daily","National",200,"DGM",86
-"C","national",2024-05-10,"Dataland Daily","National",200,"PDAL",74
-"C","national",2024-05-10,"Dataland Daily","National",200,"SSP",11
-"C","national",2024-05-10,"Dataland Daily","National",200,"CC",33
-"C","national",2024-05-10,"Dataland Daily","National",200,"DGM",87
-"C","national",2024-05-10,"Dataland Daily","National",200,"PDAL",73
-"C","national",2024-05-10,"Dataland Daily","National",200,"SSP",7
-"C","national",2024-05-10,"Dataland Register-Gazette","National",1500,"CC",341
-"C","national",2024-05-10,"Dataland Register-Gazette","National",1500,"DGM",530
-"C","national",2024-05-10,"Dataland Register-Gazette","National",1500,"PDAL",539
-"C","national",2024-05-10,"Dataland Register-Gazette","National",1500,"SSP",90
-"C","national",2024-05-11,"Dataland Daily","National",200,"CC",39
-"C","national",2024-05-11,"Dataland Daily","National",200,"DGM",81
-"C","national",2024-05-11,"Dataland Daily","National",200,"PDAL",64
-"C","national",2024-05-11,"Dataland Daily","National",200,"SSP",16
+"C","national",2024-04-27,"Dataland Daily","National",200,"PDAL",61
+"C","national",2024-04-27,"Dataland Daily","National",200,"SSP",12
+"C","national",2024-04-28,"Dataland Daily","National",200,"CC",34
+"C","national",2024-04-28,"Dataland Daily","National",200,"DGM",68
+"C","national",2024-04-28,"Dataland Daily","National",200,"PDAL",82
+"C","national",2024-04-28,"Dataland Daily","National",200,"SSP",16
+"C","national",2024-04-29,"Dataland Daily","National",200,"CC",48
+"C","national",2024-04-29,"Dataland Daily","National",200,"DGM",75
+"C","national",2024-04-29,"Dataland Daily","National",200,"PDAL",72
+"C","national",2024-04-29,"Dataland Daily","National",200,"SSP",5
+"C","national",2024-04-30,"Proudly Paid For Polling","National",1000,"CC",309
+"C","national",2024-04-30,"Proudly Paid For Polling","National",1000,"DGM",332
+"C","national",2024-04-30,"Proudly Paid For Polling","National",1000,"PDAL",300
+"C","national",2024-04-30,"Proudly Paid For Polling","National",1000,"SSP",59
+"C","national",2024-04-30,"Dataland Daily","National",200,"CC",45
+"C","national",2024-04-30,"Dataland Daily","National",200,"DGM",67
+"C","national",2024-04-30,"Dataland Daily","National",200,"PDAL",71
+"C","national",2024-04-30,"Dataland Daily","National",200,"SSP",17
+"C","national",2024-05-01,"Dataland Daily","National",200,"CC",50
+"C","national",2024-05-01,"Dataland Daily","National",200,"DGM",62
+"C","national",2024-05-01,"Dataland Daily","National",200,"PDAL",70
+"C","national",2024-05-01,"Dataland Daily","National",200,"SSP",18
+"C","national",2024-05-02,"Dataland Daily","National",200,"CC",41
+"C","national",2024-05-02,"Dataland Daily","National",200,"DGM",80
+"C","national",2024-05-02,"Dataland Daily","National",200,"PDAL",62
+"C","national",2024-05-02,"Dataland Daily","National",200,"SSP",16
+"C","national",2024-05-03,"Dataland Daily","National",200,"CC",51
+"C","national",2024-05-03,"Dataland Daily","National",200,"DGM",72
+"C","national",2024-05-03,"Dataland Daily","National",200,"PDAL",66
+"C","national",2024-05-03,"Dataland Daily","National",200,"SSP",10
+"C","national",2024-05-04,"Dataland Daily","National",200,"CC",52
+"C","national",2024-05-04,"Dataland Daily","National",200,"DGM",61
+"C","national",2024-05-04,"Dataland Daily","National",200,"PDAL",71
+"C","national",2024-05-04,"Dataland Daily","National",200,"SSP",16
+"C","national",2024-05-05,"Dataland Daily","National",200,"CC",42
+"C","national",2024-05-05,"Dataland Daily","National",200,"DGM",71
+"C","national",2024-05-05,"Dataland Daily","National",200,"PDAL",72
+"C","national",2024-05-05,"Dataland Daily","National",200,"SSP",14
+"C","national",2024-05-06,"Dataland Daily","National",200,"CC",35
+"C","national",2024-05-06,"Dataland Daily","National",200,"DGM",95
+"C","national",2024-05-06,"Dataland Daily","National",200,"PDAL",53
+"C","national",2024-05-06,"Dataland Daily","National",200,"SSP",18
+"C","national",2024-05-07,"Dataland Daily","National",200,"CC",49
+"C","national",2024-05-07,"Dataland Daily","National",200,"DGM",64
+"C","national",2024-05-07,"Dataland Daily","National",200,"PDAL",76
+"C","national",2024-05-07,"Dataland Daily","National",200,"SSP",11
+"C","national",2024-05-08,"Dataland Daily","National",200,"CC",33
+"C","national",2024-05-08,"Dataland Daily","National",200,"DGM",87
+"C","national",2024-05-08,"Dataland Daily","National",200,"PDAL",73
+"C","national",2024-05-08,"Dataland Daily","National",200,"SSP",7
+"C","national",2024-05-08,"Dataland Register-Gazette","National",1500,"CC",341
+"C","national",2024-05-08,"Dataland Register-Gazette","National",1500,"DGM",530
+"C","national",2024-05-08,"Dataland Register-Gazette","National",1500,"PDAL",539
+"C","national",2024-05-08,"Dataland Register-Gazette","National",1500,"SSP",90
+"C","national",2024-05-09,"Dataland Daily","National",200,"CC",29
+"C","national",2024-05-09,"Dataland Daily","National",200,"DGM",86
+"C","national",2024-05-09,"Dataland Daily","National",200,"PDAL",74
+"C","national",2024-05-09,"Dataland Daily","National",200,"SSP",11
+"C","national",2024-05-10,"Dataland Daily","National",200,"CC",39
+"C","national",2024-05-10,"Dataland Daily","National",200,"DGM",81
+"C","national",2024-05-10,"Dataland Daily","National",200,"PDAL",64
+"C","national",2024-05-10,"Dataland Daily","National",200,"SSP",16
