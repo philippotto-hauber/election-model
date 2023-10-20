@@ -27,10 +27,16 @@ dates_campaign <- load_dates_election_campaign()
 data_for_stan[["n_days"]] <- length(dates_campaign)
 
 # compile/load compiled stan model
-# model <- cmdstanr::cmdstan_model(here::here("model", "election_model.stan"), 
-#                                  compile=TRUE, force=TRUE)
-model <- cmdstanr::cmdstan_model(exe_file = here::here("model", "election_model.exe"), 
-                                 compile=FALSE)
+model <- cmdstanr::cmdstan_model(
+    here::here("model", "election_model.stan"), 
+    compile=TRUE,
+    force=TRUE
+)
+
+# model <- cmdstanr::cmdstan_model(
+#     exe_file = here::here("model", "election_model.exe"),
+#     compile=FALSE
+# )
 
 # load priors
 priors <- readRDS(here::here("priors", paste0("priors.Rds")))
@@ -52,7 +58,7 @@ for (scenario in scenarios) {
                                  priors[[scenario]])
 
     if (scenario == "B"){
-        # scenario B only has 1 regional polls. This causes problems in Stan 
+        # scenario B only has 1 regional poll. This causes problems in Stan 
         # where the variables refering to regional polls are declared as arrays (of size 1)
         # In this case, Stan requires the data to have a dim attribute!
         # The easiest way of doing this is by converting the variables to arrays
@@ -72,7 +78,7 @@ for (scenario in scenarios) {
                         iter_warmup = mcmc_options[["n_warmup"]],
                         iter_sampling = mcmc_options[["n_sampling"]],
                         refresh = mcmc_options[["n_refresh"]],
-                        seed = 1843
+                        seed = mcmc_options[["seed"]]
                         )
     out <- rstan::read_stan_csv(fit$output_files())
 
