@@ -4,7 +4,7 @@ plot_prob_win_election_over_time <- function(df, plt_title_prefix) {
     geom_bar(position = "stack", stat = "identity", width = 1) +
     ggsci::scale_fill_jco() + 
     ggsci::scale_color_jco() +
-    labs(title = paste0(plt_title_prefix, ": Probability of winning the election over time"))+
+    labs(title = paste0(plt_title_prefix, ": Probability of winning the election"))+
     ylab("probability")+
     xlab("") +
     theme(
