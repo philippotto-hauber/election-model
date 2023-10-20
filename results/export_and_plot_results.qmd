@@ -10,6 +10,15 @@ format:
         html-math-method: katex
 ---
 
+This notebook loads the MCMC output from the script `estimate_models.r` and calculates 
+
+- the probability of each party winning the election
+- the probability of each party winning the electoral votes in the different states
+- the posterior density of the expected vote shares of each party on election day
+- the posterior distribution of the expected vote shares over time at the state, regional and national level
+
+Note that the plots below show the results for the entire election campaign, i.e. up until election day. The results written to csv are filtered to only include win probabilities and mean expected vote shares until the last day for which polls are available in a given scenario. 
+
 ## Libraries, functions
 
 ```{r}
