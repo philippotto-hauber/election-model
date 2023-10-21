@@ -40,6 +40,7 @@ elec_dat <- rename(
 )
 ```
 
+### Election winners
 ```{r}
 elec_dat %>% 
     select(
@@ -69,7 +70,72 @@ elec_dat %>%
 - three parties have won elections in the past
 - PDAL by far the most 
 
-Election results at the state level
+### Popular vote
+
+```{r}
+load_pop_weights("national") %>%
+    as.data.frame() %>% 
+    tibble::rownames_to_column(var = "state") %>%
+    rename(pop_w = ".") -> df_state_weights 
+
+elec_dat %>%
+    select(year, state = province, cc, dgm, pdal, ssp) %>%
+    tidyr::pivot_longer(
+        cols = -c("year", "state"), 
+        names_to = "party", 
+        values_to = "vote_share"
+    ) %>%
+    merge(
+        df_state_weights,
+        by = "state"
+    ) %>% 
+    mutate(w_vote_share = vote_share * pop_w) %>% 
+    group_by(year, party) %>% 
+    summarise(nat_pop_share = sum(w_vote_share)) -> pop_vote
+
+elec_dat %>% 
+    select(
+        year,
+        national_winner
+    ) %>% 
+    distinct() -> nat_winner
+
+pop_vote %>% 
+    merge(
+        nat_winner, by = "year"
+    ) %>%
+    mutate(
+        national_winner = ifelse(
+            party == national_winner,
+            nat_pop_share,
+            NA
+        )
+    ) -> pop_vote
+
+ggplot(
+    pop_vote,
+    aes(
+        x = year,
+        y = nat_pop_share,
+        color = party
+        )
+    ) +
+    geom_line() +
+    geom_point(
+        aes(
+            y = national_winner, 
+            fill = party
+        )
+    )+
+    ggsci::scale_color_jco() +
+    ggsci::scale_fill_jco() +    
+    labs(title = "Share of popular vote", caption = "Dots highlight the winner of the electoral college.")
+```
+
+- stable but noisy
+- election winner not always the winner of the popular vote: the CC has won elections while obtaining just a quarter of the popular vote
+
+### state-level results
 ```{r}
 elec_dat %>%
     select(year, province, cc, dgm, pdal, ssp) %>%
@@ -98,8 +164,7 @@ Vector of states where one party has dominated the past elections
 dominated_states <- c(
     "Amperville",
     "Binaryshire",
-    "Neuronia",
-    "Qunatumridge"
+    "Neuronia"
 )
 ```
 ## Historic macroeconomic data
@@ -229,7 +294,223 @@ macro_scenarios %>%
 
 # Election results vs. macro fundamentals
 
-Is there a relationship between macroeconomic fundamentals and election results
+
+
+## Model
+
+### regressand $y$
+
+```{r}
+elec_dat %>% 
+    select(
+        year,
+        state = province,
+        cc,
+        dgm,
+        pdal,
+        ssp
+    ) %>%
+    tidyr::pivot_longer(
+        cols = -c(state, year),
+        names_to = "party",
+        values_to = "value"
+    )-> reg_y
+
+```
+
+### regressors $X$
+
+Load parties (and convert to lower case for consistency)
+```{r}
+parties <- tolower(load_parties())
+```
+
+```{r}
+macro_dat %>% 
+    select(
+        election, 
+        gdp,
+        inf,
+        u, 
+        sto, 
+        quarter
+    ) %>%
+    filter(
+        quarter %in% c(1, 4),
+        election >= 1984
+    ) %>%
+    tidyr::pivot_longer(
+        cols = c(gdp, inf, u, sto),
+        names_to = "macrovar",
+        values_to = "values"
+    ) %>%
+    mutate(quarter = paste0("Q", quarter)) %>% 
+    tidyr::pivot_wider(
+        id_cols = c(election, macrovar),
+        names_from = quarter,
+        values_from = values
+    ) -> reg_X
+
+elec_dat %>%
+    select(
+        election = year,
+        party_in_power,
+    ) %>% 
+    distinct() -> reg_X_dummy
+
+reg_X_dummy$party_in_power <- sapply(
+    reg_X_dummy$party_in_power,
+    function(x) {
+        which(x == parties)
+    }
+)
+
+reg_X <- merge(
+    reg_X,
+    reg_X_dummy,
+    by = "election")
+```
+
+### predictors $X^{f}$
+
+```{r}
+macro_scenarios %>% 
+    select(
+        scenario,
+        election,
+        quarter,
+        gdp,
+        u, 
+        inf,
+        sto
+    ) %>%
+    tidyr::pivot_longer(
+        cols = -c(election, quarter, scenario),
+        names_to = "macrovar",
+        values_to = "value"
+    ) %>%
+    mutate(
+        quarter = paste0(
+            "Q", 
+            as.character(quarter)
+        )
+    ) %>% 
+    tidyr::pivot_wider(
+        id_cols = c(election, macrovar, scenario),
+        names_from = quarter,
+        values_from = value) -> reg_Xfore
+
+    reg_Xfore$party_in_power <- which("pdal" == parties)
+```
+
+### Generate conditional forecasts
+
+Loop over states and macro variables, producing a forecast of the vote share in all scenarios
+
+```{r}
+scenarios <- load_scenarios()
+n_parties_by_state <- load_n_parties_by_geography("state")
+states <- load_states()
+contested_states <- states[!(states %in% dominated_states)]
+macrovars <- c("gdp", "u", "inf", "sto")
+df_fund_fcast <- data.frame()
+for (s in contested_states) {
+    # regressand
+    reg_y %>%
+        filter(
+            state == s,
+            value != 0
+        ) %>%
+        tidyr::pivot_wider(
+            id_cols = c(year, state),
+            names_from = party,
+            values_from = value
+        ) %>%        
+        arrange(year) %>% 
+        select(-c(year, state)) %>% 
+        as.matrix() %>% 
+        DirichletReg::DR_data() -> reg_y_tmp
+
+    for (mv in macrovars) {
+        # regressors
+        reg_X %>% 
+            filter(
+                macrovar == mv) -> reg_X_tmp
+
+        # estimate model
+        dirreg <- DirichletReg::DirichReg(
+            reg_y_tmp ~ Q1 + Q4 + party_in_power,
+            reg_X_tmp
+        )
+
+        # predict
+        for (scen in scenarios) {
+            reg_Xfore %>% 
+                filter(
+                    macrovar == mv,
+                    scenario == scen
+            ) -> reg_Xfore_tmp
+
+            predict(
+                dirreg, 
+                newdata = reg_Xfore_tmp
+            ) -> pred
+            print(pred)
+            df_fund_fcast <- rbind(
+                df_fund_fcast, 
+                data.frame(
+                    state = s, 
+                    scenario = scen,
+                    party = parties[1:n_parties_by_state[s]],
+                    macrovar = mv,
+                    value = as.vector(pred)
+                )
+            ) 
+        }
+    }
+}
+```
+
+Average forecasts over macro variables
+
+```{r}
+df_fund_fcast %>% 
+    group_by(
+        state,
+        scenario,
+        party) %>%
+    summarise(value = mean(value)) -> df_fund_fcast
+```
+
+Check that all vote share in a given state and scenario sum to 1
+
+```{r}
+df_fund_fcast %>%
+    group_by(
+        state,
+        scenario
+    ) %>% 
+    summarise(
+        check_sum  = sum(value)
+    ) %>% 
+    mutate(
+        diff_check = check_sum - 1
+    ) %>% arrange(
+        desc(
+            abs(diff_check)
+        )
+    )
+```
+
+Rescale to avoid miniscule differences
+
+```{r}
+df_fund_fcast %>% 
+    group_by(state, scenario) %>% 
+    mutate(
+        value = value / sum(value)
+    ) -> df_fund_fcast
+```
 
 ## Simple model 
 
@@ -414,7 +695,7 @@ for (mv in macro_vars) {
                 select_party = parties[ind_p],
                 select_macrovar = mv)
             
-            if (significant_macro_impact(tmp_lm, crit_val = 0.1)) {
+            if (significant_macro_impact(tmp_lm, crit_val = 0.05)) {
                 pred <- c()
                 for (scen in scenarios) {
                     predict_vote_share(
@@ -511,7 +792,42 @@ merge(
     df_fund_fcast,
     df_pred,
     by = c("state", "party", "scenario"),
-    all.x = TRUE) -> df_fund_fcast
+    all.x = TRUE
+) -> df_fund_fcast
+```
+
+### Economic significance
+
+Above I only checked whether macroeconomic fundamentals had a *statistically* significant effect on the election outcome. To gauge the *economic* significance, I compare the predicted vote share in the different scenarios with the historical average (ignoring those vote shares for which no statistically significant effects were found)
+
+```{r}
+df_fund_fcast %>% 
+    mutate(
+        diff_voteshare = pred - vote_share
+    ) %>%
+    ggplot(aes(x = diff_voteshare)) +
+    geom_histogram(bindwidth = 0.001) +
+    labs(x = "", title = "Difference between conditional forecast and historical average")
+```
+
+```{r}
+df_fund_fcast %>% 
+    mutate(
+        diff_voteshare = pred - vote_share
+    ) %>%
+    filter(
+        diff_voteshare < -0.04
+    )
+```
+
+```{r}
+df_fund_fcast %>% 
+    mutate(
+        diff_voteshare = pred - vote_share
+    ) %>%
+    filter(
+        diff_voteshare > 0.05
+    )
 ```
 
 Set `NA` to original vote share and rescale so that the vote shares sum to 1! 
@@ -531,6 +847,8 @@ df_fund_fcast %>%
         pred_rescaled = pred_no_na/sum(pred_no_na)
     ) -> df_fund_fcast
 ```
+
+
 
 ## Plausibility check
 
