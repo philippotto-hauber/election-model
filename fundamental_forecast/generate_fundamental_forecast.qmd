@@ -8,9 +8,14 @@ format:
         toc-location: left
         self-contained-math: true
         html-math-method: katex
-        code-fold: false
-        code-summary: "Show code"
+        code-fold: show
 ---
+
+This vignette generates **fundamental forecasts of the vote shares on election day**. These serve as the prior on the latent voting intentions in the dynamic model that tracks the polling data. 
+
+The forecasts are generated using a simple model that relates past election results to all the available macro variables and then averages the forecasts. In some states one party has clearly dominated past elections. For these no forecasts are produced as it seems highly unlikely that macro fundamentals - particulary the in historical comparison moderate swings observed in the five scenarios - will play a large role in determining the outcome of the election in those states.
+
+This script exports a dataframe of the fundamental forecasts (`fundamental_forecasts.rds`).  In addition, it also exports the list of states in which one party has been historically dominant (`dominated_states.rds`) 
 
 ```{r}
 #| echo: false
@@ -169,7 +174,7 @@ dominated_states <- c(
 ```
 ## Historic macroeconomic data
 
-Load historic macro data
+Load and plot macro data
 
 ```{r}
 macro_dat <- read.csv(here::here("data", "dataland_economic_data_1984_2023.csv"))
@@ -185,9 +190,7 @@ macro_dat <- rename(
     inf = year_on_year_inflation,
     sto = year_on_year_stock_mkt_pct_change
 )
-```
 
-```{r}
 macro_dat %>% 
     select(-c(
         "year",
@@ -205,8 +208,12 @@ macro_dat %>%
         y = values
         )
     ) + 
-    geom_point(size = 0.4) +
-    geom_line(size = 0.5) +
+    geom_point(
+        size = 0.4
+    ) +
+    geom_line(
+        linewidth = 0.5
+    ) +
     facet_wrap(~variable, scales = "free_y") +
     labs(x = "", y = "y/y growth", title = "Macroeconomic variables", caption = "Quarterly data.")
 ```
@@ -288,15 +295,25 @@ macro_scenarios %>%
     facet_wrap(~ var, scales = "free_y")
 ```
 
+- overall, variation in macro variables well within historically observed volatility 
+
 - scenarios B and E: "business as usual", scenarios A and D: "boom", scenario C: "bust"
 
 - clear correlation across macro variables suggesting informational redundancies -> can maybe get away with including only one macro regressor. However, this assumes that the historical relationship between macro regressors and election outcomes is similar, i.e. that both unemployment rate and GDP growth can explain the historical vote shares equally well which need not be the case! Also, historically, the correlation between macro variables is not as strong as in the scenarios -> think fairly stable unemployment and massive swings in GDP growth during Covid
 
-# Election results vs. macro fundamentals
+# Fundamental forecast
 
-
+For each macro variable available, I estimate a separate regression model for each state and use it to generate forecasts for all the scenarios. These conditional forecasts are then averaged over the macro variables. No forecasts are produced for those states where historically one party has clearly dominated in the elections (see above)!
 
 ## Model
+
+The model takes the following form
+
+$$
+y^{s}_{e} = \beta_0 + \beta_1 x_e^{Q1} + \beta_2 x_e^{Q4} + \gamma z^{p}_e + \epsilon_e    
+$$
+
+where $y^s_{e}$ is a vector of the parties' vote shares in state $s$ in election $e$. $x^{*}_e$ denote the latest two values of a macroeconmic variable before election $e$, e.g. for the election in 2023 y/y GDP growth in 2023Q1 and 2022Q4 and $z_e$ a dummy variable controlling for the incumbent party. 
 
 ### regressand $y$
 
@@ -320,12 +337,9 @@ elec_dat %>%
 
 ### regressors $X$
 
-Load parties (and convert to lower case for consistency)
 ```{r}
+# Load parties (and convert to lower case for consistency)
 parties <- tolower(load_parties())
-```
-
-```{r}
 macro_dat %>% 
     select(
         election, 
@@ -455,7 +469,6 @@ for (s in contested_states) {
                 dirreg, 
                 newdata = reg_Xfore_tmp
             ) -> pred
-            print(pred)
             df_fund_fcast <- rbind(
                 df_fund_fcast, 
                 data.frame(
@@ -512,235 +525,53 @@ df_fund_fcast %>%
     ) -> df_fund_fcast
 ```
 
-## Simple model 
+## Plot forecasts
 
-To get a first idea of whether the election results of the parties in different states are related to macroeconomic fundamentals I run simply univariate regressions of a party's vote share on the latest values of macroeconomic variable like GDP prior and a variable indicating whether the party is currently in power. This captures the possibility that voters punish (reward) the ruling parting if the economy is doing poorly (or well).  
-
-The models take the following form
-
-$$
-y^{p, s}_{e} = \beta_0 + \sum_{i=1}^{4} \beta_i x^{Qi}_{e} + \sum_{i=1}^{4} \gamma_i x^{Qi}_{e} \times z^{p}_e + \epsilon_e    
-$$
-
-where $y_{p, s, e}$ is party $p$'s vote share in state $s$ in election $e$. $x^{*}_e$ denote the latest four values of a macroeconmic variable before election $e$, e.g. for the election in 2023 y/y GDP growth in 2023Q1, 2022Q4, ..., 2022Q2 and $z_e$ a dummy variable taking on the value 1 if party $p$ is the incumbent.  
+On the whole, the variation in the predicted vote share across scenarios is not large. That is consistent with there not being very large macro effects to begin with as well as the moderate scenarios. 
 
 ```{r}
-# function to estimate regression 
-estimate_regression <- function(
-    elec_dat,
-    macro_dat,
-    filter_state,
-    select_party,
-    select_macrovar
-)
-{
-    elec_dat %>%
-    select(
-        state = province,
-        election = year,
-        party = !!select_party
-    ) %>% 
-    filter(state == filter_state) -> reg_y
+df_fund_fcast %>% 
+    mutate(year = 2024) %>% 
+    select(year, state, party, value, scenario) -> df_plt
 
-    macro_dat %>% 
-    select(
-        election,
-        quarter,
-        macrovar = !!select_macrovar
-    ) %>% 
-    filter(
-        quarter %in% c(1, 2, 3, 4)
-    ) %>%
+reg_y %>% 
     mutate(
-        quarter = paste0(
-            "Q", 
-            as.character(quarter)
-        )
-    ) %>% 
-    tidyr::pivot_wider(
-        id_cols = election,
-        names_from = quarter,
-        values_from = macrovar) -> reg_X
-
-    elec_dat %>%
-        select(
-            election = year,
-            state = province,
-            party_in_power,
-        ) %>%
-        mutate(
-            party_in_power = ifelse(
-                party_in_power == select_party, 
-                TRUE,
-                FALSE
-            )
-        ) %>%
-        filter(state == filter_state) -> reg_X_dummy
-
-    reg <- merge(
-        reg_y,
-        merge(
-            reg_X,
-            reg_X_dummy,
-            by = "election"
-        ),
-        by = "election"
-    )
-
-    my_lm <- lm(
-        "party ~ Q1 + + Q2 + Q3 + Q4 + Q1:party_in_power + Q2:party_in_power + Q3:party_in_power + Q4:party_in_power",
-        data = reg
-    )
-
-    return(my_lm)
-}
-```
-
-If the null hypothesis of the F-test that all coefficients (except the constant) are significantly different from zero is rejected, I take this as an indication that macro fundamentals may have an impact on the outcome of the election. 
-
-```{r}
-significant_macro_impact <- function(my_lm, crit_val = 0.05) {
-    summ_my_lm <- summary(my_lm) 
-    fstat <- summ_my_lm$fstatistic["value"]
-    num_df <- summ_my_lm$fstatistic["numdf"]
-    den_df <- summ_my_lm$fstatistic["dendf"]
-    pval <- pf(fstat, num_df, den_df, lower.tail = FALSE)
-    return(
-        ifelse(
-            pval < crit_val,
-            TRUE,
-            FALSE
-        )
-    )
-}
-```
-
-If there is a significant "macro effect", use the model to predict the vote share given the path of macroeconomic variables in the scenarios 
-
-```{r}
-predict_vote_share <- function(
-    tmp_lm,
-    party,
-    macrovar,
-    macro_scenarios,
-    scen
-) {
-    # transform data
-    macro_scenarios %>% 
-    select(
-        scenario,
-        election,
-        quarter,
-        gdp,
-        u, 
-        inf,
-        sto
+        scenario = "historic"
     ) %>%
-    filter(scenario == scen) %>%
-    tidyr::pivot_longer(
-        cols = -c(election, quarter, scenario),
-        names_to = "macrovar",
-        values_to = "value"
+    rbind(df_plt) -> df_plt
+
+df_plt %>% 
+filter(
+    value != 0
     ) %>%
-    mutate(
-        quarter = paste0(
-            "Q", 
-            as.character(quarter)
+     ggplot(
+        aes(
+            x = year,
+            y = value,
+            color = party,
+            shape = scenario
         )
-    ) %>% 
-    tidyr::pivot_wider(
-        id_cols = c(election, macrovar, scenario),
-        names_from = quarter,
-        values_from = value) -> reg_Xfore
-
-    reg_Xfore$party_in_power <- ifelse(
-        party == "pdal",
-        TRUE,
-        FALSE
-    )
-
-    # predict!
-    predict(
-    tmp_lm, 
-        filter(
-            reg_Xfore,
-            macrovar == !!macrovar
+     ) +
+     geom_line() +
+     geom_point() +
+     ggsci::scale_color_jco()+
+     scale_shape_manual(
+        values = c(
+            "historic" = NA,
+            "A" = 1,
+            "B" = 2,
+            "C" = 3,
+            "D" = 4,
+            "E" = 5
         )
-    ) -> fore
-    return(fore)
-}
+    )+
+    facet_wrap(~state, scales = "free_y") +
+    labs(title = "Election results and conditional forecasts") 
 ```
-
-## Estimate models and generate conditional forecasts
-
-Loop over parties, states and scenarios and store the predictions 
-
-```{r}
-scenarios <- load_scenarios()
-parties <- load_parties()
-parties <- tolower(parties) # parties in lower case in election data df!
-n_parties_by_state <- load_n_parties_by_geography("state")
-states <- load_states()
-contested_states <- states[!(states %in% dominated_states)]
-macro_vars <- c("gdp", "u", "inf", "sto")
-df_pred <- data.frame()
-for (mv in macro_vars) {
-    for (s in contested_states) {
-        ind_p <- 1
-        while (ind_p <= n_parties_by_state[s]) {
-            tmp_lm <- estimate_regression(
-                elec_dat, 
-                macro_dat,
-                filter_state =s,
-                select_party = parties[ind_p],
-                select_macrovar = mv)
-            
-            if (significant_macro_impact(tmp_lm, crit_val = 0.05)) {
-                pred <- c()
-                for (scen in scenarios) {
-                    predict_vote_share(
-                        tmp_lm,
-                        party = parties[ind_p],
-                        macrovar = mv,
-                        macro_scenarios,
-                        scen = scen                    
-                 ) -> pred_tmp
-                 pred <- c(pred, pred_tmp)
-                }
-
-                df_pred <- rbind(
-                    df_pred,
-                    data.frame(
-                        party = parties[ind_p],
-                        state = s,
-                        macrovar = mv,
-                        scenario = scenarios,
-                        pred = pred
-                    )
-                )
-            }
-            ind_p <- ind_p + 1
-        }
-    }
-}
-df_pred
-```
-
-For some states and parties there are more than one forecast because there were several significant macro variables. In these cases, I simply average the two forecasts: 
-
-```{r}
-df_pred %>% 
-    group_by(
-        state, party, scenario
-    ) %>% 
-    summarise(pred = mean(pred)) -> df_pred
-```
-
-# Fundamental forecast
 
 ## Benchmark forecast
 
-Calculate the mean vote share of each party in each state. This will serve as the fundamental forecast in those states where a party has dominated past elections or no significant macro effects were found. It can also serve to check how plausible the model-based predictions are!
+Calculate the mean vote share of each party in each state. This will serve as the fundamental forecast in those states where a party has dominated past elections
 
 ```{r}
 elec_dat %>% 
@@ -765,14 +596,12 @@ elec_dat %>%
     rename(vote_share = mean_vote_share) -> df_mean_vote_share
 ```
 
-## Conditional forecasts
+## Export
 
 Repeat mean vote share for each scenario
 
 ```{r}
-df_fund_fcast <- data.frame()
-
-df_fund_fcast <- do.call(
+df_priors <- do.call(
     "rbind",
     lapply(
         scenarios,
@@ -785,122 +614,33 @@ df_fund_fcast <- do.call(
 )
 ```
 
-Merge with the conditonal forecasts calculated above, obtaining `NA` if no macro variables were significant in the regressions and therefore no forecast was produced
+Merge with the conditonal forecasts calculated above, obtaining `NA` if no forecast was produced
 
 ```{r}
 merge(
+    df_priors,
     df_fund_fcast,
-    df_pred,
     by = c("state", "party", "scenario"),
     all.x = TRUE
-) -> df_fund_fcast
-```
+) -> df_priors
 
-### Economic significance
-
-Above I only checked whether macroeconomic fundamentals had a *statistically* significant effect on the election outcome. To gauge the *economic* significance, I compare the predicted vote share in the different scenarios with the historical average (ignoring those vote shares for which no statistically significant effects were found)
-
-```{r}
-df_fund_fcast %>% 
-    mutate(
-        diff_voteshare = pred - vote_share
-    ) %>%
-    ggplot(aes(x = diff_voteshare)) +
-    geom_histogram(bindwidth = 0.001) +
-    labs(x = "", title = "Difference between conditional forecast and historical average")
-```
-
-```{r}
-df_fund_fcast %>% 
-    mutate(
-        diff_voteshare = pred - vote_share
-    ) %>%
-    filter(
-        diff_voteshare < -0.04
-    )
-```
-
-```{r}
-df_fund_fcast %>% 
-    mutate(
-        diff_voteshare = pred - vote_share
-    ) %>%
-    filter(
-        diff_voteshare > 0.05
-    )
-```
-
-Set `NA` to original vote share and rescale so that the vote shares sum to 1! 
-```{r}
-df_fund_fcast %>%
-    mutate(
-        pred_no_na = ifelse(
-            is.na(pred),
-            vote_share,
-            pred
-        )
-    ) %>% 
-    group_by(
-        state,
-        scenario) %>% 
-    mutate(
-        pred_rescaled = pred_no_na/sum(pred_no_na)
-    ) -> df_fund_fcast
-```
-
-
-
-## Plausibility check
-
-Because the model above does not impose the restriction that in a given stae the macro effects offset each other, rescaling is necessary and this will also affect the vote shares of parties where no significant macro effects were found. 
-
-Consider the following examples: the forecast for DGM is more than a percentage point lower even though there was no significant effect of macro fundamentals! 
-
-```{r}
-filter(
-    df_fund_fcast,
-    state == "Electropolis", 
-    scenario == "A"
+df_priors$vote_share <- ifelse(
+    is.na(df_priors$value),
+    df_priors$vote_share,
+    df_priors$value
 )
 ```
 
-The results for scenario C look better: the original vote share and the one obtained after rescaling are almost identical! 
-
+Write fundamental forecast to file
 ```{r}
-filter(
-    df_fund_fcast,
-    state == "Electropolis", 
-    scenario == "C"
-)
-```
-
-Overall, there are some cases where the differences are quite large but most of them are concentrated within +/- one percentage point
-
-```{r}
-df_fund_fcast %>% 
-    # only those forecasts
-    filter(is.na(pred)) %>% 
-    mutate(
-        diff_voteshare = pred_rescaled - vote_share
-    ) %>% 
-    # exclude all states without any macro effects! 
-    filter(abs(diff_voteshare) > 10^(-5)) %>%
-    ggplot(aes(x = diff_voteshare)) +
-        geom_histogram(binwidth = 0.001)
-```
-
-# Export
-
-```{r}
-df_priors <- select(
-    df_fund_fcast,
-    province = state,
-    party,
-    vote_share = pred_rescaled,
-    scenario 
-)
 saveRDS(
-    df_priors,
+    select(
+        df_priors,
+        province = state,
+        party,
+        vote_share,
+        scenario
+    ),
     file = here::here(
         "fundamental_forecast",
         "fundamental_forecast.rds"
@@ -908,3 +648,15 @@ saveRDS(
 )
 ```
 
+Also export list of states in which one party has historically dominated
+
+
+```{r}
+saveRDS(
+    dominated_states,
+    file = here::here(
+        "fundamental_forecast",
+        "dominated_states.rds"
+    )
+)
+```
