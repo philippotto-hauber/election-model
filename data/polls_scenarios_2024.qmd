@@ -133,7 +133,7 @@ ggplot(
     theme(axis.text.x = element_text(angle = 90)) +
     coord_flip() 
 
- ggsave(file = here::here("plots", "polls_by_date.png"))   
+ ggsave(file = here::here("data", "polls_by_date.png"))   
 ```
 
 #### By type
@@ -146,7 +146,7 @@ ggplot(aes(x = geography, fill = type_of_poll)) +
     facet_wrap(~scenario) + 
     labs(title = "Polls by type") +
     coord_flip()
-ggsave(file = here::here("plots", "polls_by_type.png"))
+ggsave(file = here::here("data", "polls_by_type.png"))
 ```
 
 #### By sponsor
@@ -162,7 +162,7 @@ ggplot(dat,
     theme(axis.text.x = element_text(angle = 90)) +
     coord_flip()  
 
- ggsave(file = here::here("plots", "polls_by_sponsor.png"))   
+ ggsave(file = here::here("data", "polls_by_sponsor.png"))   
 ```
 
 #### By polling house
@@ -186,7 +186,7 @@ dat %>%
         legend.title = element_blank()) +
     coord_flip() 
 
-ggsave(file = here::here("plots", "polls_by_house.png"))   
+ggsave(file = here::here("data", "polls_by_house.png"))   
 ```
 
 #### By polling mode
@@ -210,7 +210,7 @@ dat %>%
         legend.title = element_blank()) +
     coord_flip() 
 
-ggsave(file = here::here("plots", "polls_by_mode.png"))   
+ggsave(file = here::here("data", "polls_by_mode.png"))   
 ```
 
 #### By population surveyed
@@ -233,7 +233,7 @@ dat %>%
         legend.title = element_blank()) +
     coord_flip() 
 
-ggsave(file = here::here("plots", "polls_by_population.png"))   
+ggsave(file = here::here("data", "polls_by_population.png"))   
 ```
 
 ## Convert polls to a Stan-friendly list
