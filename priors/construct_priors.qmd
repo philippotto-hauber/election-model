@@ -70,6 +70,11 @@ for (s in seq(1, length(n_parties_by_state))) {
 }
 ```
 
+Load the list of states in which historically one party has been the clear winner 
+
+```{r}
+dominated_states <- readRDS(here::here("fundamental_forecast", "dominated_states.rds"))
+```
 ## Scenario-independent priors
 
 ### covariance matrix $\boldsymbol{W}$
@@ -378,8 +383,6 @@ scenarios <- load_scenarios()
 
 ### $m_{\mu_T}$
 
-For the time being, the prior mean of $\mu_T$ is based on the historical average of vote shares
-
 Load fundamental forecast
 ```{r}
 df_fcast <- readRDS(here::here("fundamental_forecast", "fundamental_forecast.rds"))
@@ -426,20 +429,50 @@ In addition, it can also be set to a smaller value - placing greater weight on t
 
 ![](./../data/polls_by_type.png)
 
-For the time being, however, I set a relatively uninformative prior that is the same in all scenarios and states
+Or it could also be made much tighter to observe the fact that in previous elections (not used in the estimation!) there were certain parties clearly dominating in some states and that in the absence of further evidence this dominance seems like to hold. 
+
+Scale elements of $V_{\mu_T}$ down if party is "dominating"
 
 ```{r}
-V_mmu_T <- diag(rep(1, sum(n_parties_by_state-1)))
+var_V_mmu_T <- 1
+scale_dominated_states <- 0.1
+diag_V_mmu_T <- c()
+for (s in states_regions$state) {
+    if (s %in% dominated_states) {
+        diag_V_mmu_T <- c(
+            diag_V_mmu_T, 
+            rep(
+                scale_dominated_states * var_V_mmu_T,
+                n_parties_by_state[s] - 1)
+        )
+    } else {
+        diag_V_mmu_T <- c(
+            diag_V_mmu_T, 
+            rep(var_V_mmu_T, n_parties_by_state[s] - 1)
+        )
+    }
+}
+V_mmu_T <- diag(diag_V_mmu_T)
 dimnames(V_mmu_T) <- list(names_mmu_T, names_mmu_T)
+```
+
+Scale variance to account for differences in data availability in the scenarios
+
+```{r}
+scale_scenarios <- c(
+    "A" = 1,    # complete data up until election day
+    "B" = 0.2,  # very few polls, only in April, many regions and states without any
+    "C" = 0.5,  # polls up until May, almost all regions and states covered but mostly national
+    "D" = 1,    # similar to A
+    "E" = 0.5   # similar to C
+)
 ```
 
 Store in list
 ```{r}
-priors[["A"]][["V_mmu_T"]] <- 
-    priors[["B"]][["V_mmu_T"]] <- 
-    priors[["C"]][["V_mmu_T"]] <- 
-    priors[["D"]][["V_mmu_T"]] <- 
-    priors[["E"]][["V_mmu_T"]] <- V_mmu_T
+for (scen in scenarios) {
+    priors[[scen]][["V_mmu_T"]] <- V_mmu_T * scale_scenarios[scen]
+}
 ```
 
 ## Export
@@ -456,6 +489,3 @@ priors <- readRDS(file = here::here("priors", "priors.Rds"))
 ```
 
 
-```{r}
-priors 
-```
