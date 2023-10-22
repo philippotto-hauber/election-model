@@ -250,7 +250,7 @@ priors[["A"]][["W"]] <-
 ## variance of house effects $\sigma^2_{\delta}$
 
 ```{r}
-sig_ddelta <- sqrt(0.01) # specify in terms of standard deviation for Stan!
+sig_ddelta <- 0.01 # specify in terms of standard deviation for Stan!
 ```
 
 Store in list
@@ -372,87 +372,41 @@ rm(priors)
 
 # Prior predictive distribution
 
-
 To evaluate if the joint prior distribution specified above translates into reasonable prior beliefs for the expected voting intentions or observed polls, I sample from the *prior predictive distribution* in the different scenarios. 
 
-Draws from this predictive distribution can be obtained by randomly simulating from the prior and conditioning on this draw to sample the data. Formally, $p(y) = \int p(y|\theta) p(\theta) d\theta$ where $p(\theta)$ is the prior. For definition and background see one's favorite textbook on Bayesian statistics, [Wiki](https://en.wikipedia.org/wiki/Posterior_predictive_distribution#Prior_vs._posterior_predictive_distribution) or [Stan docs](https://mc-stan.org/docs/stan-users-guide/prior-predictive-checks.html).
+Draws from this predictive distribution can be obtained by randomly sampling from the prior and conditioning on this draw to sample the data. Formally, $p(y) = \int p(y|\theta) p(\theta) d\theta$ where $p(\theta)$ is the prior. For definition and background see one's favorite textbook on Bayesian statistics, [Wiki](https://en.wikipedia.org/wiki/Posterior_predictive_distribution#Prior_vs._posterior_predictive_distribution) or [Stan docs](https://mc-stan.org/docs/stan-users-guide/prior-predictive-checks.html).
 
 ```{r}
 priors <- readRDS(file = here::here("priors", "priors.Rds"))
 ```
 
+Function to simulate from the joint prior
 
 ```{r}
-# draw mmu_T
-mmu_T <- MASS::mvrnorm(
-        1,
-        mu = priors[["A"]]$m_mmu_T,
-        Sigma = priors[["A"]]$V_mmu_T
-)
+simulate_mmu_ppi <- function(
+    n_periods,
+    m_mmu_T,
+    V_mmu_T,
+    W,
+    sig_ddelta
+) {
+    # draw mmu_T
+    mmu_T <- MASS::mvrnorm(
+            1,
+            mu = m_mmu_T,
+            Sigma = V_mmu_T
+    )
 
-# draw mmu
-n_periods <- 100
-W <- priors[["A"]]$W
-mmu <- matrix(
-    NA,
-    nrow = length(mmu_T),
-    ncol = n_periods
-)
-mmu[, n_periods] <- mmu_T
-
-for (t in seq(n_periods - 1, 1, by = -1)) {
-    mmu[, t] = mmu[, t + 1] + 
-                MASS::mvrnorm(1,
-                    mu = rep(0, nrow(W)),
-                    Sigma = W
-                )
-}
-
-# convert mmu to df
-dimnames(mmu) <- list(names_mmu_T, seq(1, n_periods))
-
-mmu %>% 
-    as.data.frame() %>% 
-    tibble::rownames_to_column(var = "tmp") %>% 
-    tidyr::pivot_longer(
-        cols = -tmp,
-        names_to = "t",
-        values_to = "mmu"
-    ) %>% 
-    tidyr::separate(tmp, into = c("state", "party"), sep = "_") -> df_mmu
-
-# convert df_mmu to df_ppi
-do.call("rbind",
-    lappy(
-        seq(1, n_periods),
-        function(t) {
-            df_tmp <- data.frame(
-                state = states,
-
-                t = t,
-                ppi = NA,
-                )
-        }
-    ))
-df_mmu %>% 
-    filter(value != 0) %>%
-    group_by(
-        state,
-        party
-    ) %>%
-    mutate(value_lr = inv_additive_log_ratio(value)) -> df_ppi 
-
-
-# add house effects to mmu and calculate df_ttheta
-
-
-# draw a representative poll from df_ttheta
-```
-
-```{r}
-simulate_prior_pred <- function(mmu_T, n_periods, , sig_ddelta) {
-    mmu <- matrix(NA, nrow = length(mmu_T), ncol = n_periods)
+    # draw mmu
+    n_periods <- 100
+    W <- W
+    mmu <- matrix(
+        NA,
+        nrow = length(mmu_T),
+        ncol = n_periods
+    )
     mmu[, n_periods] <- mmu_T
+
     for (t in seq(n_periods - 1, 1, by = -1)) {
         mmu[, t] = mmu[, t + 1] + 
                     MASS::mvrnorm(1,
@@ -460,17 +414,242 @@ simulate_prior_pred <- function(mmu_T, n_periods, , sig_ddelta) {
                         Sigma = W
                     )
     }
-    return(mmu)
-}
 
-mmu_test <- simulate_rev_random_walk(
-    MASS::mvrnorm(
-        1,
-        mu = priors[["A"]]$m_mmu_T,
-        Sigma = priors[["A"]]$V_mmu_T
-    ),
-    100,
-    priors[["A"]]$W
-)
+    # convert mmu to df
+    dimnames(mmu) <- list(names_mmu_T, seq(1, n_periods))
+
+    mmu %>% 
+        as.data.frame() %>% 
+        tibble::rownames_to_column(var = "tmp") %>% 
+        tidyr::pivot_longer(
+            cols = -tmp,
+            names_to = "t",
+            values_to = "mmu"
+        ) %>% 
+        tidyr::separate(tmp, into = c("state", "party"), sep = "_") -> df_tmp
+    
+    # fill in "missing" parties with a value of 0
+    df_st_pa <- data.frame()
+    for (s in states) {
+        df_st_pa <- rbind(
+            df_st_pa,
+            data.frame(
+                state = s,
+                party = parties[1:n_parties_by_state[s]]
+            )
+        )
+    }
+    do.call("rbind",
+        lapply(
+            seq(1, n_periods),
+            function(t) {
+                df_tmp <- df_st_pa
+                df_tmp$t = t
+                df_tmp$ppi = NA
+                df_tmp
+            }
+        )) -> df_draw
+
+    df_draw <- merge(
+        df_draw,
+        df_tmp,
+        by = c("state", "party", "t"),
+        all.x = TRUE
+    )
+
+    # invert log ratio transformation
+    df_draw %>% 
+        mutate(mmu = ifelse(
+            is.na(mmu),
+            0,
+            mmu
+            )
+        ) %>% 
+        group_by(t, state) %>%
+        mutate(
+            ppi = inv_additive_log_ratio(mmu),
+            mmu_plus_house = mmu + rnorm(n = n(), sd = sig_ddelta),
+            ttheta = inv_additive_log_ratio(mmu_plus_house)
+        ) -> df_draw
+    return(df_draw)
+}
 ```
 
+Functions to plot $\pi$ and $\theta$ 
+
+```{r}
+plt_draws_ppi <- function(
+    df_draws,
+    plt_title,
+    plt_caption
+) {
+    df_draws %>%
+        mutate(
+            ppi = ifelse(
+            ppi == 0.0,
+                NA,
+            ppi
+            )
+        ) %>%
+        group_by(
+            t,
+            state,
+            party
+        ) %>%
+        summarise(
+            mn = mean(ppi, na.rm = T),
+            q_95_upp = quantile(
+                ppi,
+                prob = c(0.025),
+                na.rm = T
+            ),
+            q_95_low = quantile(
+                ppi,
+                prob = c(1-0.025),
+                na.rm = T
+            ),
+            q_83_upp = quantile(
+                ppi,
+                prob = c(0.0855),
+                na.rm = T
+            ),
+            q_83_low = quantile(
+                ppi,
+                prob = c(1-0.085),
+                na.rm = T
+            )
+        ) %>%
+        ungroup() %>%
+        ggplot(aes(x = t))+
+        geom_line(aes(y = mn, color = party), linetype = "dashed", linewidth= 1.0)+
+        geom_ribbon(aes(ymin = q_95_low, ymax = q_95_upp, fill = party), alpha = 0.2)+
+        geom_ribbon(aes(ymin = q_83_low, ymax = q_83_upp, fill = party), alpha = 0.3)+
+        ggsci::scale_color_jco() +
+        ggsci::scale_fill_jco() +
+        facet_wrap(~state)+
+        labs(
+            x = "",
+            y = "",
+            title = plt_title,
+            caption = plt_caption
+        ) -> p
+    return(p)    
+}
+
+plt_house_effects <- function(
+    df_draws,
+    plt_title,
+    plt_caption
+) {
+    df_draws %>%
+        mutate(
+            house_effects = ttheta - ppi
+        ) %>%
+        ggplot(aes(x = house_effects))+
+        geom_histogram(binwidth = 0.001)+
+        labs(
+            x = "",
+            y = "",
+            title = plt_title,
+            caption = plt_caption
+        ) -> p
+    return(p)    
+}
+```
+
+```{r}
+simulate_prior <- function(
+    scen, 
+    n_draws = 100,
+    n_periods = 100
+) {
+    do.call(
+    "rbind",
+    lapply(
+        seq(1, n_draws),
+        function(draw) {
+            df_draw <- simulate_mmu_ppi(
+                n_periods = n_periods,
+                priors[[scen]]$m_mmu_T,
+                priors[[scen]]$V_mmu_T,
+                priors[[scen]]$W,
+                priors[[scen]]$sig_ddelta
+            )
+            df_draw$draw = draw
+            df_draw
+        }
+    )) -> df_draws
+    df_draws$scenario = scen
+
+    # plot ppi
+    plt_ppi <- plt_draws_ppi(
+        df_draws,
+        plt_title = paste0(scen, ": Expected vote share"),
+        plt_caption = "Simulated prior distribution.")
+    
+    plt_house <- plt_house_effects(
+        df_draws,
+        plt_title = paste0(scen, ": House effects"),
+        plt_caption = "Simulated prior distribution: difference between theta and pi (see model description).")
+        
+    return(list(
+        df_draws = df_draws,
+        plt_ppi = plt_ppi,
+        plt_house = plt_house
+        )
+    )
+}
+```
+
+::: {.panel-tabset}
+
+## A
+
+```{r}
+#| echo: false
+#| warning: false
+plts <- simulate_prior(scen = "A")
+plts[["plt_ppi"]]
+```
+
+```{r}
+plts[["plt_house"]]
+```
+
+## B
+
+```{r}
+#| echo: false
+#| warning: false
+p <- simulate_prior(scen = "B")
+p
+```
+
+## C
+
+```{r}
+#| echo: false
+#| warning: false
+p <- simulate_prior(scen = "C")
+p
+```
+
+## D
+
+```{r}
+#| echo: false
+#| warning: false
+p <- simulate_prior(scen = "D")
+p
+```
+
+## E
+
+```{r}
+#| echo: false
+#| warning: false
+p <- simulate_prior(scen = "E")
+p
+```
+
+:::
