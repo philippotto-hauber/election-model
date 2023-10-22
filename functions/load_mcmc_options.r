@@ -7,6 +7,6 @@ load_mcmc_options <- function() {
     mcmc_options[["n_warmup"]] <- 250
     mcmc_options[["n_sampling"]] <- 500
     mcmc_options[["n_refresh"]] <- 100
-    mcmc_options[["seed"]] <- NULL
+    mcmc_options[["seed"]] <- 199911
     mcmc_options
 }
