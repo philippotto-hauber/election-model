@@ -283,6 +283,11 @@ macro_scenarios %>%
         names_to = "scenario",
         values_to = "value"
     ) %>%
+    group_by(var) %>%
+    mutate(
+        historic_upper = historic + sd(historic, na.rm = TRUE),
+        historic_lower = historic - sd(historic, na.rm = TRUE)
+    ) %>%
     filter(date >= as.Date("2022-01-01")) %>% 
     ggplot(aes(
         x = date, 
@@ -291,8 +296,19 @@ macro_scenarios %>%
         fill = scenario)) + 
     geom_line() + 
     geom_line(aes(y = historic), color = "black") +
+    geom_line(
+        aes(y = historic_upper),
+        color = "black",
+        linetype = "dotted"
+    )+
+    geom_line(
+        aes(y = historic_lower),
+        color = "black",
+        linetype = "dotted"
+    )+
     ggsci::scale_color_startrek() +
-    facet_wrap(~ var, scales = "free_y")
+    facet_wrap(~ var, scales = "free_y")+
+    labs(caption = "The dotted black lines indicate +/- one standard deviation. ")
 ```
 
 - overall, variation in macro variables well within historically observed volatility 
@@ -313,7 +329,7 @@ $$
 y^{s}_{e} = \beta_0 + \beta_1 x_e^{Q1} + \beta_2 x_e^{Q4} + \gamma z^{p}_e + \epsilon_e    
 $$
 
-where $y^s_{e}$ is a vector of the parties' vote shares in state $s$ in election $e$. $x^{*}_e$ denote the latest two values of a macroeconmic variable before election $e$, e.g. for the election in 2023 y/y GDP growth in 2023Q1 and 2022Q4 and $z_e$ a dummy variable controlling for the incumbent party. 
+where $y^s_{e}$ is a vector of the parties' vote shares in state $s$ in election $e$. $x^{*}_e$ denote the latest two values of a macroeconmic variable before election $e$, e.g. for the election in 2023 y/y GDP growth in 2023Q1 and 2022Q4 and $z_e$ a dummy variable controlling for the incumbent party. (I tried to include an interaction term but the estimation algorithm did not to converge.)
 
 ### regressand $y$
 
