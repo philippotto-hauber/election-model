@@ -9,7 +9,7 @@ editor: visual
 bibliography: references.bib
 ---
 
-@Linzer_2013 and @Heidemanns_2020 as well as  @Stoetzer_etal_2019 are papers that my model is based on. 
+The model outlined below is based on models of US elections - e.g. @Linzer_2013 and @Heidemanns_2020) - augmented to allow for multiple parties as in @Stoetzer_etal_2019. 
 
 The central part of the model are the latent voting intentions or expected vote shares for the different parties in all of Dataland's states. 
 
@@ -73,7 +73,7 @@ $$
 \pi^{\text{nat}}_{t} = \sum_s^{S} \omega_s \pi_{t, s}
 $$
 
-and $\mu^{\text{nat}}_{t} = \text{alr}(\pi^{\text{nat}}_{t})$.
+and $\mu^{\text{nat}}_{t} = \text{alr}(\pi^{\text{nat}}_{t})$. Since the number of parties fielding a candidate in Dataland is not always the same, the implicit vote shares equal to 0 of any "missing" parties in $\pi_{t, s}$ are inserted so 
 
 ### Priors
 
@@ -116,28 +116,36 @@ $$
 
 ## Polls
 
+The outcome of polls are modeled as a realization of *multinomial random variable* with underlying probability vector given by
+
 $$
-\theta_{t, s, c} = \text{alr}^{-1}(\mu_{t, s} + \delta_{h})
+\theta_{t, s, h} = \text{alr}^{-1}(\mu_{t, s} + \delta_{h})
 $$
+
+As such, polls not only reflect the underlying vote intentions but also contain "noise" in the form of house effects!
 
 ### State polls
 
-The outcome of the $i = 1:I$ state polls are modeled as a realization of *multinomial random variable*
+$i = 1:I$ state polls 
 
 $$
-y_i \sim \text{Multinomial}(N_i, \theta_{t[i], s[i], h[i]})
+y_i \sim \text{Multinomial}(N_i, \theta_{t, s, h})
 $$
 
-where $N_i$ is the total number of respondents and $y_i = [y_{i, 1}, \dots, y_{i, P}]$ is a vector containing the number of respondents who in poll $i$ on day $t[i]$ would vote for the candidate of party $p$ in state $s[i]$.
+where $N_i$ is the total number of respondents and $y_i = [y_{i, 1}, \dots, y_{i, P}]$ is a vector containing the number of respondents who in poll $i$ by pollster $h$ on day $t$ would vote for the candidate of party $p$ in state $s$.
 
 ### Regional polls
 
-Indexed by $j=1:J$, regional polls are modeled in exactly the same way as state polls. The only difference is that underlying probabilities of the multinomial distribution are derived from the regional voting intentions, $\pi^{reg}_{t[j], p[j], r[j]}:
+Indexed by $k=1:K$, regional polls are modeled in exactly the same way as state polls. The only difference is that underlying probabilities of the multinomial distribution are derived from the regional voting intentions, $\theta^{reg}_{t, r, h} = \text{alr}^{-1}(\mu_{t, r} + \delta_{h})$:
 
 $$
-y^{reg}_j \sim \text{Multinomial}(N_i, \pi^{reg}_{t[j], p[j], r[j]})
+y^{reg}_k \sim \text{Multinomial}(N^{reg}_k, \theta^{reg}_{t, r, h})
 $$
 
 ### National polls
 
-Similarly, national polls are 
+National polls are indexed by $j = 1:J$. A poll on day $t$ and by pollster $h$ is based on $\theta^{nat}_{t, h}$:
+
+$$
+y^{nat}_j \sim \text{Multinomial}(N^{nat}_j, \theta^{nat}_{t, h})
+$$

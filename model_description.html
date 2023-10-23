@@ -3158,7 +3158,7 @@ return!"\t\n\x0B\f\r                　\u2028\u2029
 
 </header>
 
-<p><span class="citation" data-cites="Linzer_2013">Linzer (<a href="#ref-Linzer_2013" role="doc-biblioref">2013</a>)</span> and <span class="citation" data-cites="Heidemanns_2020">Heidemanns, Gelman, and Morris (<a href="#ref-Heidemanns_2020" role="doc-biblioref">2020</a>)</span> as well as <span class="citation" data-cites="Stoetzer_etal_2019">Stoetzer et al. (<a href="#ref-Stoetzer_etal_2019" role="doc-biblioref">2019</a>)</span> are papers that my model is based on.</p>
+<p>The model outlined below is based on models of US elections - e.g. <span class="citation" data-cites="Linzer_2013">Linzer (<a href="#ref-Linzer_2013" role="doc-biblioref">2013</a>)</span> and <span class="citation" data-cites="Heidemanns_2020">Heidemanns, Gelman, and Morris (<a href="#ref-Heidemanns_2020" role="doc-biblioref">2020</a>)</span>) - augmented to allow for multiple parties as in <span class="citation" data-cites="Stoetzer_etal_2019">Stoetzer et al. (<a href="#ref-Stoetzer_etal_2019" role="doc-biblioref">2019</a>)</span>.</p>
 <p>The central part of the model are the latent voting intentions or expected vote shares for the different parties in all of Dataland’s states.</p>
 <p>For modelling purposes, these latent voting intentions are transformed using the <em>additive log ratio</em> transformation.</p>
 <p>In the model, the latent voting intentions are inferred from polling data. However, polls do <strong>not</strong> just reflect the expected vote shares (up to sampling variability). They also contain <em>house effects</em>, i.e. systematic biases in the vote shares reported by different pollsters.</p>
@@ -3170,7 +3170,7 @@ return!"\t\n\x0B\f\r                　\u2028\u2029
 <p><span class="math display">\[
 \mu_{t, s} = \text{alr}(\pi_{t, s}) = \left( \frac{\pi_{t,s,1}}{\pi_{t,s,P}}, \dots, \frac{\pi_{t,s,P-1}}{\pi_{t,s,P}}\right)
 \]</span></p>
-<p>For each state <span class="math inline">\(s\)</span> this yields a vector of dimensions <span class="math inline">\(P_s-1 \times 1\)</span> where <span class="math inline">\(P_s\)</span> is the number of parties running in thatstate!</p>
+<p>For each state <span class="math inline">\(s\)</span> this yields a vector of dimensions <span class="math inline">\(P_s-1 \times 1\)</span> where <span class="math inline">\(P_s\)</span> is the number of parties running in that state!</p>
 <p>Conversely, the inverse of the transformation is defined as</p>
 <p><span class="math display">\[
 \pi_{t,s} = \text{alr}^{-1}(\mu_{t,s}) = \frac{\left[\exp(\mu_{t,s,1}), \dots, \exp(\mu_{t,s,P-1}), 1\right]}{\sum_p^{P-1} \exp(\mu_{t,s,p}) + 1}
@@ -3200,7 +3200,7 @@ w_t \sim \mathcal{N}(0, \boldsymbol{W})
 <p><span class="math display">\[
 \pi^{\text{nat}}_{t} = \sum_s^{S} \omega_s \pi_{t, s}
 \]</span></p>
-<p>and <span class="math inline">\(\mu^{\text{nat}}_{t} = \text{alr}(\pi^{\text{nat}}_{t})\)</span>.</p>
+<p>and <span class="math inline">\(\mu^{\text{nat}}_{t} = \text{alr}(\pi^{\text{nat}}_{t})\)</span>. Since the number of parties fielding a candidate in Dataland is not always the same, the implicit vote shares equal to 0 of any “missing” parties in <span class="math inline">\(\pi_{t, s}\)</span> are inserted so</p>
 </section>
 <section id="priors" class="level3">
 <h3 class="anchored" data-anchor-id="priors">Priors</h3>
@@ -3209,7 +3209,7 @@ w_t \sim \mathcal{N}(0, \boldsymbol{W})
 <p><span class="math display">\[
 \mu_T \sim \mathcal{N}(m_{\mu_T}, V_{\mu_T})
 \]</span></p>
-<p>The prior is centered on a <em>fundamental forecast</em> of the expected vote share in each state, <span class="math inline">\(\pi^*_{T,s}\)</span>, <span class="math display">\[
+<p>The prior mean is derived from a <em>fundamental forecast</em> of the expected vote share in each state, <span class="math inline">\(\pi^*_{T,s}\)</span>, <span class="math display">\[
 m_{\mu_T} = [\mu_{T, 1}, \dots, \mu_{T, S}] = [\text{alr}(\pi^*_{T, 1}), \dots, \text{alr}(\pi^*_{T, S})]
 \]</span></p>
 <p>All elements of <span class="math inline">\(\mu_T\)</span> are assumed to be a priori independent but I allow for different prior variances <span class="math inline">\(\sigma^2_s\)</span> across states. That is to say, <span class="math inline">\(V_{\mu_T} = \text{diag}(\sigma^2_1, \dots, \sigma^2_S)\)</span>. By choosing a tighter prior more weight is placed on the fundamental forecasts. This may be reasonable in those states or regions where fewer polls are available.</p>
@@ -3235,27 +3235,32 @@ m_{\mu_T} = [\mu_{T, 1}, \dots, \mu_{T, S}] = [\text{alr}(\pi^*_{T, 1}), \dots, 
 </section>
 <section id="polls" class="level2">
 <h2 class="anchored" data-anchor-id="polls">Polls</h2>
+<p>The outcome of polls are modeled as a realization of <em>multinomial random variable</em> with underlying probability vector given by</p>
 <p><span class="math display">\[
-\theta_{t, s, c} = \text{alr}^{-1}(\mu_{t, s} + \delta_{h})
+\theta_{t, s, h} = \text{alr}^{-1}(\mu_{t, s} + \delta_{h})
 \]</span></p>
+<p>As such, polls not only reflect the underlying vote intentions but also contain “noise” in the form of house effects!</p>
 <section id="state-polls" class="level3">
 <h3 class="anchored" data-anchor-id="state-polls">State polls</h3>
-<p>The outcome of the <span class="math inline">\(i = 1:I\)</span> state polls are modeled as a realization of <em>multinomial random variable</em></p>
+<p><span class="math inline">\(i = 1:I\)</span> state polls</p>
 <p><span class="math display">\[
-y_i \sim \text{Multinomial}(N_i, \theta_{t[i], s[i], h[i]})
+y_i \sim \text{Multinomial}(N_i, \theta_{t, s, h})
 \]</span></p>
-<p>where <span class="math inline">\(N_i\)</span> is the total number of respondents and <span class="math inline">\(y_i = [y_{i, 1}, \dots, y_{i, P}]\)</span> is a vector containing the number of respondents who in poll <span class="math inline">\(i\)</span> on day <span class="math inline">\(t[i]\)</span> would vote for the candidate of party <span class="math inline">\(p\)</span> in state <span class="math inline">\(s[i]\)</span>.</p>
+<p>where <span class="math inline">\(N_i\)</span> is the total number of respondents and <span class="math inline">\(y_i = [y_{i, 1}, \dots, y_{i, P}]\)</span> is a vector containing the number of respondents who in poll <span class="math inline">\(i\)</span> by pollster <span class="math inline">\(h\)</span> on day <span class="math inline">\(t\)</span> would vote for the candidate of party <span class="math inline">\(p\)</span> in state <span class="math inline">\(s\)</span>.</p>
 </section>
 <section id="regional-polls" class="level3">
 <h3 class="anchored" data-anchor-id="regional-polls">Regional polls</h3>
-<p>Indexed by <span class="math inline">\(j=1:J\)</span>, regional polls are modeled in exactly the same way as state polls. The only difference is that underlying probabilities of the multinomial distribution are derived from the regional voting intentions, $^{reg}_{t[j], p[j], r[j]}:</p>
+<p>Indexed by <span class="math inline">\(k=1:K\)</span>, regional polls are modeled in exactly the same way as state polls. The only difference is that underlying probabilities of the multinomial distribution are derived from the regional voting intentions, <span class="math inline">\(\theta^{reg}_{t, r, h} = \text{alr}^{-1}(\mu_{t, r} + \delta_{h})\)</span>:</p>
 <p><span class="math display">\[
-y^{reg}_j \sim \text{Multinomial}(N_i, \pi^{reg}_{t[j], p[j], r[j]})
+y^{reg}_k \sim \text{Multinomial}(N^{reg}_k, \theta^{reg}_{t, r, h})
 \]</span></p>
 </section>
 <section id="national-polls" class="level3">
 <h3 class="anchored" data-anchor-id="national-polls">National polls</h3>
-<p>Similarly, national polls are</p>
+<p>National polls are indexed by <span class="math inline">\(j = 1:J\)</span>. A poll on day <span class="math inline">\(t\)</span> and by pollster <span class="math inline">\(h\)</span> is based on <span class="math inline">\(\theta^{nat}_{t, h}\)</span>:</p>
+<p><span class="math display">\[
+y^{nat}_j \sim \text{Multinomial}(N^{nat}_j, \theta^{nat}_{t, h})
+\]</span></p>
 
 </section>
 </section>
