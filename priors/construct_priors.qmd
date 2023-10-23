@@ -376,6 +376,17 @@ Two questions are of interest:
 priors <- readRDS(file = here::here("priors", "priors.Rds"))
 ```
 
+## Setup
+
+```{r}
+n_draws <- 500
+
+n_periods <- length(
+    load_dates_election_campaign()
+)
+
+```
+
 ## Functions
 
 Function to obtain a draw from the joint prior
@@ -396,7 +407,6 @@ simulate_mmu_ppi <- function(
     )
 
     # draw mmu
-    n_periods <- 100
     W <- W
     mmu <- matrix(
         NA,
@@ -608,12 +618,6 @@ simulate_prior <- function(
 
 ## Plots
 
-```{r}
-n_periods <- length(
-    load_dates_election_campaign()
-)
-```
-
 ::: {.panel-tabset}
 
 ## A
@@ -623,7 +627,8 @@ n_periods <- length(
 #| warning: false
 plts <- simulate_prior(
     scen = "A",
-    n_periods = n_periods)
+    n_periods = n_periods
+)
 plts[["plt_ppi"]]
 ```
 
