@@ -93,7 +93,7 @@ dat <- rename(dat,
 
 ### Date
 
- The publication lags of polls do not vary much and are at most two days so it probably does not make much of a difference which of the two variables - `date_conducted` or `date_published` is chosen as the "date" of a poll 
+Since results reflect the voting intentions when the poll was *conducted*, set `date_conducted` to `date`. In any case, the publication lags of polls do not vary much and are at most two days so it probably does not make much of a difference which of the two variables - `date_conducted` or `date_published` is chosen as the "date" of a poll.
 
 ```{r}
 publication_lag <- as.Date(dat$date_published) - 
@@ -103,11 +103,7 @@ hist(
     xlab = "", 
     main = "Publication lag of polls (in days)"
 )
-```
 
-Since results reflect the voting intentions when the poll was *conducted*, set `date_conducted` to `date`.
-
-```{r}
 dat %>% 
     mutate(
         date = as.Date(date_conducted)) %>%
