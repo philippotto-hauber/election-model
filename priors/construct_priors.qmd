@@ -370,17 +370,25 @@ saveRDS(priors, file = here::here("priors", "priors.Rds"))
 rm(priors)
 ```
 
-# Prior predictive distribution
+# Simulate joint prior
 
-To evaluate if the joint prior distribution specified above translates into reasonable prior beliefs for the expected voting intentions or observed polls, I sample from the *prior predictive distribution* in the different scenarios. 
+To evaluate if the joint prior distribution specified above translates into reasonable prior beliefs for the expected voting intentions or observed polls, I construct samples from the *prior predictive distribution* in the different scenarios.
 
-Draws from this predictive distribution can be obtained by randomly sampling from the prior and conditioning on this draw to sample the data. Formally, $p(y) = \int p(y|\theta) p(\theta) d\theta$ where $p(\theta)$ is the prior. For definition and background see one's favorite textbook on Bayesian statistics, [Wiki](https://en.wikipedia.org/wiki/Posterior_predictive_distribution#Prior_vs._posterior_predictive_distribution) or [Stan docs](https://mc-stan.org/docs/stan-users-guide/prior-predictive-checks.html).
+This is similar in spirit to the *prior predictive distribution* which samples the data conditional on the prior. For definition and background see one's favorite textbook on Bayesian statistics, [Wiki](https://en.wikipedia.org/wiki/Posterior_predictive_distribution#Prior_vs._posterior_predictive_distribution) or [Stan docs](https://mc-stan.org/docs/stan-users-guide/prior-predictive-checks.html).
+
+Two questions are of interest: 
+
+- does the joint prior imply reasonable ranges for the expected vote share both across parties and across time? 
+
+- is the size of the house effects plausible? 
 
 ```{r}
 priors <- readRDS(file = here::here("priors", "priors.Rds"))
 ```
 
-Function to simulate from the joint prior
+## Functions
+
+Function to obtain a draw from the joint prior
 
 ```{r}
 simulate_mmu_ppi <- function(
@@ -545,8 +553,13 @@ plt_house_effects <- function(
         mutate(
             house_effects = ttheta - ppi
         ) %>%
-        ggplot(aes(x = house_effects))+
-        geom_histogram(binwidth = 0.001)+
+        ggplot(aes(x = house_effects, fill = party))+
+        geom_histogram(
+            binwidth = 0.001,
+            position = "identity",
+            alpha = 0.3)+ 
+        ggsci::scale_fill_jco() +
+        facet_wrap(~state)+
         labs(
             x = "",
             y = "",
@@ -557,10 +570,12 @@ plt_house_effects <- function(
 }
 ```
 
+Function to simulate prior for a given scenario
+
 ```{r}
 simulate_prior <- function(
     scen, 
-    n_draws = 100,
+    n_draws = 1000,
     n_periods = 100
 ) {
     do.call(
@@ -601,6 +616,14 @@ simulate_prior <- function(
 }
 ```
 
+## Plots
+
+```{r}
+n_periods <- length(
+    load_dates_election_campaign()
+)
+```
+
 ::: {.panel-tabset}
 
 ## A
@@ -608,11 +631,14 @@ simulate_prior <- function(
 ```{r}
 #| echo: false
 #| warning: false
-plts <- simulate_prior(scen = "A")
+plts <- simulate_prior(
+    scen = "A",
+    n_periods = n_periods)
 plts[["plt_ppi"]]
 ```
 
 ```{r}
+#| echo: false
 plts[["plt_house"]]
 ```
 
@@ -621,26 +647,52 @@ plts[["plt_house"]]
 ```{r}
 #| echo: false
 #| warning: false
-p <- simulate_prior(scen = "B")
-p
+plts <- simulate_prior(
+    scen = "B",
+    n_periods = n_periods
+)
+plts[["plt_ppi"]]
 ```
+
+```{r}
+#| echo: false
+plts[["plt_house"]]
+```
+
 
 ## C
 
 ```{r}
 #| echo: false
 #| warning: false
-p <- simulate_prior(scen = "C")
-p
+plts <- simulate_prior(
+    scen = "C",
+    n_periods = n_periods
+)
+plts[["plt_ppi"]]
 ```
+
+```{r}
+#| echo: false
+plts[["plt_house"]]
+```
+
 
 ## D
 
 ```{r}
 #| echo: false
 #| warning: false
-p <- simulate_prior(scen = "D")
-p
+plts <- simulate_prior(
+    scen = "D",
+    n_periods = n_periods
+)
+plts[["plt_ppi"]]
+```
+
+```{r}
+#| echo: false
+plts[["plt_house"]]
 ```
 
 ## E
@@ -648,8 +700,16 @@ p
 ```{r}
 #| echo: false
 #| warning: false
-p <- simulate_prior(scen = "E")
-p
+plts <- simulate_prior(
+    scen = "E",
+    n_periods = n_periods
+)
+plts[["plt_ppi"]]
+```
+
+```{r}
+#| echo: false
+plts[["plt_house"]]
 ```
 
 :::
