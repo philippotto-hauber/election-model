@@ -362,7 +362,7 @@ rm(priors)
 
 # Simulate joint prior
 
-To evaluate if the joint prior distribution specified above translates into reasonable prior beliefs for the expected voting intentions or observed polls, I construct samples from the *prior predictive distribution* in the different scenarios.
+To evaluate if the joint prior distribution specified above translates into reasonable prior beliefs for the expected voting intentions or observed polls, I draw independent samples of the marginal priors in the different scenarios and simulate the implied expected vote shares and house effects.
 
 This is similar in spirit to the *prior predictive distribution* which samples the data conditional on the prior. For definition and background see one's favorite textbook on Bayesian statistics, [Wiki](https://en.wikipedia.org/wiki/Posterior_predictive_distribution#Prior_vs._posterior_predictive_distribution) or [Stan docs](https://mc-stan.org/docs/stan-users-guide/prior-predictive-checks.html).
 
