@@ -13,16 +13,6 @@ format:
 
 This notebook constructs the **priors for the model estimation**. See `model_description.html`for details. Some of the priors are independent of the specific scenario being estimated, e.g. the innovations to the reverse random-walk $\boldsymbol{W}$; others depend on the scenario and the resulting *fundamental forecast*, e.g. the prior mean $m_{\mu_T}$ and variance $V_{\mu_T}$ on the (transformed) latent voting intentions on election day.
 
-# To-dos
-
-- ~~regularization of $\boldsymbol{\hat{W}}$~~ -> James-Stein type estimator from pkg `corpcor` 
-- ~~use historic polls to inform $\boldsymbol{\hat{W}}$~~ -> discussed but not implemented
-- compare correlation of historical election results with correlation of ethnicity across states 
-- simulate trajectories of $\mu_{1:T}$ for different values of $\kappa$ given $\boldsymbol{\hat{W}}$ -> **prior predictive distribution**
-- simulate house effects by drawing from prior and using a sequence of polls from previous election as starting point -> **prior predictive distribution**
-- differences in $V_{\mu_T}$ across scenarios
-- ~~add forecasts from fundamental model~~
-
 ```{r}
 #| output: false
 
