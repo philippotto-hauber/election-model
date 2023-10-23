@@ -9,7 +9,7 @@ editor: visual
 bibliography: references.bib
 ---
 
-The model outlined below is based on models of US elections - e.g. @Linzer_2013 and @Heidemanns_2020) - augmented to allow for multiple parties as in @Stoetzer_etal_2019. 
+The model outlined below is based on models of US elections - e.g. @Linzer_2013 and @Heidemanns_2020 - augmented to allow for multiple parties as in @Stoetzer_etal_2019. 
 
 The central part of the model are the latent voting intentions or expected vote shares for the different parties in all of Dataland's states. 
 
