@@ -12,17 +12,25 @@ for (f in names_functions)
     source(here::here("functions", f))
 rm(f, names_functions)
 
+source(here::here("backtest", "prepare_priors_backtest.r"))
+
 # mcmc options
 mcmc_options <- load_mcmc_options()
 
+
+# load parties, states
+parties <- load_parties()
+states <- load_states()
+regions <- load_regions()
+
 # set up data list for stan
 data_for_stan <- list()
-data_for_stan[["n_parties"]] <- length(load_parties())
+data_for_stan[["n_parties"]] <- length(parties)
 data_for_stan[["n_parties_by_state"]] <- load_n_parties_by_geography("state")
 data_for_stan[["n_parties_by_region"]] <- load_n_parties_by_geography("region")
 states_regions <- load_dataland_states_regions()
-data_for_stan[["n_states"]] <- nrow(states_regions)
-data_for_stan[["n_regions"]] <- length(unique(states_regions$region))
+data_for_stan[["n_states"]] <- length(states)
+data_for_stan[["n_regions"]] <- length(regions)
 data_for_stan[["n_pollsters"]] <- length(load_pollsters())
 data_for_stan[["dim_mmu_v"]] <- load_dim_mmu_v()
 data_for_stan[["offset_mmu_v"]] <- load_offset_mmu_v()
@@ -44,11 +52,10 @@ model <- cmdstanr::cmdstan_model(
 )
 
 # load priors
-priors <- readRDS(here::here("priors", paste0("priors.Rds")))
+priors <- prepare_priors_backtest()
 
 # load polls
 polls <- readRDS(here::here("backtest", paste0("polls_", params$year, ".Rds")))
-
 
 data_for_stan[["n_polls_state"]] <- dim(polls$y)[2]
 data_for_stan[["n_polls_reg"]] <- dim(polls$y_reg)[2]
@@ -58,9 +65,8 @@ data_for_stan[["n_polls_nat"]] <- dim(polls$y_nat)[2]
 data_for_stan  <- c(
     data_for_stan,
     polls, 
-    priors[["A"]]
+    priors
 )
-
 
 fit <- model$sample(
                     data = data_for_stan,
