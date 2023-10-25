@@ -1,0 +1,163 @@
+---
+title: "Plot backtest results"
+format: 
+    html:
+        page-layout: full
+        embed-resources: true
+        toc: true
+        toc-location: left
+        self-contained-math: true
+        html-math-method: katex
+params:
+    year: 2023
+---
+
+# Libraries and functions
+
+```{r}
+#| output: false
+library(ggplot2)
+library(dplyr)
+library(data.table)
+names_functions = list.files(here::here("functions"))
+for (f in names_functions)
+    source(here::here("functions", f))
+rm(f, names_functions)
+```
+
+# Preliminaries
+
+```{r}
+parties <- load_parties()
+states <- load_states()
+regions <- load_regions()
+states_regions <- load_dataland_states_regions()
+n_parties_by_state <- load_n_parties_by_geography("state")
+dates_campaign <- load_dates_election_campaign(year = params$year)
+electoral_votes <- load_electoral_votes()
+election_day <- load_election_day(year = params$year)
+```
+
+## Election results
+
+```{r}
+tmp <- load_election_vote_shares()
+
+tmp %>% 
+    filter(year == params$year) %>% 
+    tidyr::pivot_longer(
+        cols = -c(year, state, region),
+        names_to = "party",
+        values_to = "vote_share"
+    ) -> tmp_results
+```
+
+# 
+
+```{r}
+scen <- "all"
+```
+
+```{r}
+out <- readRDS(
+    here::here(
+        "backtest",
+        paste0(
+            "mcmc_out_",
+            params$year,
+            "_",
+            scen,
+            ".rds"
+        )
+    )
+)
+```
+
+
+```{r}
+df_draws_ppi <- convert_draws_to_dt(
+    rstan::extract(out, pars = "ppi")[["ppi"]],                        
+    geographies = states,
+    parties = parties,
+    dates_campaign = dates_campaign
+)
+
+df_draws_ppi_nat <- convert_draws_to_dt(
+    rstan::extract(out, pars = "ppi_nat")[["ppi_nat"]],                        
+    geographies = "national",
+    parties = parties, 
+    dates_campaign = dates_campaign
+)
+```
+
+
+polls 
+```{r}
+    df_polls <- read.csv(here::here("backtest", paste0("df_polls_", params$year, "_", scen, ".csv")))
+    df_polls$date <- as.Date(df_polls$date)
+    # make non-zero polls more visible in plots
+    df_polls$value = ifelse(df_polls$value == 0, 
+                            NA, 
+                            df_polls$value) 
+```
+
+## Calc prob win
+
+```{r}
+df_prob_win_election <- do.call(
+    "rbind", 
+    lapply(
+        dates_campaign, 
+        FUN = calc_prob_win_election,
+        df_draws_ppi = df_draws_ppi,
+        df_draws_ppi_nat = df_draws_ppi_nat,
+        states = states,
+        parties = parties,
+        electoral_votes = electoral_votes
+    )
+)
+```
+
+
+```{r}
+plts <- list()
+plot_prob_win_election(
+        df_prob_win_election, 
+        election_day, 
+        scen) -> plts[[scen]][["plt_prob_win_election"]]
+```
+
+
+```{r}
+    plot_prob_win_election_over_time(
+        df_prob_win_election, 
+        paste0(params$year, " ", scen)) -> plts[[scen]][["plt_prob_win_election_over_time"]]
+```
+
+
+```{r}
+    plot_ppi(
+        df_draws_ppi, 
+        df_polls, 
+        n_geographies = length(states), 
+        type_of_poll = "state", 
+        plt_title_prefix = paste0(params$year, " ", scen)) -> plts[[scen]][["plt_ppi"]]
+
+
+```
+
+
+```{r}
+    plot_ppi(
+        df_draws_ppi_nat, 
+        df_polls, 
+        n_geographies = 1, 
+        type_of_poll = "national", 
+        plt_title_prefix = scen) -> plts[[scen]][["plt_ppi_nat"]]
+```
+
+
+
+```{r}
+plts[[scen]][["plt_ppi"]]
+```
