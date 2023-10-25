@@ -12,11 +12,8 @@ for (f in names_functions)
     source(here::here("functions", f))
 rm(f, names_functions)
 
-source(here::here("backtest", "prepare_priors_backtest.r"))
-
 # mcmc options
 mcmc_options <- load_mcmc_options()
-
 
 # load parties, states
 parties <- load_parties()
@@ -57,19 +54,22 @@ priors <- prepare_priors_backtest()
 # load polls
 polls <- readRDS(here::here("backtest", paste0("polls_", params$year, ".Rds")))
 
-data_for_stan[["n_polls_state"]] <- dim(polls$y)[2]
-data_for_stan[["n_polls_reg"]] <- dim(polls$y_reg)[2]
-data_for_stan[["n_polls_nat"]] <- dim(polls$y_nat)[2]
+# loop over scenarios
+scenarios_backtest <- c("all", "short", "missing")
 
-# sample from model
-data_for_stan  <- c(
-    data_for_stan,
-    polls, 
-    priors
-)
+for (scen in scenarios_backtest) {
+    # scenario-specific data
+    data_for_stan[["n_polls_state"]] <- dim(polls[[scen]]$y)[2]
+    data_for_stan[["n_polls_reg"]] <- dim(polls[[scen]]$y_reg)[2]
+    data_for_stan[["n_polls_nat"]] <- dim(polls[[scen]]$y_nat)[2]
 
-fit <- model$sample(
-                    data = data_for_stan,
+    data_for_stan_scenario <- list()
+    data_for_stan_scenario  <- c(data_for_stan,
+                                 polls[[scen]], 
+                                 priors)
+    # sample from model
+    fit <- model$sample(
+                    data = data_for_stan_scenario,
                     chains = mcmc_options[["n_chains"]],
                     parallel_chains = mcmc_options[["parallel_chains"]], 
                     iter_warmup = mcmc_options[["n_warmup"]],
@@ -77,19 +77,13 @@ fit <- model$sample(
                     refresh = mcmc_options[["n_refresh"]],
                     seed = mcmc_options[["seed"]]
                     )
-out <- rstan::read_stan_csv(fit$output_files())
+    out <- rstan::read_stan_csv(fit$output_files())
 
-saveRDS(
-    out,
-    file = here::here(
-        "backtest",
-        paste0("mcmc_out_", params$year, ".Rds")
+    saveRDS(
+        out,
+        file = here::here(
+            "backtest",
+            paste0("mcmc_out_", params$year, "_", scen, ".Rds")
+        )
     )
-)
-parties <- load_parties()
-states <- load_states()
-    df_draws_ppi <- convert_draws_to_dt(
-        rstan::extract(out, pars = "ppi")[["ppi"]],                        
-        geographies = states,
-        parties = parties,
-        dates_campaign = dates_campaign)
+}
