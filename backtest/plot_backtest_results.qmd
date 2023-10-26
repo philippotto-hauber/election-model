@@ -8,6 +8,7 @@ format:
         toc-location: left
         self-contained-math: true
         html-math-method: katex
+        code-fold: show
 params:
     year: 2023
 ---
