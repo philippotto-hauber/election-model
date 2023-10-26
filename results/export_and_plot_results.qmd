@@ -276,18 +276,24 @@ plts[["A"]][["plt_prob_win_election_over_time"]]
 ```
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["A"]][["plt_prob_win_states_over_time"]]
 ```
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["A"]][["plt_ppiT"]]
 ```
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["A"]][["plt_ppi"]]
@@ -314,18 +320,24 @@ plts[["B"]][["plt_prob_win_election_over_time"]]
 ```
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["B"]][["plt_prob_win_states_over_time"]]
 ```
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["B"]][["plt_ppiT"]]
 ```
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["B"]][["plt_ppi"]]
@@ -352,18 +364,24 @@ plts[["C"]][["plt_prob_win_election_over_time"]]
 ```
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["C"]][["plt_prob_win_states_over_time"]]
 ```
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["C"]][["plt_ppiT"]]
 ```
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["C"]][["plt_ppi"]]
@@ -391,6 +409,8 @@ plts[["D"]][["plt_prob_win_election_over_time"]]
 
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["D"]][["plt_prob_win_states_over_time"]]
@@ -398,6 +418,8 @@ plts[["D"]][["plt_prob_win_states_over_time"]]
 
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["D"]][["plt_ppiT"]]
@@ -405,6 +427,8 @@ plts[["D"]][["plt_ppiT"]]
 
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["D"]][["plt_ppi"]]
