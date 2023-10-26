@@ -1,8 +1,10 @@
 
-# set up ----
+# extract params ----
+args <- commandArgs(trailingOnly = TRUE)
 params <- list()
-params$year <- 2023
+params$year <- as.numeric(args[1])
 
+# set up ----
 library(dplyr)
 library(data.table)
 
