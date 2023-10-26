@@ -291,18 +291,107 @@ df_summary %>%
 plts[["all"]][["plt_prob_win_election_over_time"]]
 ```
 
+```{r}
+#| fig.width: 10
+#| fig.height: 10
+#| echo: false
+#| warning: false
+plts[["all"]][["plt_ppiT"]]
+```
+
+```{r}
+#| fig.width: 10
+#| fig.height: 10
+#| echo: false
+#| warning: false
+plts[["all"]][["plt_ppi"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["all"]][["plt_ppi_reg"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["all"]][["plt_ppi_nat"]]
+```
+
 ## Scenario: "short"
+
 ```{r}
 #| echo: false
 #| warning: false
 plts[["short"]][["plt_prob_win_election_over_time"]]
 ```
 
+```{r}
+#| fig.width: 10
+#| fig.height: 10
+#| echo: false
+#| warning: false
+plts[["short"]][["plt_ppiT"]]
+```
+
+```{r}
+#| fig.width: 10
+#| fig.height: 10
+#| echo: false
+#| warning: false
+plts[["short"]][["plt_ppi"]]
+```
+
+```{r}
+#| fig.width: 10
+#| fig.height: 10
+#| echo: false
+#| warning: false
+plts[["short"]][["plt_ppi_reg"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["short"]][["plt_ppi_nat"]]
+```
+
+
 ## Scenario: "missing"
 ```{r}
 #| echo: false
 #| warning: false
 plts[["missing"]][["plt_prob_win_election_over_time"]]
+```
+
+
+```{r}
+#| fig.width: 10
+#| fig.height: 10
+#| echo: false
+#| warning: false
+plts[["missing"]][["plt_ppiT"]]
+```
+
+```{r}
+#| fig.width: 10
+#| fig.height: 10
+#| echo: false
+#| warning: false
+plts[["missing"]][["plt_ppi"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["missing"]][["plt_ppi_reg"]]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["missing"]][["plt_ppi_nat"]]
 ```
 
 :::
