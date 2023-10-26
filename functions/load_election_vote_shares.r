@@ -5,9 +5,9 @@ load_election_vote_shares <- function(path = here::here("data", "dataland_electi
         dplyr::select(year,
                       state = province,
                       region,
-                      cc = cc_share, 
-                      dgm = dgm_share, 
-                      pdal = pdal_share, 
-                      ssp = ssp_share) %>%
+                      CC = cc_share, 
+                      DGM = dgm_share, 
+                      PDAL = pdal_share, 
+                      SSP = ssp_share) %>%
         dplyr::arrange(region, state) -> election_results
 }
