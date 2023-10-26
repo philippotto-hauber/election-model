@@ -13,6 +13,10 @@ plot_prob_win_election <- function(
     scale_y_continuous(breaks=seq(0, 1, 0.2), limits = c(0, 1))+
     labs(title = paste0(plt_title_prefix, ": Probability of winning the election on ", filter_t))+
     ylab("probability")+
-    xlab("") -> plt
+    xlab("") +
+    theme(
+      legend.position = "top",
+      legend.title = element_blank()
+    ) -> plt
   plt
 }
