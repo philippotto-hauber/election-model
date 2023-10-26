@@ -12,7 +12,19 @@ params:
     year: 2023
 ---
 
-# Libraries and functions
+This notebook summarises the backtesting results for the year `r params$year`. 
+
+For the backtest, I consider three scenarios
+
+- **all**: includes all the polls up until election day
+- **short**: includes all the polls until the end of April, so around one third of the campaign
+- **missing**: includes national and provincial polls up until end of May except the largest (by population) in each region, no regional polls
+
+Below, I print the win probabilities of the parties on election day in the different scenarios as well as the evolution of the win probabilties over the campaign. 
+
+In addition, I include plots of the posterior distributions of the expected vote shares. Where sensible, the "true" values are included in the plots!
+
+## Libraries and functions
 
 ```{r}
 #| output: false
@@ -25,7 +37,7 @@ for (f in names_functions)
 rm(f, names_functions)
 ```
 
-# Preliminaries
+## Preliminaries
 
 ```{r}
 parties <- load_parties()
@@ -38,11 +50,12 @@ electoral_votes <- load_electoral_votes()
 election_day <- load_election_day(year = params$year)
 ```
 
-## Election results
+### Election results
 
-Election results at the state level
+Election results at the state, regional and national (=popular vote) level: 
 
 ```{r}
+# state results
 load_election_vote_shares() %>%
     dplyr::filter(year == params$year) %>%
     tidyr::pivot_longer(
@@ -50,186 +63,170 @@ load_election_vote_shares() %>%
         names_to = "party",
         values_to = "vote_share"
     ) %>%
-    dplyr::mutate(
-        t = election_day
-    ) %>% 
-    dplyr::rename(
-        geography = state
-    ) %>% 
     filter(
         vote_share != 0
     ) -> df_state_results
-```
 
-...regional level
-
-```{r}
-
+# regional results
 load_pop_weights("regional") %>%
     as.data.frame() %>% 
     tibble::rownames_to_column(var = "region") %>%
     tidyr::pivot_longer(
         cols = -region,
-        names_to = "geography",
+        names_to = "state",
         values_to  = "pop_w_reg") %>% 
-        select(-region) -> df_state_weights_regions
-
-df_state_results %>%
+        select(-region) %>%
     merge(
-        df_state_weights_regions,
-        by = "geography"
+        df_state_results, 
+        by = "state"
     ) %>% 
     mutate(w_vote_share = vote_share * pop_w_reg) %>% 
     group_by(year, region, party) %>% 
-    summarise(vote_share = sum(w_vote_share)) %>% 
-    dplyr::mutate(t = election_day) -> df_regions_results
-```
+    summarise(vote_share = sum(w_vote_share)) -> df_regions_results
 
-...national level (= popular vote)
-
-```{r}
+# national results (=popular vote)
 load_pop_weights("national") %>%
     as.data.frame() %>% 
-    tibble::rownames_to_column(var = "geography") %>%
-    rename(pop_w = ".") -> df_state_weights 
-
-df_state_results %>%
+    tibble::rownames_to_column(var = "state") %>%
+    rename(
+        pop_w = "."
+    ) %>%
     merge(
-        df_state_weights,
-        by = "geography"
+        df_state_results,
+        by = "state"
     ) %>% 
     mutate(w_vote_share = vote_share * pop_w) %>% 
     group_by(year, party) %>% 
-    summarise(vote_share = sum(w_vote_share)) %>% 
-    dplyr::mutate(t = election_day) -> df_pop_vote
-```
+    summarise(vote_share = sum(w_vote_share)) -> df_pop_vote
 
-# Plots
+# combine into one df
+df_state_results %>% 
+    rename(geography = state) %>% 
+    select(-region) -> df_state_tmp
 
-Read in data
+df_regions_results %>%
+    rename(geography = region) -> df_reg_tmp
 
-```{r}
-scen <- "all"
-out <- readRDS(
-    here::here(
-        "backtest",
-        paste0(
-            "mcmc_out_",
-            params$year,
-            "_",
-            scen,
-            ".rds"
-        )
+df_pop_vote %>% 
+    mutate(geography = "National") -> df_nat_tmp
+
+df_results <- do.call(
+    "rbind",
+    list(
+        df_state_tmp,
+        df_reg_tmp,
+        df_nat_tmp
     )
 )
+
+df_results$t <- election_day
 ```
 
-Convert draws
-```{r}
-df_draws_ppi <- convert_draws_to_dt(
-    rstan::extract(out, pars = "ppi")[["ppi"]],                        
-    geographies = states,
-    parties = parties,
-    dates_campaign = dates_campaign
-)
+### Priors
 
-df_draws_ppi_reg <- convert_draws_to_dt(
-    rstan::extract(out, pars = "ppi_reg")[["ppi_reg"]],                        
-    geographies = "regional",
-    parties = parties, 
-    dates_campaign = dates_campaign
-)
-
-df_draws_ppi_nat <- convert_draws_to_dt(
-    rstan::extract(out, pars = "ppi_nat")[["ppi_nat"]],                        
-    geographies = "national",
-    parties = parties, 
-    dates_campaign = dates_campaign
-)
-```
-
-
-Load polls 
-```{r}
-    df_polls <- read.csv(here::here("backtest", paste0("df_polls_", params$year, "_", scen, ".csv")))
-    df_polls$date <- as.Date(df_polls$date)
-    # make non-zero polls more visible in plots
-    df_polls$value = ifelse(df_polls$value == 0, 
-                            NA, 
-                            df_polls$value) 
-```
-
-Load priors and invert alr transformation
+Scenario-invariant in backtests! Invert alr transformation
 
 ```{r}
 priors <- readRDS(here::here("priors", "priors.Rds"))
 df_prior_ppi <- invert_alr_on_prior(priors[["A"]][["m_mmu_T"]])
 ```
 
-## Calc prob win
-
-```{r}
-df_prob_win_election <- do.call(
-    "rbind", 
-    lapply(
-        dates_campaign, 
-        FUN = calc_prob_win_election,
-        df_draws_ppi = df_draws_ppi,
-        df_draws_ppi_nat = df_draws_ppi_nat,
-        states = states,
-        parties = parties,
-        electoral_votes = electoral_votes
-    )
-)
-```
-
-
-### Plots
-
-
-Add caption that mentions winning party
+## Loop over scenarios
 
 ```{r}
 plts <- list()
-
-plot_prob_win_election_over_time(
-    df_prob_win_election, 
-    paste0(
-        params$year,
-        " ",
-        scen
+df_summary <- data.frame()
+scenarios_backtest <- c("all", "short", "missing")
+for (scen in scenarios_backtest) {
+    # load mcmc output, polls
+    out <- readRDS(
+        here::here(
+            "backtest",
+            paste0(
+                "mcmc_out_",
+                params$year,
+                "_",
+                scen,
+                ".rds"
+            )
+        )
     )
-) -> plts[[scen]][["plt_prob_win_election_over_time"]]
-```
 
-```{r}
-plts[[scen]][["plt_prob_win_election_over_time"]]
-```
+    df_polls <- read.csv(here::here("backtest", paste0("df_polls_", params$year, "_", scen, ".csv")))
+    df_polls$date <- as.Date(df_polls$date)
+    # make non-zero polls more visible in plots
+    df_polls$value = ifelse(df_polls$value == 0, 
+                            NA, 
+                            df_polls$value)
 
-## Density plots of expected vote shares on election day
+    # calculations
+    df_draws_ppi <- convert_draws_to_dt(
+        rstan::extract(out, pars = "ppi")[["ppi"]],                        
+        geographies = states,
+        parties = parties,
+        dates_campaign = dates_campaign
+    )
 
-```{r}
- plot_ppiT(
+    df_draws_ppi_reg <- convert_draws_to_dt(
+        rstan::extract(out, pars = "ppi_reg")[["ppi_reg"]],                        
+        geographies = regions,
+        parties = parties, 
+        dates_campaign = dates_campaign
+    )
+
+    df_draws_ppi_nat <- convert_draws_to_dt(
+        rstan::extract(out, pars = "ppi_nat")[["ppi_nat"]],                        
+        geographies = "National",
+        parties = parties, 
+        dates_campaign = dates_campaign
+    )
+
+    df_prob_win_election <- do.call(
+        "rbind", 
+        lapply(
+            dates_campaign, 
+            FUN = calc_prob_win_election,
+            df_draws_ppi = df_draws_ppi,
+            df_draws_ppi_nat = df_draws_ppi_nat,
+            states = states,
+            parties = parties,
+            electoral_votes = electoral_votes
+        )
+    )
+
+    df_summary <- rbind(
+        df_summary,
+        data.frame(
+            scenario = scen,
+            party = df_prob_win_election[df_prob_win_election$date == election_day, "party"],
+            prob_win = df_prob_win_election[df_prob_win_election$date == election_day, "prob_win"]
+        )
+    )
+
+    # Plots
+    plot_prob_win_election_over_time(
+        df_prob_win_election, 
+        paste0(
+            params$year,
+            " ",
+            scen
+        ),
+        plt_caption = paste0("Winning party: ", load_winner_election(year = params$year))
+    ) -> plts[[scen]][["plt_prob_win_election_over_time"]]
+
+    plot_ppiT(
         df_draws_ppi, 
         df_prior_ppi, 
         election_day, 
         n_geographies = length(states), 
         paste0(params$year, " ", scen),
-        df_state_results
+        df_results = filter(
+            df_results,
+            vote_share != 0,
+            geography %in% states
+        )
     ) -> plts[[scen]][["plt_ppiT"]]
-```
 
-
-```{r}
-plts[[scen]][["plt_ppiT"]]
-```
-
-## Expected vote shares over time
-
-
-
-
-```{r}
     plot_ppi(
         df_draws_ppi, 
         df_polls, 
@@ -237,47 +234,76 @@ plts[[scen]][["plt_ppiT"]]
         type_of_poll = "state", 
         plt_title_prefix = paste0(params$year, " ", scen),
         df_results = filter(
-            df_state_results,
-            vote_share != 0
+            df_results,
+            vote_share != 0,
+            geography %in% states
         )
     ) -> plts[[scen]][["plt_ppi"]]
-```
 
-```{r}
-plts[[scen]][["plt_ppi"]]
-```
-
-```{r}
     plot_ppi(
         df_draws_ppi_reg, 
         df_polls, 
-        n_geographies = length(states), 
+        n_geographies = length(regions), 
         type_of_poll = "regional", 
         plt_title_prefix = paste0(params$year, " ", scen),
         df_results = filter(
-            df_regions_results,
-            vote_share != 0
+            df_results,
+            vote_share != 0,
+            geography %in% regions
         )
     ) -> plts[[scen]][["plt_ppi_reg"]]
-```
 
-```{r}
-plts[[scen]][["plt_ppi_reg"]]
-```
-
-
-```{r}
     plot_ppi(
         df_draws_ppi_nat, 
         df_polls, 
         n_geographies = 1, 
         type_of_poll = "national", 
         plt_title_prefix = paste0(params$year, " ", scen),
-        df_results = df_pop_vote
+        df_results = filter(
+            df_results,
+            geography == "National"
+        )
     ) -> plts[[scen]][["plt_ppi_nat"]]
+}
 ```
 
+
+## Win probabilities on election day
+
 ```{r}
-plts[[scen]][["plt_ppi_nat"]]
+df_summary %>% 
+    tidyr::pivot_wider(
+        id_cols = scenario,
+        names_from = party,
+        values_from = prob_win
+    ) %>% print()
 ```
+
+## Plots
+
+::: {.panel-tabset}
+
+## Scenario: "all"
+
+```{r}
+#| echo: false
+#| warning: false
+plts[["all"]][["plt_prob_win_election_over_time"]]
+```
+
+## Scenario: "short"
+```{r}
+#| echo: false
+#| warning: false
+plts[["short"]][["plt_prob_win_election_over_time"]]
+```
+
+## Scenario: "missing"
+```{r}
+#| echo: false
+#| warning: false
+plts[["missing"]][["plt_prob_win_election_over_time"]]
+```
+
+:::
 
