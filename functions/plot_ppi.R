@@ -36,13 +36,11 @@ plot_ppi <- function(
     }+
     ggsci::scale_color_jco()+
     ggsci::scale_fill_jco()+
-    {if (type_of_poll != "national")
-      facet_wrap(
-        vars(geography),
-        nrow = ceiling(sqrt(n_geographies)),
-        scales = "free"
-      )
-    }+
+    facet_wrap(
+      vars(geography),
+      nrow = ceiling(sqrt(n_geographies)),
+      scales = "free"
+    )+    
     labs(
       title = paste0(
         plt_title_prefix,
@@ -52,6 +50,7 @@ plot_ppi <- function(
     )+
     ylab("share")+
     theme(legend.position="top",
+          legend.title = element_blank(),
           plot.caption = ggtext::element_textbox_simple(size = 7, 
                                                         margin = margin(8, 0, 0, 0)
           ))-> plt_ppi
