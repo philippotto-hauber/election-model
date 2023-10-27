@@ -4,7 +4,7 @@ plot_ppiT <- function(
   election_day,
   n_geographies,
   plt_title_prefix,
-  plt_caption = element_blank()
+  plt_caption = element_blank(),
   df_results = NULL
 ) {
   df_draws %>%
