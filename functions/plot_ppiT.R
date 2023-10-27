@@ -4,6 +4,7 @@ plot_ppiT <- function(
   election_day,
   n_geographies,
   plt_title_prefix,
+  plt_caption = element_blank()
   df_results = NULL
 ) {
   df_draws %>%
@@ -32,7 +33,7 @@ plot_ppiT <- function(
     facet_wrap(~geography, nrow = ceiling(sqrt(n_geographies)), scales = "free")+
     xlab("")+
     labs(title = paste0(plt_title_prefix, ": Posterior densities of the expected vote share on election day"),
-         caption = "Vertical (dotted) lines: election result (prior mean);")+
+         caption = plt_caption)+
     theme(legend.position = "top",
           plot.caption = ggtext::element_textbox_simple(size = 10, 
                                                         margin = margin(8, 0, 0, 0)

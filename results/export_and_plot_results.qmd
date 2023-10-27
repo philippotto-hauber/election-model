@@ -215,7 +215,9 @@ gen_results <- function(plts, scen) {
         df_prior_ppi, 
         election_day, 
         n_geographies = length(states), 
-        scen) -> plts[[scen]][["plt_ppiT"]]
+        plt_title_prefix = scen,
+        plt_caption = "Dotted vertical line: prior mean"
+    ) -> plts[[scen]][["plt_ppiT"]]
     
     plot_ppi(
         df_draws_ppi, 

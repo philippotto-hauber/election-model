@@ -221,6 +221,7 @@ for (scen in scenarios_backtest) {
         election_day, 
         n_geographies = length(states), 
         paste0(params$year, " ", scen),
+        plt_caption = "Solid (dotted) vertical lines: election result (prior mean)."
         df_results = filter(
             df_results,
             vote_share != 0,
