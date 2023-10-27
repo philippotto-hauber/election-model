@@ -7,10 +7,10 @@ calc_cor_election_results <- function(election_results) {
                 year,
                 state,
                 region,
-                cc,
-                dgm,
-                pdal,
-                ssp
+                CC,
+                DGM,
+                PDAL,
+                SSP
             ) %>% 
             arrange(region, state) %>% 
             tidyr::pivot_longer(
