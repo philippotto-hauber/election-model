@@ -34,6 +34,15 @@ prepare_priors_backtest <- function() {
 
     # store in list
     priors[["m_mmu_T"]] <- df_m_mmu_T$vote_share_lr
+
+    # export to rds for documentation
+    saveRDS(
+        priors,
+        here::here(
+            "backtest",
+            "priors_backtest.rds"
+        )
+    )
     
     return(priors)
 }
