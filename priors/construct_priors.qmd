@@ -9,6 +9,7 @@ format:
         self-contained-math: true
         html-math-method: katex
         code-fold: show
+bibliography: ../references.bib
 ---
 
 This notebook constructs the **priors for the model estimation**. See `model_description.html`for details. Some of the priors are independent of the specific scenario being estimated, e.g. the innovations to the reverse random-walk $\boldsymbol{W}$; others depend on the scenario and the resulting *fundamental forecast*, e.g. the prior mean $m_{\mu_T}$ and variance $V_{\mu_T}$ on the (transformed) latent voting intentions on election day.
@@ -239,7 +240,7 @@ priors[["A"]][["W"]] <-
 
 ## variance of house effects $\sigma^2_{\delta}$
 
-Set this value equal to Stoeltzer et al. (Note, however, that there is a discrepancy between i) the value set in the code - 0.001 - and the accompanying comment ("1 percent point sd") and ii) what the say about the prior in the original paper - !)
+Set this value equal to @Stoetzer_etal_2019. Note, however, that there is a discrepancy between the value set in the code - 0.001 - and the accompanying comment ("1 percent point sd"). In addition, this also differs from what the say about the prior in the original paper on page 258! There they mention that $\delta_{c,p} \sim \mathcal{N}(0, 1)$ which refers to the log ratio transformed house effects!
 
 ```{r}
 sig_ddelta <- 0.001 # specify in terms of standard deviation for Stan!
@@ -603,6 +604,7 @@ simulate_prior <- function(
         df_draws,
         plt_title = paste0(scen, ": Expected vote share"),
         plt_caption = "Simulated prior distribution. Mean: dashed line; lighter (darker) ribbon: 95 (83) percent interval."
+    )
     
     plt_house <- plt_house_effects(
         df_draws,
