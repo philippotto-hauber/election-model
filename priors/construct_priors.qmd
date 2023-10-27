@@ -103,7 +103,7 @@ Plot historical election results
 ```{r}
 election_results %>% 
     tidyr::pivot_longer(
-        cols = c("cc", "dgm", "pdal", "ssp"),
+        cols = c("CC", "DGM", "PDAL", "SSP"),
         names_to = "party",
         values_to = "vote_share"
     ) %>% 
@@ -223,7 +223,7 @@ W_hat <- corr_mat_shrink
 ### Scale factor $\kappa$
 
 ```{r}
-kappa <- 0.01
+kappa <- 0.1
 ```
 
 ### Calculate $\boldsymbol{W}$ and store in list
@@ -239,8 +239,10 @@ priors[["A"]][["W"]] <-
 
 ## variance of house effects $\sigma^2_{\delta}$
 
+Set this value equal to Stoeltzer et al. (Note, however, that there is a discrepancy between i) the value set in the code - 0.001 - and the accompanying comment ("1 percent point sd") and ii) what the say about the prior in the original paper - !)
+
 ```{r}
-sig_ddelta <- 0.01 # specify in terms of standard deviation for Stan!
+sig_ddelta <- 0.001 # specify in terms of standard deviation for Stan!
 ```
 
 Store in list
@@ -312,8 +314,8 @@ Or it could also be made much tighter to observe the fact that in previous elect
 Scale elements of $V_{\mu_T}$ down if party is "dominating"
 
 ```{r}
-var_V_mmu_T <- 1
-scale_dominated_states <- 0.1
+var_V_mmu_T <- 2
+scale_dominated_states <- 0.25
 diag_V_mmu_T <- c()
 for (s in states) {
     if (s %in% dominated_states) {
@@ -339,10 +341,10 @@ Scale variance to account for differences in data availability in the scenarios
 ```{r}
 scale_scenarios <- c(
     "A" = 1,    # complete data up until election day
-    "B" = 0.2,  # very few polls, only in April, many regions and states without any
-    "C" = 0.5,  # polls up until May, almost all regions and states covered but mostly national
+    "B" = 1,  # very few polls, only in April, many regions and states without any
+    "C" = 1,  # polls up until May, almost all regions and states covered but mostly national
     "D" = 1,    # similar to A
-    "E" = 0.5   # similar to C
+    "E" = 1   # similar to C
 )
 ```
 
@@ -600,7 +602,7 @@ simulate_prior <- function(
     plt_ppi <- plt_draws_ppi(
         df_draws,
         plt_title = paste0(scen, ": Expected vote share"),
-        plt_caption = "Simulated prior distribution.")
+        plt_caption = "Simulated prior distribution. Mean: dashed line; lighter (darker) ribbon: 95 (83) percent interval."
     
     plt_house <- plt_house_effects(
         df_draws,
