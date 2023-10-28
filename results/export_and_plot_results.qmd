@@ -110,8 +110,8 @@ gen_results <- function(plts, scen) {
             states = states,
             parties = parties,
             electoral_votes = electoral_votes
-            )
         )
+    )
     toc()
     tic("calc prob win states")
     df_prob_win_states <- do.call(
@@ -215,7 +215,9 @@ gen_results <- function(plts, scen) {
         df_prior_ppi, 
         election_day, 
         n_geographies = length(states), 
-        scen) -> plts[[scen]][["plt_ppiT"]]
+        plt_title_prefix = scen,
+        plt_caption = "Dotted vertical line: prior mean"
+    ) -> plts[[scen]][["plt_ppiT"]]
     
     plot_ppi(
         df_draws_ppi, 
@@ -276,18 +278,24 @@ plts[["A"]][["plt_prob_win_election_over_time"]]
 ```
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["A"]][["plt_prob_win_states_over_time"]]
 ```
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["A"]][["plt_ppiT"]]
 ```
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["A"]][["plt_ppi"]]
@@ -314,18 +322,24 @@ plts[["B"]][["plt_prob_win_election_over_time"]]
 ```
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["B"]][["plt_prob_win_states_over_time"]]
 ```
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["B"]][["plt_ppiT"]]
 ```
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["B"]][["plt_ppi"]]
@@ -352,18 +366,24 @@ plts[["C"]][["plt_prob_win_election_over_time"]]
 ```
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["C"]][["plt_prob_win_states_over_time"]]
 ```
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["C"]][["plt_ppiT"]]
 ```
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["C"]][["plt_ppi"]]
@@ -391,6 +411,8 @@ plts[["D"]][["plt_prob_win_election_over_time"]]
 
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["D"]][["plt_prob_win_states_over_time"]]
@@ -398,6 +420,8 @@ plts[["D"]][["plt_prob_win_states_over_time"]]
 
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["D"]][["plt_ppiT"]]
@@ -405,6 +429,8 @@ plts[["D"]][["plt_ppiT"]]
 
 
 ```{r}
+#| fig.width: 10
+#| fig.height: 10
 #| echo: false
 #| warning: false
 plts[["D"]][["plt_ppi"]]

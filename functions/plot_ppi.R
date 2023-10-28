@@ -1,4 +1,11 @@
-plot_ppi <- function(df_draws, df_polls, n_geographies, type_of_poll, plt_title_prefix){
+plot_ppi <- function(
+    df_draws,
+    df_polls,
+    n_geographies,
+    type_of_poll,
+    plt_title_prefix,
+    df_results = NULL
+  ){
   df_draws %>%
     mutate(values = ifelse(values == 0.0, NA, values)) %>%
     group_by(t, geography, party) %>%
@@ -14,15 +21,36 @@ plot_ppi <- function(df_draws, df_polls, n_geographies, type_of_poll, plt_title_
     geom_ribbon(aes(ymin = q_83_low, ymax = q_83_upp, fill = party), alpha = 0.3)+
     # add share in polls as points in plot
     geom_point(data = filter(df_polls, type_of_poll == !!type_of_poll),
-               mapping = aes(x = date, y = value / sample_size, color = party))+
+               mapping = aes(x = date, y = value / sample_size, color = party),
+               shape = 1)+
+    {if (!is.null(df_results)) {
+      # add election resultd as a diamond
+      geom_point(
+          mapping = aes(x = t, y = vote_share, color = party),
+          data = df_results,
+          shape = 18,
+          size = 2,
+          show.legend = FALSE
+      )
+    }
+    }+
     ggsci::scale_color_jco()+
     ggsci::scale_fill_jco()+
-    {if (type_of_poll != "national")
-      facet_wrap(vars(geography), nrow = ceiling(sqrt(n_geographies)), scales = "free")}+
-    labs(title = paste0(plt_title_prefix, ": Expected vote share"),
-         caption = "Posterior mean: dashed line; lighter (darker) ribbon: 95 (83) percent posterior credible interval; dots indicate the vote share in a survey on that day")+
+    facet_wrap(
+      vars(geography),
+      nrow = ceiling(sqrt(n_geographies)),
+      scales = "free"
+    )+    
+    labs(
+      title = paste0(
+        plt_title_prefix,
+        ": Expected vote share"
+      ),
+      caption = "Posterior mean: dashed line; lighter (darker) ribbon: 95 (83) percent posterior credible interval; dots indicate the vote share in a survey on that day; diamonds indicate the election result."
+    )+
     ylab("share")+
     theme(legend.position="top",
+          legend.title = element_blank(),
           plot.caption = ggtext::element_textbox_simple(size = 7, 
                                                         margin = margin(8, 0, 0, 0)
           ))-> plt_ppi

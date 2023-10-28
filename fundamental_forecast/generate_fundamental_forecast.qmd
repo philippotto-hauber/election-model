@@ -676,3 +676,20 @@ saveRDS(
     )
 )
 ```
+
+Export mean vote share as fundamental forecast for backtests
+
+```{r}
+saveRDS(
+    select(
+        df_mean_vote_share,
+        province = state,
+        party,
+        vote_share
+    ),
+    file = here::here(
+        "backtest",
+        "mean_vote_shares.rds"
+    )
+)
+```

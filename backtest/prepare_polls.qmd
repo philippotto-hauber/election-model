@@ -1,0 +1,298 @@
+---
+title: "Prepare poll data for model backtest"
+format: 
+    html:
+        page-layout: full
+        embed-resources: true
+        toc: true
+        toc-location: left
+        self-contained-math: true
+        html-math-method: katex
+params:
+    year: 2023
+---
+
+# Libraries and functions
+
+```{r}
+#| output: false
+library(ggplot2)
+library(dplyr)
+names_functions = list.files(here::here("functions"))
+for (f in names_functions)
+    source(here::here("functions", f))
+rm(f, names_functions)
+```
+
+# Load polls for year, pollsters and dates
+
+```{r}
+rawdat <- read.csv(
+    here::here("data", "dataland_polls_1984_2023.csv"), stringsAsFactors = FALSE)
+dat <- filter(rawdat, year == params$year)
+```
+
+Load list of pollsters 
+```{r}
+pollsters <- load_pollsters()
+```
+
+Load the dates of the election campaign -> start = earliest recorded poll
+
+```{r}
+dates_campaign <- load_dates_election_campaign(year = params$year)
+```
+
+# Transform data
+
+Add column indicating the *type of poll*: national, regional or state
+
+```{r}
+states_regions <- load_dataland_states_regions()
+dat$type_of_poll <- determine_type_of_poll(dat$geography, states_regions)
+```
+
+Rescale vote shares to account for undecided voters -> party shares need to sum to 1!
+
+```{r}
+dat %>% 
+    mutate(sum_shares_parties = cc_poll_share +
+                                    dgm_poll_share +
+                                        pdal_poll_share +
+                                            ssp_poll_share,
+           cc_poll_share      = cc_poll_share / sum_shares_parties,
+           dgm_poll_share     = dgm_poll_share / sum_shares_parties,
+           pdal_poll_share    = pdal_poll_share / sum_shares_parties,
+           ssp_poll_share     = ssp_poll_share / sum_shares_parties) %>%
+    select(-sum_shares_parties) -> dat
+```
+
+Check that shares (approximately) sum to 1:
+
+```{r}
+#| echo: false
+hist(dat$cc_poll_share + 
+         dat$dgm_poll_share + 
+            dat$pdal_poll_share + 
+                dat$ssp_poll_share - 1, 
+                xlab = "", 
+                main = "Sum of vote shares minus 1")
+```
+
+Simplify names of party vote shares
+
+```{r}
+dat <- rename(dat, 
+    cc_share      = cc_poll_share, 
+    dgm_share     = dgm_poll_share,
+    pdal_share    = pdal_poll_share,
+    ssp_share     = ssp_poll_share
+)
+```
+
+Set `date` column
+```{r}
+dat %>% 
+    mutate(
+        date = as.Date(date_conducted)) %>%
+    select(
+        -c("date_published", "date_conducted")
+     ) -> dat
+```
+
+# Convert polls to a Stan-friendly list
+
+```{r}
+keep_cols_stan <- c("type_of_poll", "date",
+                    "pollster", "geography", "sample_size", 
+                    "cc_share", "dgm_share", 
+                    "pdal_share", "ssp_share")
+dat <- dat[, keep_cols_stan]
+```
+
+## Scenarios
+
+For the backtests, I consider three different vintages or scenarios
+
+```{r}
+scenarios_backtest <- c("all", "short", "missing")
+```
+
+- **all**: includes all polls in all geographies up until election day
+- **short**: includes all polls in all geographies until end of April
+
+```{r}
+date_max_short <- as.Date(paste0(params$year, "-04-30"))
+```
+
+- **missing**: includes polls until end of May but completely missing in regions and some states
+
+```{r}
+date_max_missing <- as.Date(paste0(params$year, "-05-31"))
+missing_states <- c("Electropolis", "Infoglen", "Cortexia")
+```
+
+```{r}
+polls <- list()
+
+for (scen in scenarios_backtest) {
+    polls[[scen]] <- list()
+    if (scen == "short") {
+        dat %>%
+            filter(
+                date <= date_max_short,
+                type_of_poll == "state"
+            ) %>%        
+            arrange(date) -> df_polls_state 
+    } else if (scen == "missing") {
+        dat %>%
+            filter(
+                date <= date_max_missing,
+                !(geography %in% missing_states), 
+                type_of_poll == "state"
+            ) %>%        
+            arrange(date) -> df_polls_state 
+    } else {        
+        dat %>%
+            filter(type_of_poll == "state") %>%        
+            arrange(date) -> df_polls_state
+    }
+
+    # convert vote shares to votes
+    df_polls_state %>%
+        mutate( cc_n      = round(cc_share * sample_size, digits = 0),
+                dgm_n     = round(dgm_share * sample_size, digits = 0),
+                pdal_n    = round(pdal_share * sample_size, digits = 0),
+                ssp_n     = round(ssp_share * sample_size, digits = 0)
+            ) -> df_polls_state
+
+    # store data in list
+    polls[[scen]][["n_responses"]]   <- df_polls_state$sample_size
+    polls[[scen]][["day_poll"]]      <- sapply(df_polls_state$date, 
+                                                function(x){ which(dates_campaign == x)})
+    polls[[scen]][["house_poll"]]    <- sapply(df_polls_state$pollster, 
+                                                function(x){which(pollsters == x)})
+    polls[[scen]][["state_poll"]]    <- sapply(df_polls_state$geography, 
+                                                function(x){which(states_regions$state == x)}) 
+    polls[[scen]][["y"]]             <- t(as.matrix(df_polls_state[, c("cc_n", "dgm_n", "pdal_n", "ssp_n")]))
+
+     
+    # regional polls ----
+    if (scen == "short") {
+        dat %>%
+            filter(
+                type_of_poll == "regional",
+                date <= date_max_short
+            ) %>%
+            arrange(date) -> df_polls_region  
+    } else if (scen == "missing") {
+        dat %>%
+            filter(
+                type_of_poll == "regional",
+                # exclude all regions!
+                !(geography %in% load_regions()), 
+                date <= date_max_missing) %>%
+            arrange(date) -> df_polls_region 
+    } else {
+        dat %>%
+            filter(
+                type_of_poll == "regional") %>%
+            arrange(date) -> df_polls_region 
+    }
+
+    df_polls_region %>%
+    mutate( cc_n      = round(cc_share * sample_size, digits = 0),
+            dgm_n     = round(dgm_share * sample_size, digits = 0),
+            pdal_n    = round(pdal_share * sample_size, digits = 0),
+            ssp_n     = round(ssp_share * sample_size, digits = 0)) -> df_polls_region
+
+    polls[[scen]][["n_responses_reg"]]   <- df_polls_region$sample_size
+    polls[[scen]][["day_poll_reg"]]      <- sapply(df_polls_region$date, 
+                                                        function(x){ which(dates_campaign == x)})
+    polls[[scen]][["house_poll_reg"]]    <- sapply(df_polls_region$pollster, 
+                                                        function(x){which(pollsters == x)})
+    polls[[scen]][["region_poll"]]       <- sapply(df_polls_region$geography,
+                                                        function(x){which(unique(states_regions$region) == x)}) 
+    polls[[scen]][["y_reg"]]             <- t(as.matrix(df_polls_region[, c("cc_n", "dgm_n", "pdal_n", "ssp_n")]))
+
+    # national polls ----
+    if (scen == "short") {
+    dat %>%
+        filter(
+            type_of_poll == "national",
+            date <= date_max_short
+        ) %>%
+        arrange(date) -> df_polls_national
+    } else if (scen == "missing") {
+        dat %>%
+        filter(
+            type_of_poll == "national",
+            date <= date_max_missing
+        ) %>%
+        arrange(date) -> df_polls_national
+    } else {
+        dat %>%
+        filter(
+            type_of_poll == "national"
+        ) %>%
+        arrange(date) -> df_polls_national
+    }
+
+    # convert vote shares to votes
+    df_polls_national %>%
+        mutate( cc_n      = round(cc_share * sample_size, digits = 0),
+                dgm_n     = round(dgm_share * sample_size, digits = 0),
+                pdal_n    = round(pdal_share * sample_size, digits = 0),
+                ssp_n     = round(ssp_share * sample_size, digits = 0)) -> df_polls_national
+
+
+    polls[[scen]][["n_responses_nat"]]   <- df_polls_national$sample_size
+    polls[[scen]][["day_poll_nat"]]      <- sapply(df_polls_national$date, 
+                                                    function(x){ which(dates_campaign == x)})
+    polls[[scen]][["house_poll_nat"]]    <- sapply(df_polls_national$pollster, 
+                                                    function(x){which(pollsters == x)})
+    polls[[scen]][["y_nat"]]             <- t(as.matrix(df_polls_national[, c("cc_n", "dgm_n", "pdal_n", "ssp_n")]))
+
+    # merge and convert polls to long format 
+    do.call("rbind", 
+            list(
+                df_polls_state,
+                df_polls_region,
+                df_polls_national
+            )
+        ) %>%
+    rename(CC = cc_n, 
+            DGM = dgm_n, 
+            PDAL = pdal_n, 
+            SSP = ssp_n) %>%
+    select(-ends_with("_share")) %>%
+    tidyr::pivot_longer(cols = -c("date", 
+                                    "geography", 
+                                    "sample_size",
+                                    "pollster",
+                                    "type_of_poll"),
+                        names_to = "party", 
+                        values_to = "value") -> df_polls
+
+    # export polls to csv
+    write.csv(
+        df_polls,
+        file = here::here(
+            "backtest",
+            paste0("df_polls_", params$year, "_", scen, ".csv")
+            ), 
+        row.names = FALSE
+    )
+
+    rm(df_polls, df_polls_state, df_polls_region, df_polls_national)
+}
+
+# export polls to rds
+saveRDS(
+    polls, 
+    file = here::here(
+        "backtest",
+        paste0("polls_", params$year, ".rds")
+    )
+)
+```

@@ -9,15 +9,15 @@ editor: visual
 bibliography: references.bib
 ---
 
-The model outlined below is based on models of US elections - e.g. @Linzer_2013 and @Heidemanns_2020 - augmented to allow for multiple parties as in @Stoetzer_etal_2019. 
+My approach to forecasting elections in Dataland is based on models of US elections - e.g. @Linzer_2013 and @Heidemanns_2020 - augmented to allow for multiple parties as in @Stoetzer_etal_2019. 
 
-The central part of the model are the latent voting intentions or expected vote shares for the different parties in all of Dataland's states. 
+The central part of the model are the latent voting intentions or expected vote shares for the different parties in all of Dataland's states or provinces. 
 
 For modelling purposes, these latent voting intentions are transformed using the *additive log ratio* transformation. 
 
 In the model, the latent voting intentions are inferred from polling data. However, polls do **not** just reflect the expected vote shares (up to sampling variability). They also contain *house effects*, i.e. systematic biases in the vote shares reported by different pollsters.
 
-The latent voting intentions at the state level are aggregated to the regional and national level using population weights so that the model can also handle regional and national polls
+To incorporate additional information in the form of regional and national polls, the latent voting intentions at the state level are aggregated to the regional and national level using population weights.
 
 ## Latent voting intentions
 
@@ -73,7 +73,7 @@ $$
 \pi^{\text{nat}}_{t} = \sum_s^{S} \omega_s \pi_{t, s}
 $$
 
-and $\mu^{\text{nat}}_{t} = \text{alr}(\pi^{\text{nat}}_{t})$. Since the number of parties fielding a candidate in Dataland is not always the same, the implicit vote shares equal to 0 of any "missing" parties in $\pi_{t, s}$ are inserted so 
+and $\mu^{\text{nat}}_{t} = \text{alr}(\pi^{\text{nat}}_{t})$. Since the number of parties fielding a candidate in Dataland is not always the same, I insert an implicit vote share of 0 for any "missing" parties in $\pi_{t, s}$.  
 
 ### Priors
 
@@ -136,7 +136,7 @@ where $N_i$ is the total number of respondents and $y_i = [y_{i, 1}, \dots, y_{i
 
 ### Regional polls
 
-Indexed by $k=1:K$, regional polls are modeled in exactly the same way as state polls. The only difference is that underlying probabilities of the multinomial distribution are derived from the regional voting intentions, $\theta^{reg}_{t, r, h} = \text{alr}^{-1}(\mu_{t, r} + \delta_{h})$:
+Indexed by $k=1:K$, regional polls are modeled in exactly the same way as state polls. The only difference is that underlying probabilities of the multinomial distribution are derived from the regional voting intentions, $\theta^{reg}_{t, r, h} = \text{alr}^{-1}(\mu^{reg}_{t, r} + \delta_{h})$:
 
 $$
 y^{reg}_k \sim \text{Multinomial}(N^{reg}_k, \theta^{reg}_{t, r, h})
@@ -144,7 +144,7 @@ $$
 
 ### National polls
 
-National polls are indexed by $j = 1:J$. A poll on day $t$ and by pollster $h$ is based on $\theta^{nat}_{t, h}$:
+National polls are indexed by $j = 1:J$. A poll on day $t$ and by pollster $h$ is based on $\theta^{nat}_{t, h} = \text{alr}^{-1}(\mu^{nat}_{t} + \delta_{h})$:
 
 $$
 y^{nat}_j \sim \text{Multinomial}(N^{nat}_j, \theta^{nat}_{t, h})

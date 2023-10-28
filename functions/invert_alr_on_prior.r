@@ -1,7 +1,8 @@
-invert_alr_on_prior <- function(prior_mmu_T) {
-    prior_mmuT <- as.data.frame(priors[[scen]][["m_mmu_T"]])
+invert_alr_on_prior <- function(prior_mmuT) {
+    prior_mmuT <- as.data.frame(prior_mmuT)    
     names(prior_mmuT) <- "mmu"   
     prior_mmuT %>% 
+        as.data.frame() %>%
         tibble::rownames_to_column(var = "tmp") %>%
         tidyr::separate(
             tmp, 

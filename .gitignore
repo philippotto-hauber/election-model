@@ -56,3 +56,5 @@ model/*.rda
 
 dev
 archive
+
+backtest/mcmc_out_*.rds
