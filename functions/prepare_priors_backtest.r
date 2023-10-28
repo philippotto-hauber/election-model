@@ -1,11 +1,11 @@
 prepare_priors_backtest <- function() {
     priors <- readRDS(here::here("priors", paste0("priors.Rds")))
-    priors_orig <- priors
-    # rm scenarios
-    priors <- priors[["A"]]
+
+    # rm scenarios    
+    priors_bt <- priors[["A"]]
 
     # extract names
-    names_mmu_T <- names(priors$m_mmu_T)
+    names_mmu_T <- names(priors_bt$m_mmu_T)
 
     # load mean vote share in past elections
     df_fcast <- readRDS(here::here(
@@ -33,16 +33,16 @@ prepare_priors_backtest <- function() {
     stopifnot(all(df_m_mmu_T$name == names_mmu_T))
 
     # store in list
-    priors[["m_mmu_T"]] <- df_m_mmu_T$vote_share_lr
-
+    priors_bt[["m_mmu_T"]] <- df_m_mmu_T$vote_share_lr
+    names(priors_bt[["m_mmu_T"]]) <- names_mmu_T
     # export to rds for documentation
     saveRDS(
-        priors,
+        priors_bt,
         here::here(
             "backtest",
             "priors_backtest.rds"
         )
     )
     
-    return(priors)
+    return(priors_bt)
 }
