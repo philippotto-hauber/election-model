@@ -1,0 +1,213 @@
+"type_of_poll","date","pollster","geography","sample_size","party","value"
+"state",2005-04-05,"No Province Left Behind","Binaryshire",500,"CC",415
+"state",2005-04-05,"No Province Left Behind","Binaryshire",500,"DGM",11
+"state",2005-04-05,"No Province Left Behind","Binaryshire",500,"PDAL",74
+"state",2005-04-05,"No Province Left Behind","Binaryshire",500,"SSP",0
+"state",2005-04-09,"Progressive Polling","Electropolis",1000,"CC",279
+"state",2005-04-09,"Progressive Polling","Electropolis",1000,"DGM",257
+"state",2005-04-09,"Progressive Polling","Electropolis",1000,"PDAL",464
+"state",2005-04-09,"Progressive Polling","Electropolis",1000,"SSP",0
+"state",2005-04-10,"Progressive Polling","Circuiton",1000,"CC",97
+"state",2005-04-10,"Progressive Polling","Circuiton",1000,"DGM",301
+"state",2005-04-10,"Progressive Polling","Circuiton",1000,"PDAL",603
+"state",2005-04-10,"Progressive Polling","Circuiton",1000,"SSP",0
+"state",2005-04-14,"Progressive Polling","Byteforge Domain",1000,"CC",318
+"state",2005-04-14,"Progressive Polling","Byteforge Domain",1000,"DGM",113
+"state",2005-04-14,"Progressive Polling","Byteforge Domain",1000,"PDAL",569
+"state",2005-04-14,"Progressive Polling","Byteforge Domain",1000,"SSP",0
+"state",2005-04-16,"Synapse Strategies","Cerebrica",1000,"CC",225
+"state",2005-04-16,"Synapse Strategies","Cerebrica",1000,"DGM",371
+"state",2005-04-16,"Synapse Strategies","Cerebrica",1000,"PDAL",319
+"state",2005-04-16,"Synapse Strategies","Cerebrica",1000,"SSP",85
+"state",2005-04-18,"Synapse Strategies","Cerebrica",1000,"CC",227
+"state",2005-04-18,"Synapse Strategies","Cerebrica",1000,"DGM",401
+"state",2005-04-18,"Synapse Strategies","Cerebrica",1000,"PDAL",293
+"state",2005-04-18,"Synapse Strategies","Cerebrica",1000,"SSP",79
+"state",2005-04-20,"Metaflux University","Byteforge Domain",1500,"CC",631
+"state",2005-04-20,"Metaflux University","Byteforge Domain",1500,"DGM",117
+"state",2005-04-20,"Metaflux University","Byteforge Domain",1500,"PDAL",752
+"state",2005-04-20,"Metaflux University","Byteforge Domain",1500,"SSP",0
+"state",2005-04-21,"No Province Left Behind","Amperville",500,"CC",18
+"state",2005-04-21,"No Province Left Behind","Amperville",500,"DGM",80
+"state",2005-04-21,"No Province Left Behind","Amperville",500,"PDAL",401
+"state",2005-04-21,"No Province Left Behind","Amperville",500,"SSP",0
+"state",2005-04-22,"Metaflux University","Quantumridge",1500,"CC",334
+"state",2005-04-22,"Metaflux University","Quantumridge",1500,"DGM",385
+"state",2005-04-22,"Metaflux University","Quantumridge",1500,"PDAL",781
+"state",2005-04-22,"Metaflux University","Quantumridge",1500,"SSP",0
+"state",2005-04-23,"Synapse Strategies","Cerebrica",1000,"CC",184
+"state",2005-04-23,"Synapse Strategies","Cerebrica",1000,"DGM",380
+"state",2005-04-23,"Synapse Strategies","Cerebrica",1000,"PDAL",366
+"state",2005-04-23,"Synapse Strategies","Cerebrica",1000,"SSP",69
+"state",2005-04-24,"Metaflux University","Quantumridge",1500,"CC",327
+"state",2005-04-24,"Metaflux University","Quantumridge",1500,"DGM",509
+"state",2005-04-24,"Metaflux University","Quantumridge",1500,"PDAL",664
+"state",2005-04-24,"Metaflux University","Quantumridge",1500,"SSP",0
+"state",2005-04-25,"Cobolite Coalition Calling","Electropolis",2000,"CC",740
+"state",2005-04-25,"Cobolite Coalition Calling","Electropolis",2000,"DGM",691
+"state",2005-04-25,"Cobolite Coalition Calling","Electropolis",2000,"PDAL",569
+"state",2005-04-25,"Cobolite Coalition Calling","Electropolis",2000,"SSP",0
+"state",2005-04-26,"Progressive Polling","Voltagea",1000,"CC",120
+"state",2005-04-26,"Progressive Polling","Voltagea",1000,"DGM",318
+"state",2005-04-26,"Progressive Polling","Voltagea",1000,"PDAL",562
+"state",2005-04-26,"Progressive Polling","Voltagea",1000,"SSP",0
+"state",2005-04-27,"Progressive Polling","Byteforge Domain",1000,"CC",386
+"state",2005-04-27,"Progressive Polling","Byteforge Domain",1000,"DGM",116
+"state",2005-04-27,"Progressive Polling","Byteforge Domain",1000,"PDAL",499
+"state",2005-04-27,"Progressive Polling","Byteforge Domain",1000,"SSP",0
+"state",2005-04-29,"Progressive Polling","Byteforge Domain",1000,"CC",364
+"state",2005-04-29,"Progressive Polling","Byteforge Domain",1000,"DGM",134
+"state",2005-04-29,"Progressive Polling","Byteforge Domain",1000,"PDAL",502
+"state",2005-04-29,"Progressive Polling","Byteforge Domain",1000,"SSP",0
+"state",2005-04-29,"Metaflux University","Infinitron Peninsula",1500,"CC",668
+"state",2005-04-29,"Metaflux University","Infinitron Peninsula",1500,"DGM",495
+"state",2005-04-29,"Metaflux University","Infinitron Peninsula",1500,"PDAL",337
+"state",2005-04-29,"Metaflux University","Infinitron Peninsula",1500,"SSP",0
+"state",2005-04-30,"Proudly Paid For Polling","Cortexia",1000,"CC",67
+"state",2005-04-30,"Proudly Paid For Polling","Cortexia",1000,"DGM",297
+"state",2005-04-30,"Proudly Paid For Polling","Cortexia",1000,"PDAL",300
+"state",2005-04-30,"Proudly Paid For Polling","Cortexia",1000,"SSP",336
+"state",2005-04-30,"No Province Left Behind","Quantumridge",500,"CC",120
+"state",2005-04-30,"No Province Left Behind","Quantumridge",500,"DGM",167
+"state",2005-04-30,"No Province Left Behind","Quantumridge",500,"PDAL",213
+"state",2005-04-30,"No Province Left Behind","Quantumridge",500,"SSP",0
+"regional",2005-04-05,"Big Dataland Surveys","Metaflux Realm",10000,"CC",3306
+"regional",2005-04-05,"Big Dataland Surveys","Metaflux Realm",10000,"DGM",3365
+"regional",2005-04-05,"Big Dataland Surveys","Metaflux Realm",10000,"PDAL",3329
+"regional",2005-04-05,"Big Dataland Surveys","Metaflux Realm",10000,"SSP",0
+"regional",2005-04-06,"Big Dataland Surveys","Synapse Territories",10000,"CC",1424
+"regional",2005-04-06,"Big Dataland Surveys","Synapse Territories",10000,"DGM",2916
+"regional",2005-04-06,"Big Dataland Surveys","Synapse Territories",10000,"PDAL",2985
+"regional",2005-04-06,"Big Dataland Surveys","Synapse Territories",10000,"SSP",2675
+"regional",2005-04-10,"Big Dataland Surveys","Synapse Territories",10000,"CC",1131
+"regional",2005-04-10,"Big Dataland Surveys","Synapse Territories",10000,"DGM",3816
+"regional",2005-04-10,"Big Dataland Surveys","Synapse Territories",10000,"PDAL",2603
+"regional",2005-04-10,"Big Dataland Surveys","Synapse Territories",10000,"SSP",2450
+"regional",2005-04-26,"Conference Board of Dataland","Synapse Territories",3000,"CC",403
+"regional",2005-04-26,"Conference Board of Dataland","Synapse Territories",3000,"DGM",899
+"regional",2005-04-26,"Conference Board of Dataland","Synapse Territories",3000,"PDAL",892
+"regional",2005-04-26,"Conference Board of Dataland","Synapse Territories",3000,"SSP",806
+"regional",2005-04-28,"Cobolite Coalition Calling","Circuit Confederation",2000,"CC",504
+"regional",2005-04-28,"Cobolite Coalition Calling","Circuit Confederation",2000,"DGM",379
+"regional",2005-04-28,"Cobolite Coalition Calling","Circuit Confederation",2000,"PDAL",1118
+"regional",2005-04-28,"Cobolite Coalition Calling","Circuit Confederation",2000,"SSP",0
+"national",2005-04-05,"Dataland Daily","National",200,"CC",39
+"national",2005-04-05,"Dataland Daily","National",200,"DGM",57
+"national",2005-04-05,"Dataland Daily","National",200,"PDAL",88
+"national",2005-04-05,"Dataland Daily","National",200,"SSP",16
+"national",2005-04-06,"No Province Left Behind","National",500,"CC",66
+"national",2005-04-06,"No Province Left Behind","National",500,"DGM",151
+"national",2005-04-06,"No Province Left Behind","National",500,"PDAL",238
+"national",2005-04-06,"No Province Left Behind","National",500,"SSP",45
+"national",2005-04-06,"Dataland Daily","National",200,"CC",43
+"national",2005-04-06,"Dataland Daily","National",200,"DGM",61
+"national",2005-04-06,"Dataland Daily","National",200,"PDAL",84
+"national",2005-04-06,"Dataland Daily","National",200,"SSP",13
+"national",2005-04-07,"Dataland Daily","National",200,"CC",39
+"national",2005-04-07,"Dataland Daily","National",200,"DGM",63
+"national",2005-04-07,"Dataland Daily","National",200,"PDAL",88
+"national",2005-04-07,"Dataland Daily","National",200,"SSP",10
+"national",2005-04-08,"Dataland Daily","National",200,"CC",55
+"national",2005-04-08,"Dataland Daily","National",200,"DGM",62
+"national",2005-04-08,"Dataland Daily","National",200,"PDAL",72
+"national",2005-04-08,"Dataland Daily","National",200,"SSP",11
+"national",2005-04-09,"Dataland Daily","National",200,"CC",43
+"national",2005-04-09,"Dataland Daily","National",200,"DGM",48
+"national",2005-04-09,"Dataland Daily","National",200,"PDAL",99
+"national",2005-04-09,"Dataland Daily","National",200,"SSP",9
+"national",2005-04-10,"Dataland Daily","National",200,"CC",46
+"national",2005-04-10,"Dataland Daily","National",200,"DGM",80
+"national",2005-04-10,"Dataland Daily","National",200,"PDAL",61
+"national",2005-04-10,"Dataland Daily","National",200,"SSP",13
+"national",2005-04-11,"Dataland Daily","National",200,"CC",32
+"national",2005-04-11,"Dataland Daily","National",200,"DGM",69
+"national",2005-04-11,"Dataland Daily","National",200,"PDAL",94
+"national",2005-04-11,"Dataland Daily","National",200,"SSP",5
+"national",2005-04-12,"Dataland Daily","National",200,"CC",52
+"national",2005-04-12,"Dataland Daily","National",200,"DGM",54
+"national",2005-04-12,"Dataland Daily","National",200,"PDAL",77
+"national",2005-04-12,"Dataland Daily","National",200,"SSP",16
+"national",2005-04-13,"Dataland Daily","National",200,"CC",49
+"national",2005-04-13,"Dataland Daily","National",200,"DGM",77
+"national",2005-04-13,"Dataland Daily","National",200,"PDAL",55
+"national",2005-04-13,"Dataland Daily","National",200,"SSP",19
+"national",2005-04-14,"Dataland Daily","National",200,"CC",42
+"national",2005-04-14,"Dataland Daily","National",200,"DGM",76
+"national",2005-04-14,"Dataland Daily","National",200,"PDAL",71
+"national",2005-04-14,"Dataland Daily","National",200,"SSP",11
+"national",2005-04-15,"Dataland Daily","National",200,"CC",48
+"national",2005-04-15,"Dataland Daily","National",200,"DGM",44
+"national",2005-04-15,"Dataland Daily","National",200,"PDAL",97
+"national",2005-04-15,"Dataland Daily","National",200,"SSP",11
+"national",2005-04-16,"Dataland Daily","National",200,"CC",48
+"national",2005-04-16,"Dataland Daily","National",200,"DGM",56
+"national",2005-04-16,"Dataland Daily","National",200,"PDAL",90
+"national",2005-04-16,"Dataland Daily","National",200,"SSP",6
+"national",2005-04-17,"Dataland Daily","National",200,"CC",34
+"national",2005-04-17,"Dataland Daily","National",200,"DGM",72
+"national",2005-04-17,"Dataland Daily","National",200,"PDAL",82
+"national",2005-04-17,"Dataland Daily","National",200,"SSP",12
+"national",2005-04-18,"Dataland Daily","National",200,"CC",49
+"national",2005-04-18,"Dataland Daily","National",200,"DGM",64
+"national",2005-04-18,"Dataland Daily","National",200,"PDAL",82
+"national",2005-04-18,"Dataland Daily","National",200,"SSP",5
+"national",2005-04-19,"Dataland Daily","National",200,"CC",52
+"national",2005-04-19,"Dataland Daily","National",200,"DGM",62
+"national",2005-04-19,"Dataland Daily","National",200,"PDAL",75
+"national",2005-04-19,"Dataland Daily","National",200,"SSP",11
+"national",2005-04-20,"No Province Left Behind","National",500,"CC",105
+"national",2005-04-20,"No Province Left Behind","National",500,"DGM",144
+"national",2005-04-20,"No Province Left Behind","National",500,"PDAL",227
+"national",2005-04-20,"No Province Left Behind","National",500,"SSP",25
+"national",2005-04-20,"Dataland Daily","National",200,"CC",38
+"national",2005-04-20,"Dataland Daily","National",200,"DGM",62
+"national",2005-04-20,"Dataland Daily","National",200,"PDAL",91
+"national",2005-04-20,"Dataland Daily","National",200,"SSP",10
+"national",2005-04-21,"Dataland Daily","National",200,"CC",45
+"national",2005-04-21,"Dataland Daily","National",200,"DGM",58
+"national",2005-04-21,"Dataland Daily","National",200,"PDAL",86
+"national",2005-04-21,"Dataland Daily","National",200,"SSP",11
+"national",2005-04-22,"Dataland Daily","National",200,"CC",52
+"national",2005-04-22,"Dataland Daily","National",200,"DGM",58
+"national",2005-04-22,"Dataland Daily","National",200,"PDAL",84
+"national",2005-04-22,"Dataland Daily","National",200,"SSP",7
+"national",2005-04-23,"Dataland Daily","National",200,"CC",34
+"national",2005-04-23,"Dataland Daily","National",200,"DGM",67
+"national",2005-04-23,"Dataland Daily","National",200,"PDAL",88
+"national",2005-04-23,"Dataland Daily","National",200,"SSP",12
+"national",2005-04-23,"Cobolite Coalition Calling","National",2000,"CC",713
+"national",2005-04-23,"Cobolite Coalition Calling","National",2000,"DGM",456
+"national",2005-04-23,"Cobolite Coalition Calling","National",2000,"PDAL",702
+"national",2005-04-23,"Cobolite Coalition Calling","National",2000,"SSP",130
+"national",2005-04-23,"Big Dataland Surveys","National",10000,"CC",2330
+"national",2005-04-23,"Big Dataland Surveys","National",10000,"DGM",3274
+"national",2005-04-23,"Big Dataland Surveys","National",10000,"PDAL",3811
+"national",2005-04-23,"Big Dataland Surveys","National",10000,"SSP",585
+"national",2005-04-24,"Dataland Daily","National",200,"CC",49
+"national",2005-04-24,"Dataland Daily","National",200,"DGM",69
+"national",2005-04-24,"Dataland Daily","National",200,"PDAL",72
+"national",2005-04-24,"Dataland Daily","National",200,"SSP",11
+"national",2005-04-25,"Dataland Daily","National",200,"CC",55
+"national",2005-04-25,"Dataland Daily","National",200,"DGM",53
+"national",2005-04-25,"Dataland Daily","National",200,"PDAL",80
+"national",2005-04-25,"Dataland Daily","National",200,"SSP",12
+"national",2005-04-26,"Dataland Daily","National",200,"CC",35
+"national",2005-04-26,"Dataland Daily","National",200,"DGM",54
+"national",2005-04-26,"Dataland Daily","National",200,"PDAL",98
+"national",2005-04-26,"Dataland Daily","National",200,"SSP",13
+"national",2005-04-27,"Dataland Daily","National",200,"CC",45
+"national",2005-04-27,"Dataland Daily","National",200,"DGM",83
+"national",2005-04-27,"Dataland Daily","National",200,"PDAL",64
+"national",2005-04-27,"Dataland Daily","National",200,"SSP",8
+"national",2005-04-28,"Dataland Daily","National",200,"CC",36
+"national",2005-04-28,"Dataland Daily","National",200,"DGM",56
+"national",2005-04-28,"Dataland Daily","National",200,"PDAL",88
+"national",2005-04-28,"Dataland Daily","National",200,"SSP",19
+"national",2005-04-29,"Dataland Daily","National",200,"CC",44
+"national",2005-04-29,"Dataland Daily","National",200,"DGM",67
+"national",2005-04-29,"Dataland Daily","National",200,"PDAL",70
+"national",2005-04-29,"Dataland Daily","National",200,"SSP",19
+"national",2005-04-30,"Dataland Daily","National",200,"CC",43
+"national",2005-04-30,"Dataland Daily","National",200,"DGM",76
+"national",2005-04-30,"Dataland Daily","National",200,"PDAL",73
+"national",2005-04-30,"Dataland Daily","National",200,"SSP",8
