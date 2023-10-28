@@ -1,3 +1,4 @@
+@Rem cd back to project root so that Rprofile is loaded correctly
 cd ..
 @REM  2005: CC winner
 quarto render ./backtest/prepare_polls.qmd -P year=2005
