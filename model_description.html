@@ -3158,11 +3158,11 @@ return!"\t\n\x0B\f\r                　\u2028\u2029
 
 </header>
 
-<p>The model outlined below is based on models of US elections - e.g. <span class="citation" data-cites="Linzer_2013">Linzer (<a href="#ref-Linzer_2013" role="doc-biblioref">2013</a>)</span> and <span class="citation" data-cites="Heidemanns_2020">Heidemanns, Gelman, and Morris (<a href="#ref-Heidemanns_2020" role="doc-biblioref">2020</a>)</span> - augmented to allow for multiple parties as in <span class="citation" data-cites="Stoetzer_etal_2019">Stoetzer et al. (<a href="#ref-Stoetzer_etal_2019" role="doc-biblioref">2019</a>)</span>.</p>
-<p>The central part of the model are the latent voting intentions or expected vote shares for the different parties in all of Dataland’s states.</p>
+<p>My approach to forecasting elections in Dataland is based on models of US elections - e.g. <span class="citation" data-cites="Linzer_2013">Linzer (<a href="#ref-Linzer_2013" role="doc-biblioref">2013</a>)</span> and <span class="citation" data-cites="Heidemanns_2020">Heidemanns, Gelman, and Morris (<a href="#ref-Heidemanns_2020" role="doc-biblioref">2020</a>)</span> - augmented to allow for multiple parties as in <span class="citation" data-cites="Stoetzer_etal_2019">Stoetzer et al. (<a href="#ref-Stoetzer_etal_2019" role="doc-biblioref">2019</a>)</span>.</p>
+<p>The central part of the model are the latent voting intentions or expected vote shares for the different parties in all of Dataland’s states or provinces.</p>
 <p>For modelling purposes, these latent voting intentions are transformed using the <em>additive log ratio</em> transformation.</p>
 <p>In the model, the latent voting intentions are inferred from polling data. However, polls do <strong>not</strong> just reflect the expected vote shares (up to sampling variability). They also contain <em>house effects</em>, i.e. systematic biases in the vote shares reported by different pollsters.</p>
-<p>The latent voting intentions at the state level are aggregated to the regional and national level using population weights so that the model can also handle regional and national polls</p>
+<p>To incorporate additional information in the form of regional and national polls, the latent voting intentions at the state level are aggregated to the regional and national level using population weights.</p>
 <section id="latent-voting-intentions" class="level2">
 <h2 class="anchored" data-anchor-id="latent-voting-intentions">Latent voting intentions</h2>
 <p>Let <span class="math inline">\(\pi_{t, s} = [\pi_{t, s, 1}, \dots, \pi_{t, s, P}]\)</span> denote the vector of voting intentions for the <span class="math inline">\(P\)</span> different parties in state <span class="math inline">\(s\)</span> at time <span class="math inline">\(t\)</span>. Because these are expected vote shares, <span class="math inline">\(\sum_p^P \pi_{t,s, p} = 1\)</span>.</p>
@@ -3200,7 +3200,7 @@ w_t \sim \mathcal{N}(0, \boldsymbol{W})
 <p><span class="math display">\[
 \pi^{\text{nat}}_{t} = \sum_s^{S} \omega_s \pi_{t, s}
 \]</span></p>
-<p>and <span class="math inline">\(\mu^{\text{nat}}_{t} = \text{alr}(\pi^{\text{nat}}_{t})\)</span>. Since the number of parties fielding a candidate in Dataland is not always the same, the implicit vote shares equal to 0 of any “missing” parties in <span class="math inline">\(\pi_{t, s}\)</span> are inserted so</p>
+<p>and <span class="math inline">\(\mu^{\text{nat}}_{t} = \text{alr}(\pi^{\text{nat}}_{t})\)</span>. Since the number of parties fielding a candidate in Dataland is not always the same, I insert an implicit vote share of 0 for any “missing” parties in <span class="math inline">\(\pi_{t, s}\)</span>.</p>
 </section>
 <section id="priors" class="level3">
 <h3 class="anchored" data-anchor-id="priors">Priors</h3>
@@ -3250,14 +3250,14 @@ y_i \sim \text{Multinomial}(N_i, \theta_{t, s, h})
 </section>
 <section id="regional-polls" class="level3">
 <h3 class="anchored" data-anchor-id="regional-polls">Regional polls</h3>
-<p>Indexed by <span class="math inline">\(k=1:K\)</span>, regional polls are modeled in exactly the same way as state polls. The only difference is that underlying probabilities of the multinomial distribution are derived from the regional voting intentions, <span class="math inline">\(\theta^{reg}_{t, r, h} = \text{alr}^{-1}(\mu_{t, r} + \delta_{h})\)</span>:</p>
+<p>Indexed by <span class="math inline">\(k=1:K\)</span>, regional polls are modeled in exactly the same way as state polls. The only difference is that underlying probabilities of the multinomial distribution are derived from the regional voting intentions, <span class="math inline">\(\theta^{reg}_{t, r, h} = \text{alr}^{-1}(\mu^{reg}_{t, r} + \delta_{h})\)</span>:</p>
 <p><span class="math display">\[
 y^{reg}_k \sim \text{Multinomial}(N^{reg}_k, \theta^{reg}_{t, r, h})
 \]</span></p>
 </section>
 <section id="national-polls" class="level3">
 <h3 class="anchored" data-anchor-id="national-polls">National polls</h3>
-<p>National polls are indexed by <span class="math inline">\(j = 1:J\)</span>. A poll on day <span class="math inline">\(t\)</span> and by pollster <span class="math inline">\(h\)</span> is based on <span class="math inline">\(\theta^{nat}_{t, h}\)</span>:</p>
+<p>National polls are indexed by <span class="math inline">\(j = 1:J\)</span>. A poll on day <span class="math inline">\(t\)</span> and by pollster <span class="math inline">\(h\)</span> is based on <span class="math inline">\(\theta^{nat}_{t, h} = \text{alr}^{-1}(\mu^{nat}_{t} + \delta_{h})\)</span>:</p>
 <p><span class="math display">\[
 y^{nat}_j \sim \text{Multinomial}(N^{nat}_j, \theta^{nat}_{t, h})
 \]</span></p>
