@@ -55,6 +55,12 @@ election_results <- load_election_vote_shares()
 n_elections <- length(unique(election_results$year))
 ```
 
+Load electoral votes -> used in simulating the prior probabilities of winning the election
+
+```{r}
+electoral_votes <- load_electoral_votes()
+```
+
 Calculate the dim names of $\mu_T$, i.e. the state and party that each entry refers to. These are also the dimnames of $\boldsymbol{W}$ and $V_{\mu_T}$. These serve as a cross-check that the priors are ordered in the same way as in the data preparation and estimation! 
 
 ```{r}
@@ -73,6 +79,8 @@ Load the list of states in which historically one party has been the clear winne
 ```{r}
 dominated_states <- readRDS(here::here("fundamental_forecast", "dominated_states.rds"))
 ```
+
+
 # Scenario-independent priors
 
 ## covariance matrix $\boldsymbol{W}$
@@ -240,10 +248,10 @@ priors[["A"]][["W"]] <-
 
 ## variance of house effects $\sigma^2_{\delta}$
 
-Set this value equal to @Stoetzer_etal_2019. Note, however, that there is a discrepancy between the value set in the code - 0.001 - and the accompanying comment ("1 percent point sd"). In addition, this also differs from what the say about the prior in the original paper on page 258! There they mention that $\delta_{c,p} \sim \mathcal{N}(0, 1)$ which refers to the log ratio transformed house effects!
+ Note that there is a discrepancy between  how @Stoetzer_etal_2019 set the value in the code - 0.001 - and the accompanying comment ("1 percent point sd"). In addition, this also differs from what the say about the prior in the original paper on page 258! There they mention that $\delta_{c,p} \sim \mathcal{N}(0, 1)$ which refers to the log ratio transformed house effects!
 
 ```{r}
-sig_ddelta <- 0.001 # specify in terms of standard deviation for Stan!
+sig_ddelta <- 0.005 # specify in terms of standard deviation for Stan!
 ```
 
 Store in list
@@ -315,8 +323,8 @@ Or it could also be made much tighter to observe the fact that in previous elect
 Scale elements of $V_{\mu_T}$ down if party is "dominating"
 
 ```{r}
-var_V_mmu_T <- 2
-scale_dominated_states <- 0.25
+var_V_mmu_T <- 1
+scale_dominated_states <- 0.2
 diag_V_mmu_T <- c()
 for (s in states) {
     if (s %in% dominated_states) {
@@ -337,15 +345,15 @@ V_mmu_T <- diag(diag_V_mmu_T)
 dimnames(V_mmu_T) <- list(names_mmu_T, names_mmu_T)
 ```
 
-Scale variance to account for differences in data availability in the scenarios
+Given differences in data availability across scenarios, the prior could be made even tighter. For the time being, however, I don't let the tightness of the prior vary: 
 
 ```{r}
 scale_scenarios <- c(
-    "A" = 1,    # complete data up until election day
-    "B" = 1,  # very few polls, only in April, many regions and states without any
-    "C" = 1,  # polls up until May, almost all regions and states covered but mostly national
-    "D" = 1,    # similar to A
-    "E" = 1   # similar to C
+    "A" = 1,  
+    "B" = 1,  
+    "C" = 1,  
+    "D" = 1,  
+    "E" = 1 
 )
 ```
 
@@ -369,11 +377,13 @@ To evaluate if the joint prior distribution specified above translates into reas
 
 This is similar in spirit to the *prior predictive distribution* which samples the data conditional on the prior. For definition and background see one's favorite textbook on Bayesian statistics, [Wiki](https://en.wikipedia.org/wiki/Posterior_predictive_distribution#Prior_vs._posterior_predictive_distribution) or [Stan docs](https://mc-stan.org/docs/stan-users-guide/prior-predictive-checks.html).
 
-Two questions are of interest: 
+Three questions are of interest: 
 
 - does the joint prior imply reasonable ranges for the expected vote share both across parties and across time? 
 
 - is the size of the house effects plausible? 
+
+- what does the joint prior imply for the a priori win probabilities of the different elections?
 
 ```{r}
 priors <- readRDS(file = here::here("priors", "priors.Rds"))
@@ -382,12 +392,11 @@ priors <- readRDS(file = here::here("priors", "priors.Rds"))
 ## Setup
 
 ```{r}
-n_draws <- 500
+n_draws <- 250
 
 n_periods <- length(
     load_dates_election_campaign()
 )
-
 ```
 
 ## Functions
@@ -496,36 +505,36 @@ plt_draws_ppi <- function(
 ) {
     df_draws %>%
         mutate(
-            ppi = ifelse(
-            ppi == 0.0,
-                NA,
-            ppi
+            values = ifelse(
+                values == 0.0,
+                    NA,
+                values
             )
         ) %>%
         group_by(
             t,
-            state,
+            geography,
             party
         ) %>%
         summarise(
-            mn = mean(ppi, na.rm = T),
+            mn = mean(values, na.rm = T),
             q_95_upp = quantile(
-                ppi,
+                values,
                 prob = c(0.025),
                 na.rm = T
             ),
             q_95_low = quantile(
-                ppi,
+                values,
                 prob = c(1-0.025),
                 na.rm = T
             ),
             q_83_upp = quantile(
-                ppi,
+                values,
                 prob = c(0.0855),
                 na.rm = T
             ),
             q_83_low = quantile(
-                ppi,
+                values,
                 prob = c(1-0.085),
                 na.rm = T
             )
@@ -537,7 +546,7 @@ plt_draws_ppi <- function(
         geom_ribbon(aes(ymin = q_83_low, ymax = q_83_upp, fill = party), alpha = 0.3)+
         ggsci::scale_color_jco() +
         ggsci::scale_fill_jco() +
-        facet_wrap(~state)+
+        facet_wrap(~geography)+
         labs(
             x = "",
             y = "",
@@ -553,23 +562,20 @@ plt_house_effects <- function(
     plt_caption
 ) {
     df_draws %>%
-        mutate(
-            house_effects = ttheta - ppi
-        ) %>%
         ggplot(aes(x = house_effects, fill = party))+
         geom_histogram(
-            binwidth = 0.001,
+            bins = 100,
             position = "identity",
             alpha = 0.3)+ 
         ggsci::scale_fill_jco() +
-        facet_wrap(~state)+
+        facet_wrap(~geography)+
         labs(
             x = "",
             y = "",
             title = plt_title,
             caption = plt_caption
         ) -> p
-    return(p)    
+    return(p)  
 }
 ```
 
@@ -578,8 +584,8 @@ Function to simulate prior for a given scenario
 ```{r}
 simulate_prior <- function(
     scen, 
-    n_draws = 1000,
-    n_periods = 100
+    n_draws,
+    n_periods
 ) {
     do.call(
     "rbind",
@@ -598,6 +604,50 @@ simulate_prior <- function(
         }
     )) -> df_draws
     df_draws$scenario = scen
+    df_draws$house_effects <- df_draws$ttheta - df_draws$ppi
+
+    # aggregate over states to get national vote
+    load_pop_weights("national") %>%
+        as.data.frame() %>% 
+        tibble::rownames_to_column(var = "state") %>%
+        rename(pop_w = ".") -> df_state_weights 
+
+    merge(
+        df_draws,
+        df_state_weights,
+        by = "state"
+    ) %>% 
+    select(draw, t, state, party, ppi, pop_w) %>%
+    mutate(ppi_w = ppi * pop_w) %>%
+    summarise(
+        ppi_nat = sum(ppi_w),
+        .by = c(draw, t, party)
+    ) -> df_draws_nat
+
+    # calculate probability of winning election for each t
+    df_draws <- rename(
+        df_draws,
+        values = ppi,
+        geography = state
+    )
+
+    df_draws_nat <- rename(
+        df_draws_nat,
+        values = ppi_nat
+    )
+
+    df_prob_win_election <- do.call(
+        "rbind", 
+        lapply(
+            seq(1, n_periods), 
+            FUN = calc_prob_win_election,
+            df_draws_ppi = df_draws,
+            df_draws_ppi_nat = df_draws_nat,
+            states = states,
+            parties = parties,
+            electoral_votes = electoral_votes
+        )
+    )
 
     # plot ppi
     plt_ppi <- plt_draws_ppi(
@@ -606,21 +656,47 @@ simulate_prior <- function(
         plt_caption = "Simulated prior distribution. Mean: dashed line; lighter (darker) ribbon: 95 (83) percent interval."
     )
     
+    # plot house effects
     plt_house <- plt_house_effects(
         df_draws,
         plt_title = paste0(scen, ": House effects"),
         plt_caption = "Simulated prior distribution: difference between theta and pi (see model description).")
+
+    # plot probability of wining election
+    plot_prob_win_election_over_time(
+        df_prob_win_election, 
+        plt_title_prefix = scen,
+        plt_caption = "Simulated from the prior distribution."
+    ) -> plt_probwin
         
     return(list(
-        df_draws = df_draws,
-        plt_ppi = plt_ppi,
-        plt_house = plt_house
+            df_draws = df_draws,
+            df_draws_nat = df_draws_nat,
+            df_prob_win_election = df_prob_win_election,
+            plt_ppi = plt_ppi,
+            plt_house = plt_house,
+            plt_probwin = plt_probwin
         )
     )
 }
 ```
 
+Loop over scenarios and simulate prior
+```{r}
+plts <- list()
+
+for (scen in scenarios) {
+    plts[[scen]] <- simulate_prior(
+        scen = "A",
+        n_periods = n_periods,
+        n_draws = n_draws
+    )
+}
+```
+
 ## Plots
+
+### Expected vote share
 
 ::: {.panel-tabset}
 
@@ -629,16 +705,8 @@ simulate_prior <- function(
 ```{r}
 #| echo: false
 #| warning: false
-plts <- simulate_prior(
-    scen = "A",
-    n_periods = n_periods
-)
-plts[["plt_ppi"]]
-```
 
-```{r}
-#| echo: false
-plts[["plt_house"]]
+plts[["A"]][["plt_ppi"]]
 ```
 
 ## B
@@ -646,52 +714,26 @@ plts[["plt_house"]]
 ```{r}
 #| echo: false
 #| warning: false
-plts <- simulate_prior(
-    scen = "B",
-    n_periods = n_periods
-)
-plts[["plt_ppi"]]
-```
 
-```{r}
-#| echo: false
-plts[["plt_house"]]
+plts[["B"]][["plt_ppi"]]
 ```
-
 
 ## C
 
 ```{r}
 #| echo: false
 #| warning: false
-plts <- simulate_prior(
-    scen = "C",
-    n_periods = n_periods
-)
-plts[["plt_ppi"]]
-```
 
-```{r}
-#| echo: false
-plts[["plt_house"]]
+plts[["C"]][["plt_ppi"]]
 ```
-
 
 ## D
 
 ```{r}
 #| echo: false
 #| warning: false
-plts <- simulate_prior(
-    scen = "D",
-    n_periods = n_periods
-)
-plts[["plt_ppi"]]
-```
 
-```{r}
-#| echo: false
-plts[["plt_house"]]
+plts[["D"]][["plt_ppi"]]
 ```
 
 ## E
@@ -699,16 +741,99 @@ plts[["plt_house"]]
 ```{r}
 #| echo: false
 #| warning: false
-plts <- simulate_prior(
-    scen = "E",
-    n_periods = n_periods
-)
-plts[["plt_ppi"]]
+
+plts[["E"]][["plt_ppi"]]
 ```
+
+:::
+
+### Prior probability of winning election
+
+::: {.panel-tabset}
+
+## A
 
 ```{r}
 #| echo: false
-plts[["plt_house"]]
+#| warning: false
+
+plts[["A"]][["plt_probwin"]]
+```
+
+## B
+
+```{r}
+#| echo: false
+#| warning: false
+
+plts[["B"]][["plt_probwin"]]
+```
+
+## C
+
+```{r}
+#| echo: false
+#| warning: false
+
+plts[["C"]][["plt_probwin"]]
+```
+
+## D
+
+```{r}
+#| echo: false
+#| warning: false
+
+plts[["D"]][["plt_probwin"]]
+```
+
+## E
+
+```{r}
+#| echo: false
+#| warning: false
+
+plts[["E"]][["plt_probwin"]]
+```
+
+:::
+
+### House effects
+
+::: {.panel-tabset}
+
+## A
+```{r}
+#| echo: false
+plts[["A"]][["plt_house"]]
+```
+
+## B
+
+```{r}
+#| echo: false
+plts[["B"]][["plt_house"]]
+```
+
+## C
+
+```{r}
+#| echo: false
+plts[["C"]][["plt_house"]]
+```
+
+## D
+
+```{r}
+#| echo: false
+plts[["C"]][["plt_house"]]
+```
+
+## E
+
+```{r}
+#| echo: false
+plts[["E"]][["plt_house"]]
 ```
 
 :::
