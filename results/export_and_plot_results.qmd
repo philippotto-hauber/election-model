@@ -110,8 +110,8 @@ gen_results <- function(plts, scen) {
             states = states,
             parties = parties,
             electoral_votes = electoral_votes
-            )
         )
+    )
     toc()
     tic("calc prob win states")
     df_prob_win_states <- do.call(
