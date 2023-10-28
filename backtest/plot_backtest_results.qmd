@@ -128,8 +128,8 @@ df_results$t <- election_day
 Scenario-invariant in backtests! Invert alr transformation
 
 ```{r}
-priors <- readRDS(here::here("priors", "priors.Rds"))
-df_prior_ppi <- invert_alr_on_prior(priors[["A"]][["m_mmu_T"]])
+priors <- readRDS(here::here("backtest", "priors_backtest.Rds"))
+df_prior_ppi <- invert_alr_on_prior(priors[["m_mmu_T"]])
 ```
 
 ## Loop over scenarios
@@ -137,7 +137,8 @@ df_prior_ppi <- invert_alr_on_prior(priors[["A"]][["m_mmu_T"]])
 ```{r}
 plts <- list()
 df_summary <- data.frame()
-scenarios_backtest <- c("all", "short", "missing")
+# scenarios_backtest <- c("all", "short", "missing")
+scenarios_backtest <- c("all")
 for (scen in scenarios_backtest) {
     # load mcmc output, polls
     out <- readRDS(
@@ -221,7 +222,7 @@ for (scen in scenarios_backtest) {
         election_day, 
         n_geographies = length(states), 
         paste0(params$year, " ", scen),
-        plt_caption = "Solid (dotted) vertical lines: election result (prior mean)."
+        plt_caption = "Solid (dotted) vertical lines: election result (prior mean).",
         df_results = filter(
             df_results,
             vote_share != 0,
@@ -326,7 +327,7 @@ plts[["all"]][["plt_ppi_nat"]]
 ```{r}
 #| echo: false
 #| warning: false
-plts[["short"]][["plt_prob_win_election_over_time"]]
+#plts[["short"]][["plt_prob_win_election_over_time"]]
 ```
 
 ```{r}
@@ -334,7 +335,7 @@ plts[["short"]][["plt_prob_win_election_over_time"]]
 #| fig.height: 10
 #| echo: false
 #| warning: false
-plts[["short"]][["plt_ppiT"]]
+#plts[["short"]][["plt_ppiT"]]
 ```
 
 ```{r}
@@ -342,7 +343,7 @@ plts[["short"]][["plt_ppiT"]]
 #| fig.height: 10
 #| echo: false
 #| warning: false
-plts[["short"]][["plt_ppi"]]
+#plts[["short"]][["plt_ppi"]]
 ```
 
 ```{r}
@@ -350,13 +351,13 @@ plts[["short"]][["plt_ppi"]]
 #| fig.height: 10
 #| echo: false
 #| warning: false
-plts[["short"]][["plt_ppi_reg"]]
+#plts[["short"]][["plt_ppi_reg"]]
 ```
 
 ```{r}
 #| echo: false
 #| warning: false
-plts[["short"]][["plt_ppi_nat"]]
+#plts[["short"]][["plt_ppi_nat"]]
 ```
 
 
@@ -364,7 +365,7 @@ plts[["short"]][["plt_ppi_nat"]]
 ```{r}
 #| echo: false
 #| warning: false
-plts[["missing"]][["plt_prob_win_election_over_time"]]
+#plts[["missing"]][["plt_prob_win_election_over_time"]]
 ```
 
 
@@ -373,7 +374,7 @@ plts[["missing"]][["plt_prob_win_election_over_time"]]
 #| fig.height: 10
 #| echo: false
 #| warning: false
-plts[["missing"]][["plt_ppiT"]]
+#plts[["missing"]][["plt_ppiT"]]
 ```
 
 ```{r}
@@ -381,19 +382,19 @@ plts[["missing"]][["plt_ppiT"]]
 #| fig.height: 10
 #| echo: false
 #| warning: false
-plts[["missing"]][["plt_ppi"]]
+#plts[["missing"]][["plt_ppi"]]
 ```
 
 ```{r}
 #| echo: false
 #| warning: false
-plts[["missing"]][["plt_ppi_reg"]]
+#plts[["missing"]][["plt_ppi_reg"]]
 ```
 
 ```{r}
 #| echo: false
 #| warning: false
-plts[["missing"]][["plt_ppi_nat"]]
+#plts[["missing"]][["plt_ppi_nat"]]
 ```
 
 :::
