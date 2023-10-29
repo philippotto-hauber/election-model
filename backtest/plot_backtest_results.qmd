@@ -15,11 +15,10 @@ params:
 
 This notebook summarises the backtesting results for the year `r params$year`. 
 
-For the backtest, I consider three scenarios
+For the backtest, I consider two scenarios
 
 - **all**: includes all the polls up until election day
 - **short**: includes all the polls until the end of April, so around one third of the campaign
-- **missing**: includes national and provincial polls up until end of May except the largest (by population) in each region, no regional polls
 
 Below, I print the win probabilities of the parties on election day in the different scenarios as well as the evolution of the win probabilties over the campaign. 
 
@@ -137,8 +136,7 @@ df_prior_ppi <- invert_alr_on_prior(priors[["m_mmu_T"]])
 ```{r}
 plts <- list()
 df_summary <- data.frame()
-# scenarios_backtest <- c("all", "short", "missing")
-scenarios_backtest <- c("all")
+scenarios_backtest <- c("all", "short")
 for (scen in scenarios_backtest) {
     # load mcmc output, polls
     out <- readRDS(
@@ -331,7 +329,7 @@ plts[["all"]][["plt_ppi_nat"]]
 ```{r}
 #| echo: false
 #| warning: false
-#plts[["short"]][["plt_prob_win_election_over_time"]]
+plts[["short"]][["plt_prob_win_election_over_time"]]
 ```
 
 ```{r}
@@ -339,7 +337,7 @@ plts[["all"]][["plt_ppi_nat"]]
 #| fig.height: 10
 #| echo: false
 #| warning: false
-#plts[["short"]][["plt_ppiT"]]
+plts[["short"]][["plt_ppiT"]]
 ```
 
 ```{r}
@@ -347,7 +345,7 @@ plts[["all"]][["plt_ppi_nat"]]
 #| fig.height: 10
 #| echo: false
 #| warning: false
-#plts[["short"]][["plt_ppi"]]
+plts[["short"]][["plt_ppi"]]
 ```
 
 ```{r}
@@ -355,50 +353,13 @@ plts[["all"]][["plt_ppi_nat"]]
 #| fig.height: 10
 #| echo: false
 #| warning: false
-#plts[["short"]][["plt_ppi_reg"]]
+plts[["short"]][["plt_ppi_reg"]]
 ```
 
 ```{r}
 #| echo: false
 #| warning: false
-#plts[["short"]][["plt_ppi_nat"]]
-```
-
-
-## Scenario: "missing"
-```{r}
-#| echo: false
-#| warning: false
-#plts[["missing"]][["plt_prob_win_election_over_time"]]
-```
-
-
-```{r}
-#| fig.width: 10
-#| fig.height: 10
-#| echo: false
-#| warning: false
-#plts[["missing"]][["plt_ppiT"]]
-```
-
-```{r}
-#| fig.width: 10
-#| fig.height: 10
-#| echo: false
-#| warning: false
-#plts[["missing"]][["plt_ppi"]]
-```
-
-```{r}
-#| echo: false
-#| warning: false
-#plts[["missing"]][["plt_ppi_reg"]]
-```
-
-```{r}
-#| echo: false
-#| warning: false
-#plts[["missing"]][["plt_ppi_nat"]]
+plts[["short"]][["plt_ppi_nat"]]
 ```
 
 :::

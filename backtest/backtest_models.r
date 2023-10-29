@@ -57,7 +57,7 @@ priors <- prepare_priors_backtest()
 polls <- readRDS(here::here("backtest", paste0("polls_", params$year, ".Rds")))
 
 # loop over scenarios
-scenarios_backtest <- c("all", "short", "missing")
+scenarios_backtest <- c("all", "short")
 
 for (scen in scenarios_backtest) {
     # scenario-specific data

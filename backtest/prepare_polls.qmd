@@ -112,10 +112,10 @@ dat <- dat[, keep_cols_stan]
 
 ## Scenarios
 
-For the backtests, I consider three different vintages or scenarios
+For the backtests, I consider two different vintages or scenarios
 
 ```{r}
-scenarios_backtest <- c("all", "short", "missing")
+scenarios_backtest <- c("all", "short")
 ```
 
 - **all**: includes all polls in all geographies up until election day
@@ -123,13 +123,6 @@ scenarios_backtest <- c("all", "short", "missing")
 
 ```{r}
 date_max_short <- as.Date(paste0(params$year, "-04-30"))
-```
-
-- **missing**: includes polls until end of May but completely missing in regions and some states
-
-```{r}
-date_max_missing <- as.Date(paste0(params$year, "-05-31"))
-missing_states <- c("Electropolis", "Infoglen", "Cortexia")
 ```
 
 ```{r}
