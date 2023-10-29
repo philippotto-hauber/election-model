@@ -1,43 +1,49 @@
 # election-model
 
-Code to generate forecasts for the 2024 election in Dataland.
+This repo contains scripts to generate forecasts for the 2024 election in Dataland.
 
-## Model
+## Model 
 
-The model is based  . See `model_description.html` for details. Th
+The **model** I estimate is very similar to the one I originally described in the model outline. The description in  `model_description.html` contains a bit more details and hopefully less hand-waving.
 
-## Repo
+## Repo structure
 
-The folder structure of the repo is guided by the required steps of the analysis. With the exception of the computationally intensive model estimation, all of the analyses are in notebooks which bundle the underlying R code, narrative or documentation and (graphical) output. (Some of the notebooks are more polished than others!) 
+The folder structure of the repo is guided by the required steps of the analysis. These are: 
 
-- `data/prepare_polls_scenarios_2024.html` prepares the poll data for the 2024 election campaign, mak
+- generate a **fundamental forecast** based on a model of the relationship between past election results and historic macroeconomic data. For details, see `fundamental_forecast/generate_fundamental_forecast.html`
 
-- `fundamental_forecast/generate_fundamental_forecast.html` 
+- transform the **polls** of the 2024 campaign to a Stan-friendly format. See `data/polls_scenarios_2024.html` for the R code to do so along with plots describing the poll data
 
-- `priors/construct_priors.html` 
+- construct the prior for the model estimation. This includes the fundamental forecast (as a prior on the expected vote share on election day)! For the underlying R code, a discussion of the priors and a visualization of the prior predictive distribution, see `priors/construct_priors.html`
 
-- `model/estimate_models.r`
+- given the prior and data, **estimate** the model. See the R script `model/estimate_models.r` which compiles and samples from the Stan script `model/election_model.stan`
 
-- `model/election_model.stan`
+- process the MCMC output from the model estimation and calculate the mean vote shares and win probalities. See `results/export_and_plot_results.html` for the underlying R code that generates the csv-files and plots the results
 
-- `results/export_and_plot_results.qmd` processes the MCMC output and calculates the win probalities. It also exports the csv result files that are in the main directory of this repo (e.g. `national_forecast_A.csv`). The rendered notebook also includes plots of the main results. 
+- **backtest** the model's performance in three previous elections (won by the three parties that have ever done so). See `backtest/plot_backtest_results_XXXX.html` where XXXX is the year of the election for plots of the model forecasts. 
 
-- `backtest/plot_results`
+## Notes
+
+- throughout the code and documentation, I use the terms province and state interchangeably!
+
+- some of the notebooks are more polished than others!
+
+- because of their size, the MCMC output files are not stored in the repo but in this [Dropbox folder](insert link)
 
 ## Possible extensions/improvements
 
-- Over and beyond sampling uncertainty the model only includes "house effects" as a wedge between observed polling results and underlying voting intentions. Other sources of noise in the polls such as who is being polled (registered voters, all adults?) or how they are polled (online?) and should be adressed in the model in a similar fashion. 
+- over and beyond sampling uncertainty the model only includes "house effects" as a wedge between observed polling results and underlying voting intentions. Other sources of noise in the polls such as who is being polled (registered voters, all adults?) or how they are polled (online?) and should be adressed in the model in a similar fashion. 
 
-- The Stan code that estimates the model prioritizes transparency and ease of implementation over efficiency! 
+- the Stan code so far prioritizes transparency and ease of implementation over efficiency
 
-- The prior
+- the prior on the innovations XXXXXX
 
-- The fundamental forecast 
+- the fundamental forecast XXXXX
 
 ## Replication
 
-To generate the forecasts for the 2024 election, execute `run_scripts.bat` or run the individual scripts/notebooks in the order listed therein. This ensures that all the steps are performed in the correct order, e.g. that the fundamental forecast is produced first which is then used to set the prior for the expected vote shares on election day! 
+To generate the forecasts for the 2024 election, execute `run_scripts.bat` or run the individual scripts/notebooks in the order listed therein.
 
-For the backtests there is a separate batch script in the corresponding directoy called `run_backtests.bat`. Note that the years for which the model is backtested are hard-coded and need to be adjusted manually if desired. 
+For the backtests there is a separate batch script in the corresponding directory called `run_backtests.bat`. Note that the years for which the model is backtested are hard-coded and need to be adjusted manually if desired. 
 
 
