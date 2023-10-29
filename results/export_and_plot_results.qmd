@@ -95,7 +95,7 @@ gen_results <- function(plts, scen) {
 
     df_draws_ppi_nat <- convert_draws_to_dt(
         rstan::extract(out, pars = "ppi_nat")[["ppi_nat"]],                        
-        geographies = "national",
+        geographies = "National",
         parties = parties, 
         dates_campaign = dates_campaign)
 
@@ -126,7 +126,7 @@ gen_results <- function(plts, scen) {
         ) 
     toc()
 
-    # Export mean vote share and win probabilities to read 
+    # Export mean vote share and win probabilities to csv
     tic("calc mean vote states")
     df_draws_ppi %>% 
     group_by(t, party, geography) %>% 
@@ -224,14 +224,18 @@ gen_results <- function(plts, scen) {
         filter(df_polls, scenario == scen), 
         n_geographies = length(states), 
         type_of_poll = "state", 
-        plt_title_prefix = scen) -> plts[[scen]][["plt_ppi"]]
+        plt_title_prefix = scen,
+        plt_caption = "Posterior mean: dashed line; lighter (darker) ribbon: 95 (83) percent posterior credible interval; dots indicate the vote share in a survey on that day."
+    ) -> plts[[scen]][["plt_ppi"]]
 
     plot_ppi(
         df_draws_ppi_reg, 
         filter(df_polls, scenario == scen), 
         n_geographies = length(regions), 
         type_of_poll = "regional", 
-        plt_title_prefix = scen) -> plts[[scen]][["plt_ppi_reg"]]    
+        plt_title_prefix = scen,
+        plt_caption = "Posterior mean: dashed line; lighter (darker) ribbon: 95 (83) percent posterior credible interval; dots indicate the vote share in a survey on that day."
+    ) -> plts[[scen]][["plt_ppi_reg"]]    
     
 
     plot_ppi(
@@ -239,7 +243,10 @@ gen_results <- function(plts, scen) {
         filter(df_polls, scenario == scen), 
         n_geographies = 1, 
         type_of_poll = "national", 
-        plt_title_prefix = scen) -> plts[[scen]][["plt_ppi_nat"]]
+        plt_title_prefix = scen,
+        plt_caption = "Posterior mean: dashed line; lighter (darker) ribbon: 95 (83) percent posterior credible interval; dots indicate the vote share in a survey on that day."
+    ) -> plts[[scen]][["plt_ppi_nat"]]
+    
     rm(df_draws_ppi, 
         df_draws_ppi_reg, 
         df_draws_ppi_nat, 
@@ -256,6 +263,10 @@ gen_results <- function(plts, scen) {
 }
 ```
 
+
+```{r}
+plts <- gen_results(plts, "A")
+```
 
 Loop over scenarios
 ```{r}
