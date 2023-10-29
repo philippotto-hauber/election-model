@@ -4,6 +4,7 @@ plot_ppi <- function(
     n_geographies,
     type_of_poll,
     plt_title_prefix,
+    plt_caption = element_blank(),
     df_results = NULL
   ){
   df_draws %>%
@@ -46,7 +47,7 @@ plot_ppi <- function(
         plt_title_prefix,
         ": Expected vote share"
       ),
-      caption = "Posterior mean: dashed line; lighter (darker) ribbon: 95 (83) percent posterior credible interval; dots indicate the vote share in a survey on that day; diamonds indicate the election result."
+      caption = plt_caption
     )+
     ylab("share")+
     theme(legend.position="top",
