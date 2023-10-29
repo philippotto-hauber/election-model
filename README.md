@@ -4,7 +4,7 @@ This repo contains scripts to generate forecasts for the 2024 election in Datala
 
 ## Model 
 
-The **model** I estimate is very similar to the one I originally described in the model outline. The description in  `model_description.html` contains a bit more details and hopefully less hand-waving.
+The model I estimate is very similar to the one I originally described in the model outline. The description in  `model_description.html` contains a bit more details and hopefully less hand-waving.
 
 ## Repo structure
 
@@ -35,11 +35,13 @@ The folder structure of the repo is guided by the required steps of the analysis
 
 ## Possible extensions/improvements
 
-- over and beyond sampling uncertainty the model only includes "house effects" as a wedge between observed polling results and underlying voting intentions. Other sources of noise in the polls such as who is being polled (registered voters, all adults?) or how they are polled (online?) and should be adressed in the model in a similar fashion. 
+- over and beyond sampling uncertainty the model only includes "house effects" as a wedge between observed polling results and underlying voting intentions. Other sources of noise in the polls such as who is being polled (registered voters, all adults?) or how they are polled (online?) and should be adressed in the model in a similar fashion. The fact that is not the case is not a deliberate modelling decision but down to resource constraints!
 
 - the Stan code so far prioritizes transparency and ease of implementation over efficiency
 
-- the prior on the innovations XXXXXX
+- improve the prior on the innovation covariance matrix that governs the comovement of the underlying vote intentions ($\boldmath{W}$ in the model description's notation). I see two main points: 
+    - use additional data in determining the correlation matrix of vote shares across parties and states, not just historic election results (see the discussion in `priors/construct_priors.html`) 
+    - rather than fixing $\boldmath{\hat{W}}$ and $\kappa$, place a prior on either or both values and update these in a fully Bayesian manner like the other parameters in the model. By treating $\boldmath{W}$ as known, a major source of uncertainty in the model - we simply don't know exactly how the underlying vote intentions comove and by how much they move - is disregarded! Prior Information about likely correlations between parties and states can still be incorporated by choosing a suitable prior like an inverse Wishart
 
 - the fundamental forecast XXXXX
 
