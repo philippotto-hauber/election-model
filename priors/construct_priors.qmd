@@ -12,7 +12,13 @@ format:
 bibliography: ../references.bib
 ---
 
-This notebook constructs the **priors for the model estimation**. See `model_description.html`for details. Some of the priors are independent of the specific scenario being estimated, e.g. the innovations to the reverse random-walk $\boldsymbol{W}$; others depend on the scenario and the resulting *fundamental forecast*, e.g. the prior mean $m_{\mu_T}$ and variance $V_{\mu_T}$ on the (transformed) latent voting intentions on election day.
+This notebook constructs the **priors for the model estimation**. See `model_description.html`for details. 
+
+Some of the priors are independent of the specific scenario being estimated, e.g. the innovations to the reverse random-walk $\boldsymbol{W}$; others depend on the scenario and the resulting *fundamental forecast*, e.g. the prior mean $m_{\mu_T}$ and variance $V_{\mu_T}$ on the (transformed) latent voting intentions on election day. 
+
+The priors are exported to `.rds` as a list. 
+
+Lastly, through simulation I assess the ranges of expected vote share and win probabilities of the different parties implied by the joint prior. 
 
 ```{r}
 #| output: false
@@ -383,7 +389,7 @@ Three questions are of interest:
 
 - is the size of the house effects plausible? 
 
-- what does the joint prior imply for the a priori win probabilities of the different elections?
+- what probabilities of winning the election does the joint prior imply for the different parties? 
 
 ```{r}
 priors <- readRDS(file = here::here("priors", "priors.Rds"))
