@@ -8,6 +8,7 @@ format:
         toc-location: left
         self-contained-math: true
         html-math-method: katex
+        code-fold: show
 ---
 
 This notebook loads the MCMC output from the script `estimate_models.r` and calculates 
@@ -54,15 +55,6 @@ priors <- readRDS(here::here("priors", "priors.Rds"))
 
 
 ## Generate results for different scenarios
-
-```{r}
-scenarios <- load_scenarios()
-```
-
-List to store plots
-```{r}
-plts <- list()
-```
 
 Define a function to generate csv output and plots for each scenario
 
@@ -263,13 +255,11 @@ gen_results <- function(plts, scen) {
 }
 ```
 
-
-```{r}
-plts <- gen_results(plts, "A")
-```
-
 Loop over scenarios
 ```{r}
+scenarios <- load_scenarios()
+plts <- list()
+
 for (scen in scenarios) {
     plts <- gen_results(plts, scen)
 }
