@@ -230,12 +230,14 @@ for (scen in scenarios_backtest) {
         )
     ) -> plts[[scen]][["plt_ppiT"]]
 
+    plt_caption <- "Posterior mean: dashed line; lighter (darker) ribbon: 95 (83) percent posterior credible interval; dots indicate the vote share in a survey on that day; diamonds indicate the election result."
     plot_ppi(
         df_draws_ppi, 
         df_polls, 
         n_geographies = length(states), 
         type_of_poll = "state", 
         plt_title_prefix = paste0(params$year, " ", scen),
+        plt_caption = plt_caption,
         df_results = filter(
             df_results,
             vote_share != 0,
@@ -249,6 +251,7 @@ for (scen in scenarios_backtest) {
         n_geographies = length(regions), 
         type_of_poll = "regional", 
         plt_title_prefix = paste0(params$year, " ", scen),
+        plt_caption = plt_caption,
         df_results = filter(
             df_results,
             vote_share != 0,
@@ -262,6 +265,7 @@ for (scen in scenarios_backtest) {
         n_geographies = 1, 
         type_of_poll = "national", 
         plt_title_prefix = paste0(params$year, " ", scen),
+        plt_caption = plt_caption,
         df_results = filter(
             df_results,
             geography == "National"
