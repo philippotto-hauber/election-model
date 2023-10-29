@@ -39,9 +39,9 @@ The folder structure of the repo is guided by the required steps of the analysis
 
 - the Stan code so far prioritizes transparency and ease of implementation over efficiency
 
-- improve the prior on the innovation covariance matrix that governs the comovement of the underlying vote intentions ($\boldmath{W}$ in the model description's notation). I see two main points: 
+- improve the prior on the innovation covariance matrix that governs the comovement of the underlying vote intentions ($W$ in the model description's notation). I see two main points: 
     - use additional data in determining the correlation matrix of vote shares across parties and states, not just historic election results (see the discussion in `priors/construct_priors.html`) 
-    - rather than fixing $\boldmath{\hat{W}}$ and $\kappa$, place a prior on either or both values and update these in a fully Bayesian manner like the other parameters in the model. By treating $\boldmath{W}$ as known, a major source of uncertainty in the model - we simply don't know exactly how the underlying vote intentions comove and by how much they move - is disregarded! Prior Information about likely correlations between parties and states can still be incorporated by choosing a suitable prior like an inverse Wishart
+    - rather than fixing $\hat{W}$ and $\kappa$, place a prior on either or both values and update these in a fully Bayesian manner like the other parameters in the model. By treating $W$ as known, a major source of uncertainty in the model is disregarded! Prior information about likely correlations between parties and states can still be incorporated by choosing a suitable prior like an inverse Wishart
 
 - the fundamental forecast XXXXX
 
