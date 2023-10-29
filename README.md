@@ -10,17 +10,20 @@ The **model** I estimate is very similar to the one I originally described in th
 
 The folder structure of the repo is guided by the required steps of the analysis. These are: 
 
-- generate a **fundamental forecast** based on a model of the relationship between past election results and historic macroeconomic data. For details, see `fundamental_forecast/generate_fundamental_forecast.html`
+- generate a **fundamental forecast** based on a model of the relationship between past election results and historic macroeconomic data. For details on the model and how the fundamental forecasts differ across scenarios, see `fundamental_forecast/generate_fundamental_forecast.html`
 
 - transform the **polls** of the 2024 campaign to a Stan-friendly format. See `data/polls_scenarios_2024.html` for the R code to do so along with plots describing the poll data
 
-- construct the prior for the model estimation. This includes the fundamental forecast (as a prior on the expected vote share on election day)! For the underlying R code, a discussion of the priors and a visualization of the prior predictive distribution, see `priors/construct_priors.html`
+- construct the prior for the model estimation. This includes the fundamental forecast (as a prior on the expected vote share on election day)! For the underlying R code, a discussion of the priors and a visualization of the prior predictive distribution (in particular the prior probability of each party winning the election) see `priors/construct_priors.html`
 
 - given the prior and data, **estimate** the model. See the R script `model/estimate_models.r` which compiles and samples from the Stan script `model/election_model.stan`
 
 - process the MCMC output from the model estimation and calculate the mean vote shares and win probalities. See `results/export_and_plot_results.html` for the underlying R code that generates the csv-files and plots the results
 
-- **backtest** the model's performance in three previous elections (won by the three parties that have ever done so). See `backtest/plot_backtest_results_XXXX.html` where XXXX is the year of the election for plots of the model forecasts. 
+- **backtest** the model's performance in three previous elections (each with a different winner). Plots of the results are in `backtest/plot_backtest_results_XXXX.html` where XXXX is the year of the election. A short summary: 
+    - XXXX
+    - YYYY
+    - ZZZZ
 
 ## Notes
 
@@ -28,7 +31,7 @@ The folder structure of the repo is guided by the required steps of the analysis
 
 - some of the notebooks are more polished than others!
 
-- because of their size, the MCMC output files are not stored in the repo but in this [Dropbox folder](insert link)
+- because of their size, the MCMC output files are not stored in the repo but in this [Dropbox folder](https://www.dropbox.com/scl/fo/pu03a41st6of51rk1ezix/h?rlkey=4tg43mptcbgaie0y6mc22gejw&dl=0)
 
 ## Possible extensions/improvements
 
