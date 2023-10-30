@@ -35,7 +35,7 @@ The folder structure of the repo is guided by the required steps of the analysis
 
 ## Possible extensions/improvements
 
-- over and beyond sampling uncertainty the model only includes "house effects" as a wedge between observed polling results and underlying voting intentions. Other sources of noise in the polls such as who is being polled (registered voters, all adults?) or how they are polled (online?) and should be adressed in the model in a similar fashion. The fact that is not the case is not a deliberate modelling decision but down to resource constraints!
+- over and beyond sampling uncertainty the model only includes "house effects" as a wedge between observed polling results and underlying voting intentions. Other sources of noise in the polls such as who is being polled (registered voters, all adults?) or how they are polled (online or not?) and should be adressed in the model in a similar fashion. The fact that is not the case is not a deliberate modelling decision but down to resource constraints!
 
 - the Stan code so far prioritizes transparency and ease of implementation over efficiency
 
@@ -44,6 +44,8 @@ The folder structure of the repo is guided by the required steps of the analysis
     - rather than fixing $\hat{W}$ and $\kappa$, place a prior on either or both values and update these in a fully Bayesian manner like the other parameters in the model. By treating $W$ as known, a major source of uncertainty in the model is disregarded! Prior information about likely correlations between parties and states can still be incorporated by choosing a suitable prior like an inverse Wishart
 	
 - try out other models for the fundamental forecast to see if the tentative conclusion that the given scenarios do not have a large impact on the expected vote shares on election day stands up to scrutiny
+
+- assess the calibration of the predictive densities in the backtesting exercise: roughly half of the realized vote shares at the provincial, regional and national level should lie within the 50 percent predictive intervals, roughly 9 out of 10 should lie within the 90 percent intervals and so on
 
 ## Replication
 
