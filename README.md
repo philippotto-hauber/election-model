@@ -4,7 +4,7 @@ This repo contains scripts to generate forecasts for the 2024 election in Datala
 
 ## Model 
 
-The model I estimate is very similar to the one I originally described in the model outline. The description in  `model_description.html` contains a bit more details and hopefully less hand-waving.
+The model I estimate is very similar to the one I originally proposed in the model outline. The description in  `model_description.html` contains a bit more details and hopefully less hand-waving.
 
 ## Repo structure
 
@@ -14,20 +14,20 @@ The folder structure of the repo is guided by the required steps of the analysis
 
 - transform the **polls** of the 2024 campaign to a Stan-friendly format. See `data/polls_scenarios_2024.html` for the R code to do so along with plots describing the poll data
 
-- construct the prior for the model estimation. This includes the fundamental forecast (as a prior on the expected vote share on election day)! For the underlying R code, a discussion of the priors and a visualization of the prior predictive distribution (in particular the prior probability of each party winning the election) see `priors/construct_priors.html`
+- construct the **prior** for the model estimation. This includes the fundamental forecast (as a prior on the expected vote share on election day)! For the underlying R code, a discussion of the priors and a visualization of the prior predictive distribution (in particular the prior probability of each party winning the election) see `priors/construct_priors.html`
 
 - given the prior and data, **estimate** the model. See the R script `model/estimate_models.r` which compiles and samples from the Stan script `model/election_model.stan`
 
-- process the MCMC output from the model estimation and calculate the mean vote shares and win probalities. See `results/export_and_plot_results.html` for the underlying R code that generates the csv-files and plots the results
+- process the MCMC output from the model estimation and **calculate the mean vote shares and win probalities**. See `results/export_and_plot_results.html` for the underlying R code that generates the csv-files and plots the results
 
-- **backtest** the model's performance in three previous elections (each with a different winner). Plots of the results are in `backtest/plot_backtest_results_XXXX.html` where XXXX is the year of the election. A short summary: 
-    - XXXX
-    - YYYY
-    - ZZZZ
+- **backtest** the model's performance in three previous elections (each with a different winner). Plots of the results are in `backtest/plot_backtest_results_XXXX.html` where XXXX is the year of the election. A short summary of the results: 
+    - Throughout the election campaign, the model assigns a probability of more than 50 percent to a PDAL win (with occasional exceptions); on election day, the probability is even higher which is in line with a clear lead in the expected popular vote
+    - The model severely underestimates CC's probability of winning in the 2005 election. While it assigns a probability of around 40 percent to a CC win on election day, this appears to be more of a fluke: for most of the campaign the model does not see the CC anywhere near a win. However, the forecast of the CC's share of the popular vote is actually quite accurate
+    - The model's performance in the 2019 election is somewhere in the middle: for large parts of the campaign the DGM - winner of the 2019 election - is deemed to be neck-and-neck with the PDAL in terms of win probabilities
 
 ## Notes
 
-- throughout the code and documentation, I use the terms province and state interchangeably!
+- throughout the code and documentation, I use the terms "province" and "state" interchangeably!
 
 - some of the notebooks are more polished than others!
 
@@ -42,12 +42,12 @@ The folder structure of the repo is guided by the required steps of the analysis
 - improve the prior on the innovation covariance matrix that governs the comovement of the underlying vote intentions ($W$ in the model description's notation). I see two main points: 
     - use additional data in determining the correlation matrix of vote shares across parties and states, not just historic election results (see the discussion in `priors/construct_priors.html`) 
     - rather than fixing $\hat{W}$ and $\kappa$, place a prior on either or both values and update these in a fully Bayesian manner like the other parameters in the model. By treating $W$ as known, a major source of uncertainty in the model is disregarded! Prior information about likely correlations between parties and states can still be incorporated by choosing a suitable prior like an inverse Wishart
-
-- the fundamental forecast XXXXX
+	
+- try out other models for the fundamental forecast to see if the tentative conclusion that the given scenarios do not have a large impact on the expected vote shares on election day stands up to scrutiny
 
 ## Replication
 
-To generate the forecasts for the 2024 election, execute `run_scripts.bat` or run the individual scripts/notebooks in the order listed therein.
+To generate the forecasts for the 2024 election, execute `run_scripts.bat` or run the individual scripts/notebooks in the order listed therein. Most of the required R packages can be installed via `renv`. In addition, the model estimation requires CmdStan 2.32.2 and the package cmdstanr 0.6.1!
 
 For the backtests there is a separate batch script in the corresponding directory called `run_backtests.bat`. Note that the years for which the model is backtested are hard-coded and need to be adjusted manually if desired. 
 
